@@ -8,4 +8,5 @@
 - 점수 및 완료 화면
 - 데스크톱·모바일 반응형 구성
 
+배포 방식: GitHub Pages 자동 배포  
 배포 주소: https://xognsdl1019.github.io/information-gain-tree-lab/
