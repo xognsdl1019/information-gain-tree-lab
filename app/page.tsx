@@ -1,294 +1,407 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
-type Attr = "age" | "income" | "student" | "credit";
-type Row = {
-  id: number;
-  age: "청소년" | "청년" | "중년";
-  income: "고소득층" | "중소득층" | "저소득층";
-  student: "예" | "아니요";
-  credit: "좋음" | "아주 좋음";
-  buy: boolean;
+type FeatureKey = "sender" | "link" | "urgency";
+type MailLabel = "정상 메일" | "해킹메일";
+
+type Mail = {
+  id: string;
+  subject: string;
+  sender: "내부" | "확인된 외부" | "미확인 외부";
+  link: "예" | "아니오";
+  urgency: "긴급" | "보통";
+  label: MailLabel;
 };
-type FieldState = "idle" | "correct" | "wrong";
 
-const DATA: Row[] = [
-  { id: 1, age: "청소년", income: "고소득층", student: "아니요", credit: "좋음", buy: false },
-  { id: 2, age: "청소년", income: "고소득층", student: "아니요", credit: "아주 좋음", buy: false },
-  { id: 3, age: "청년", income: "고소득층", student: "아니요", credit: "좋음", buy: true },
-  { id: 4, age: "중년", income: "중소득층", student: "아니요", credit: "좋음", buy: true },
-  { id: 5, age: "중년", income: "저소득층", student: "예", credit: "좋음", buy: true },
-  { id: 6, age: "중년", income: "저소득층", student: "예", credit: "아주 좋음", buy: false },
-  { id: 7, age: "청년", income: "저소득층", student: "예", credit: "아주 좋음", buy: true },
-  { id: 8, age: "청소년", income: "중소득층", student: "아니요", credit: "좋음", buy: false },
-  { id: 9, age: "청소년", income: "저소득층", student: "예", credit: "좋음", buy: true },
-  { id: 10, age: "중년", income: "중소득층", student: "예", credit: "좋음", buy: true },
-  { id: 11, age: "청소년", income: "중소득층", student: "예", credit: "아주 좋음", buy: true },
-  { id: 12, age: "청년", income: "중소득층", student: "아니요", credit: "아주 좋음", buy: true },
-  { id: 13, age: "청년", income: "고소득층", student: "예", credit: "좋음", buy: true },
-  { id: 14, age: "중년", income: "중소득층", student: "아니요", credit: "아주 좋음", buy: false },
+type TreeNode = {
+  id: string;
+  mailIds: string[];
+  used: FeatureKey[];
+  edge?: string;
+  split?: FeatureKey;
+  label?: MailLabel;
+  children?: TreeNode[];
+};
+
+const FEATURES: Array<{
+  key: FeatureKey;
+  name: string;
+  question: string;
+  values: string[];
+  icon: string;
+}> = [
+  { key: "sender", name: "발신자 유형", question: "발신자 유형은?", values: ["내부", "확인된 외부", "미확인 외부"], icon: "◎" },
+  { key: "link", name: "외부 링크 포함", question: "외부 링크가 있는가?", values: ["예", "아니오"], icon: "↗" },
+  { key: "urgency", name: "긴급 여부", question: "긴급 메일인가?", values: ["긴급", "보통"], icon: "!" },
 ];
 
-const ATTR_META: Record<Attr, { label: string; formula: string; question: string }> = {
-  age: { label: "나이", formula: "age", question: "나이는?" },
-  income: { label: "수입", formula: "income", question: "수입은?" },
-  student: { label: "학생 여부", formula: "student", question: "학생입니까?" },
-  credit: { label: "신용등급", formula: "credit", question: "신용등급은?" },
-};
+const internalNormal = ["주간회의 자료", "교육 일정 안내", "당직근무 변경", "체육행사 계획", "보안교육 참석", "정기점검 결과", "회의록 공유", "업무협조 요청", "교육명령 확인", "월간계획 보고"];
+const verifiedHack = ["공문 열람 프로그램", "전자문서 확인 요청", "계정 동기화 안내", "자료 수신 확인"];
+const verifiedNormal = ["협조문서 송부", "세미나 초청", "납품 일정 안내", "교육자료 공유", "행사 참석 요청"];
+const unknownHack = ["보안 경고 확인", "메일함 용량 초과", "급여명세서 확인", "배송 주소 확인", "지원금 대상 안내", "계정 잠금 해제", "미확인 문서 열람"];
 
-const STEPS = ["데이터 관찰", "나이 계산", "후보 비교", "노드 확인", "청소년 분할", "중년 분할", "트리 활용", "핵심 정리", "확인 퀴즈", "실습 완료"];
-const STEP_TITLES = [
-  "구매 여부 데이터에서 규칙을 찾아봅시다",
-  "나이로 분할한 정보이득을 계산합니다",
-  "모든 후보를 비교하고 첫 질문을 선택합니다",
-  "어떤 노드를 더 분할해야 할까요?",
-  "청소년 노드의 두 번째 질문을 찾습니다",
-  "중년 노드의 질문을 독립적으로 찾습니다",
-  "완성된 의사결정 트리를 사용해 봅시다",
-  "질문과 분할을 중심으로 핵심 개념을 정리합니다",
-  "다섯 문제로 오늘 배운 내용을 확인합니다",
-  "정보이득 기반 의사결정 트리 실습을 완료했습니다",
-];
-const STEP_DESCRIPTIONS = [
-  "14개 데이터를 관찰한 뒤 정보이득으로 의사결정 트리를 직접 완성합니다.",
-  "주어진 그룹별 엔트로피를 이용해 분할 후 엔트로피와 정보이득을 빈칸에 입력하세요.",
-  "분할 후 엔트로피에서 각 후보의 정보이득을 계산한 뒤 가장 큰 속성을 선택하세요.",
-  "순수한 노드는 종료하고 구매·비구매가 섞인 노드만 선택하세요.",
-  "이제 전체 데이터가 아니라 청소년 5개 데이터만 새로운 D로 보고 다시 계산합니다.",
-  "청소년 가지와 별개로 중년 5개 데이터에 가장 알맞은 질문을 계산합니다.",
-  "완성된 트리의 질문을 따라 새로운 고객의 구매 여부를 예측하세요.",
-  "실습에서 사용한 여섯 가지 핵심 원리를 한 번 더 연결해 보세요.",
-  "오답은 바로 다시 풀 수 있습니다. 모든 문제를 해결하면 점수가 표시됩니다.",
-  "핵심 정리를 다시 보거나 전체 실습을 처음부터 다시 시작할 수 있습니다.",
+const mails: Mail[] = [
+  { id: "01", subject: "비밀번호 만료 안내", sender: "내부", link: "예", urgency: "긴급", label: "해킹메일" },
+  { id: "02", subject: "내부 인증 재설정", sender: "내부", link: "아니오", urgency: "긴급", label: "해킹메일" },
+  ...internalNormal.map((subject, index) => ({ id: String(index + 3).padStart(2, "0"), subject, sender: "내부" as const, link: index < 3 ? "예" as const : "아니오" as const, urgency: "보통" as const, label: "정상 메일" as const })),
+  ...verifiedHack.map((subject, index) => ({ id: String(index + 13).padStart(2, "0"), subject, sender: "확인된 외부" as const, link: "예" as const, urgency: index < 3 ? "긴급" as const : "보통" as const, label: "해킹메일" as const })),
+  ...verifiedNormal.map((subject, index) => ({ id: String(index + 17).padStart(2, "0"), subject, sender: "확인된 외부" as const, link: "아니오" as const, urgency: index < 2 ? "긴급" as const : "보통" as const, label: "정상 메일" as const })),
+  ...unknownHack.map((subject, index) => ({ id: String(index + 22).padStart(2, "0"), subject, sender: "미확인 외부" as const, link: "예" as const, urgency: index < 2 ? "긴급" as const : "보통" as const, label: "해킹메일" as const })),
+  { id: "29", subject: "학술행사 안내", sender: "미확인 외부", link: "아니오", urgency: "긴급", label: "정상 메일" },
+  { id: "30", subject: "설문조사 요청", sender: "미확인 외부", link: "아니오", urgency: "보통", label: "정상 메일" },
 ];
 
-const ROOT_VALUES: Record<Attr, { after: number; gain: number }> = {
-  age: { after: 0.693, gain: 0.247 },
-  income: { after: 0.911, gain: 0.029 },
-  student: { after: 0.789, gain: 0.151 },
-  credit: { after: 0.892, gain: 0.048 },
-};
-const YOUTH_VALUES: Record<Exclude<Attr, "age">, { after: number; gain: number }> = {
-  income: { after: 0.400, gain: 0.571 },
-  student: { after: 0, gain: 0.971 },
-  credit: { after: 0.952, gain: 0.019 },
-};
-const SENIOR_VALUES: Record<Exclude<Attr, "age">, { after: number; gain: number }> = {
-  income: { after: 0.952, gain: 0.019 },
-  student: { after: 0.952, gain: 0.019 },
-  credit: { after: 0, gain: 0.971 },
-};
-
-function log2(value: number) { return Math.log(value) / Math.log(2); }
-function entropy(rows: Row[]) {
-  if (!rows.length) return 0;
-  const yes = rows.filter((row) => row.buy).length;
-  return [yes, rows.length - yes].reduce((sum, count) => {
-    if (!count) return sum;
-    const probability = count / rows.length;
-    return sum - probability * log2(probability);
-  }, 0);
-}
-function n(value: number) { return value.toFixed(3); }
-function parseAnswer(value: string) { return Number(value.trim().replace(",", ".")); }
-function isClose(value: string, target: number) {
-  const parsed = parseAnswer(value);
-  return Number.isFinite(parsed) && Math.abs(parsed - target) <= 0.0016;
-}
-
-function DotLegend() {
-  return <div className="dot-legend" aria-label="범례"><span><i className="dot buy" /> 구매</span><span><i className="dot no-buy" /> 비구매</span></div>;
-}
-function Dots({ rows, max = 14 }: { rows: Row[]; max?: number }) {
-  return <div className="dots" style={{ maxWidth: Math.min(max, 7) * 25 }} aria-label={`구매 ${rows.filter((r) => r.buy).length}명, 비구매 ${rows.filter((r) => !r.buy).length}명`}>{rows.map((row) => <i key={row.id} className={`dot ${row.buy ? "buy" : "no-buy"}`} />)}</div>;
-}
-function Count({ rows }: { rows: Row[] }) {
-  const yes = rows.filter((row) => row.buy).length;
-  return <span>구매 <b>{yes}</b> · 비구매 <b>{rows.length - yes}</b></span>;
-}
-function DataTable({ rows, compact = false }: { rows: Row[]; compact?: boolean }) {
-  return <div className={`table-wrap ${compact ? "compact" : ""}`}><table><thead><tr><th>번호</th><th>나이</th><th>수입</th><th>학생 여부</th><th>신용등급</th><th>구매 여부</th></tr></thead><tbody>{rows.map((row) => <tr key={row.id}><td>{row.id}</td><td>{row.age}</td><td>{row.income}</td><td>{row.student}</td><td>{row.credit}</td><td className={row.buy ? "label-buy" : "label-no"}>{row.buy ? "구매" : "비구매"}</td></tr>)}</tbody></table></div>;
-}
-
-function NumberField({ id, label, value, onChange, state, disabled = false }: { id: string; label: string; value: string; onChange: (value: string) => void; state: FieldState; disabled?: boolean }) {
-  return <label className={`answer-field ${state}`} htmlFor={id}><span>{label}</span><span className="input-shell"><input id={id} aria-label={label || id} type="text" inputMode="decimal" placeholder="0.000" value={value} onChange={(event) => onChange(event.target.value)} disabled={disabled} aria-invalid={state === "wrong"} /><i>{state === "correct" ? "✓" : state === "wrong" ? "!" : ""}</i></span></label>;
-}
-
-function Feedback({ kind, children }: { kind: "good" | "bad" | "hint"; children: React.ReactNode }) {
-  return <div className={`exercise-feedback ${kind}`} role="status"><b>{kind === "good" ? "✓" : kind === "bad" ? "다시 확인" : "힌트"}</b><span>{children}</span></div>;
-}
-
-function IntroStage({ onStart }: { onStart: () => void }) {
-  return <div className="intro-grid"><section className="card intro-table"><div className="section-kicker">학습 데이터 · 14개</div><DataTable rows={DATA} /></section><aside className="intro-side"><div className="card mix-card"><div className="section-kicker">현재 정답 분포</div><Dots rows={DATA} /><div className="big-count"><Count rows={DATA} /></div><div className="entropy-value"><span>분할 전 엔트로피</span><b><i>h</i>(D) = 0.940</b></div></div><div className="card mission-card"><span>오늘의 미션</span><h3>구매·비구매를 가장 명확하게 나누는 질문을 직접 계산해 보세요.</h3><div className="feature-chips">{(["age", "income", "student", "credit"] as Attr[]).map((attr) => <i key={attr}>{ATTR_META[attr].label}</i>)}</div><button type="button" className="start-button" onClick={onStart}>실습 시작 →</button></div></aside></div>;
-}
-
-function AgeCalculation({ solved, onComplete, onAttempt }: { solved: boolean; onComplete: () => void; onAttempt: () => void }) {
-  const [after, setAfter] = useState(solved ? "0.693" : "");
-  const [gainValue, setGainValue] = useState(solved ? "0.247" : "");
-  const [states, setStates] = useState<{ after: FieldState; gain: FieldState }>(solved ? { after: "correct", gain: "correct" } : { after: "idle", gain: "idle" });
-  const [attempts, setAttempts] = useState(0);
-  const [complete, setComplete] = useState(solved);
-
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    if (complete) return;
-    onAttempt();
-    const afterCorrect = isClose(after, 0.693) || isClose(after, 0.694);
-    const gainCorrect = isClose(gainValue, 0.247) || isClose(gainValue, 0.246);
-    setStates({ after: afterCorrect ? "correct" : "wrong", gain: gainCorrect ? "correct" : "wrong" });
-    if (afterCorrect && gainCorrect) { setComplete(true); onComplete(); }
-    else setAttempts((value) => value + 1);
-  };
-  const reveal = () => { setAfter("0.693"); setGainValue("0.247"); setStates({ after: "correct", gain: "correct" }); setComplete(true); onComplete(); };
-
-  return <div className="exercise-layout"><section className="card data-column"><div className="section-kicker">나이로 분할</div><div className="dataset-summary"><Dots rows={DATA} /><Count rows={DATA} /><span><i>h</i>(D) = <b>0.940</b></span></div><div className="group-given-grid"><div><b>청소년</b><span>5/14</span><small>구매 2 · 비구매 3</small><strong><i>h</i> = 0.971</strong></div><div><b>청년</b><span>4/14</span><small>구매 4 · 비구매 0</small><strong><i>h</i> = 0</strong></div><div><b>중년</b><span>5/14</span><small>구매 3 · 비구매 2</small><strong><i>h</i> = 0.971</strong></div></div></section><form className="card worksheet" onSubmit={submit}><div className="worksheet-head"><div><span className="section-kicker">계산 문제 1</span><h2>가중평균 엔트로피 계산</h2></div><span className="points">빈칸 2개</span></div><div className="formula-box"><div className="formula-label">분할 후 엔트로피</div><div className="formula-row math"><span><i>h</i><sub>age</sub>(D)</span><b>=</b><span className="formula-expression">5/14 × 0.971 + 4/14 × 0 + 5/14 × 0.971</span></div><NumberField id="age-after" label="h_age(D) =" value={after} onChange={setAfter} state={states.after} disabled={complete} /></div><div className="formula-box"><div className="formula-label">정보이득</div><div className="formula-row math"><span>Gain(D, age)</span><b>=</b><span>0.940 − <u>{after || "h_age(D)"}</u></span></div><NumberField id="age-gain" label="Gain(D, age) =" value={gainValue} onChange={setGainValue} state={states.gain} disabled={complete} /></div>{complete ? <Feedback kind="good">나이로 분할하면 불확실성이 <b>0.247</b>만큼 감소합니다.</Feedback> : attempts > 0 ? <Feedback kind={attempts >= 2 ? "hint" : "bad"}>{attempts === 1 ? "세 그룹의 엔트로피에 각 그룹의 비율을 곱했는지 확인하세요." : attempts === 2 ? "분할 후 엔트로피는 약 0.693~0.694입니다. 이를 0.940에서 빼세요." : "반올림 차이를 허용합니다. 0.693 또는 0.694를 입력할 수 있습니다."}</Feedback> : null}<div className="worksheet-actions">{attempts >= 3 && !complete && <button type="button" className="text-button" onClick={reveal}>정답으로 계속하기</button>}<button type="submit" className="primary" disabled={complete}>{complete ? "계산 완료" : "정답 확인"}</button></div></form></div>;
-}
-
-function RootComparison({ solved, onComplete, onAttempt }: { solved: boolean; onComplete: () => void; onAttempt: () => void }) {
-  const attrs: Attr[] = ["age", "income", "student", "credit"];
-  const [values, setValues] = useState<Record<string, string>>(solved ? { income: "0.029", student: "0.151", credit: "0.048" } : {});
-  const [states, setStates] = useState<Record<string, FieldState>>(solved ? { income: "correct", student: "correct", credit: "correct" } : {});
-  const [numbersDone, setNumbersDone] = useState(solved);
-  const [attempts, setAttempts] = useState(0);
-  const [selected, setSelected] = useState<Attr | null>(solved ? "age" : null);
-  const [selectionFeedback, setSelectionFeedback] = useState<"idle" | "wrong" | "correct">(solved ? "correct" : "idle");
-
-  const checkNumbers = (event: FormEvent) => {
-    event.preventDefault();
-    onAttempt();
-    const nextStates: Record<string, FieldState> = {};
-    (["income", "student", "credit"] as Attr[]).forEach((attr) => { nextStates[attr] = isClose(values[attr] || "", ROOT_VALUES[attr].gain) ? "correct" : "wrong"; });
-    setStates(nextStates);
-    if (Object.values(nextStates).every((state) => state === "correct")) setNumbersDone(true);
-    else { setAttempts((value) => value + 1); setNumbersDone(false); }
-  };
-  const reveal = () => { setValues({ income: "0.029", student: "0.151", credit: "0.048" }); setStates({ income: "correct", student: "correct", credit: "correct" }); setNumbersDone(true); };
-  const choose = (attr: Attr) => {
-    if (!numbersDone) return;
-    setSelected(attr);
-    if (attr === "age") { setSelectionFeedback("correct"); onComplete(); }
-    else { setSelectionFeedback("wrong"); onAttempt(); }
-  };
-
-  return <div className="comparison-stage"><form className="card compare-worksheet" onSubmit={checkNumbers}><div className="worksheet-head"><div><span className="section-kicker">계산 문제 2</span><h2>나머지 후보의 정보이득</h2></div><span className="points">Gain = 0.940 − h<sub>A</sub>(D)</span></div><div className="comparison-table"><div className="comparison-row header"><span>후보 속성</span><span>분할 후 엔트로피</span><span>정보이득</span></div>{attrs.map((attr) => <div className={`comparison-row ${selected === attr ? "selected" : ""}`} key={attr}><b>{ATTR_META[attr].label}</b><span className="math"><i>h</i><sub>{ATTR_META[attr].formula}</sub>(D) = {n(ROOT_VALUES[attr].after)}</span>{attr === "age" ? <strong className="locked-answer">0.247 <i>✓</i></strong> : <NumberField id={`root-${attr}`} label="" value={values[attr] || ""} onChange={(value) => setValues((current) => ({ ...current, [attr]: value }))} state={states[attr] || "idle"} disabled={numbersDone} />}</div>)}</div>{numbersDone ? <Feedback kind="good">계산이 완료되었습니다. 이제 가장 큰 정보이득을 직접 선택하세요.</Feedback> : attempts > 0 ? <Feedback kind={attempts >= 2 ? "hint" : "bad"}>{attempts === 1 ? "각 행에서 0.940 − 분할 후 엔트로피를 계산하세요." : "예: 수입은 0.940 − 0.911 = 0.029입니다."}</Feedback> : null}<div className="worksheet-actions">{attempts >= 3 && !numbersDone && <button type="button" className="text-button" onClick={reveal}>정답으로 계속하기</button>}<button type="submit" className="primary" disabled={numbersDone}>{numbersDone ? "계산 완료" : "계산값 확인"}</button></div></form><section className={`card choice-panel ${numbersDone ? "ready" : "locked"}`}><span className="section-kicker">분할속성 선택</span><h2>정보이득이 가장 큰 속성은?</h2><p>{numbersDone ? "막대의 길이와 계산값을 비교해 하나를 선택하세요." : "먼저 왼쪽의 계산을 완료하세요."}</p><div className="gain-bars">{attrs.map((attr) => <button type="button" key={attr} disabled={!numbersDone} onClick={() => choose(attr)} className={`${selected === attr ? "selected" : ""} ${selectionFeedback === "correct" && attr === "age" ? "correct" : ""}`}><span>{ATTR_META[attr].label}</span><i><em style={{ width: numbersDone ? `${(ROOT_VALUES[attr].gain / 0.247) * 100}%` : "0%" }} /></i><b>{numbersDone ? n(ROOT_VALUES[attr].gain) : "?"}</b></button>)}</div>{selectionFeedback === "wrong" && <Feedback kind="bad">선택한 속성보다 정보이득이 큰 속성이 있습니다.</Feedback>}{selectionFeedback === "correct" && <Feedback kind="good"><b>나이</b>를 첫 번째 분할속성으로 선택했습니다.</Feedback>}</section></div>;
-}
-
-function StatusBox({ title, rows, action, selectable = false, selected = false, onClick }: { title: string; rows: Row[]; action: string; selectable?: boolean; selected?: boolean; onClick?: () => void }) {
-  const pure = entropy(rows) === 0;
-  const content = <><b>{title}</b><Dots rows={rows} /><Count rows={rows} /><small><i>h</i> = {n(entropy(rows))}</small><span className="status-action">{action}</span>{selectable && <i className="select-mark">{selected ? "✓" : ""}</i>}</>;
-  return selectable ? <button type="button" onClick={onClick} className={`status-box selectable ${pure ? "pure" : "mixed"} ${selected ? "selected" : ""}`}>{content}</button> : <div className={`status-box ${pure ? "pure" : "mixed"}`}>{content}</div>;
-}
-
-function NodeInspection({ solved, onComplete, onAttempt }: { solved: boolean; onComplete: () => void; onAttempt: () => void }) {
-  const youth = DATA.filter((row) => row.age === "청소년");
-  const young = DATA.filter((row) => row.age === "청년");
-  const senior = DATA.filter((row) => row.age === "중년");
-  const [selected, setSelected] = useState<Set<string>>(new Set(solved ? ["청소년", "중년"] : []));
-  const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">(solved ? "correct" : "idle");
-  const toggle = (name: string) => { if (feedback === "correct") return; setSelected((current) => { const next = new Set(current); if (next.has(name)) next.delete(name); else next.add(name); return next; }); setFeedback("idle"); };
-  const check = () => { onAttempt(); const correct = selected.size === 2 && selected.has("청소년") && selected.has("중년"); if (correct) { setFeedback("correct"); onComplete(); } else setFeedback("wrong"); };
-  return <div className="card node-stage"><div className="gain-ribbon">Gain(D, age) = <b>0.247</b><span>최대 → 나이 적용</span></div><div className="root-node">나이는?</div><p className="node-instruction">구매·비구매가 섞여 있어 <b>추가 분할이 필요한 노드를 모두 선택</b>하세요.</p><div className="three-branches"><StatusBox title="청소년" rows={youth} action={feedback === "correct" ? "추가 분할 필요" : "?"} selectable selected={selected.has("청소년")} onClick={() => toggle("청소년")} /><StatusBox title="청년" rows={young} action={feedback === "correct" ? "구매로 분류 · 종료" : "?"} selectable selected={selected.has("청년")} onClick={() => toggle("청년")} /><StatusBox title="중년" rows={senior} action={feedback === "correct" ? "추가 분할 필요" : "?"} selectable selected={selected.has("중년")} onClick={() => toggle("중년")} /></div><div className="node-check-area">{feedback === "wrong" && <Feedback kind="bad">엔트로피가 0인 노드는 더 나눌 필요가 없습니다.</Feedback>}{feedback === "correct" && <Feedback kind="good">청년은 모두 구매이므로 종료합니다. 청소년과 중년 노드만 다시 계산합니다.</Feedback>}<button type="button" className="primary" onClick={check} disabled={feedback === "correct"}>선택 확인</button></div></div>;
-}
-
-type BranchAttr = Exclude<Attr, "age">;
-function BranchExercise({ kind, rows, solved, onComplete, onAttempt }: { kind: "youth" | "senior"; rows: Row[]; solved: boolean; onComplete: () => void; onAttempt: () => void }) {
-  const valuesMap = kind === "youth" ? YOUTH_VALUES : SENIOR_VALUES;
-  const correctAttr: BranchAttr = kind === "youth" ? "student" : "credit";
-  const attrs: BranchAttr[] = ["income", "student", "credit"];
-  const [answers, setAnswers] = useState<Record<string, string>>(solved ? Object.fromEntries(attrs.map((attr) => [attr, n(valuesMap[attr].gain)])) : {});
-  const [states, setStates] = useState<Record<string, FieldState>>(solved ? Object.fromEntries(attrs.map((attr) => [attr, "correct"])) : {});
-  const [numbersDone, setNumbersDone] = useState(solved);
-  const [attempts, setAttempts] = useState(0);
-  const [selected, setSelected] = useState<BranchAttr | null>(solved ? correctAttr : null);
-  const [selectionFeedback, setSelectionFeedback] = useState<"idle" | "wrong" | "correct">(solved ? "correct" : "idle");
-  const checkNumbers = (event: FormEvent) => { event.preventDefault(); onAttempt(); const nextStates: Record<string, FieldState> = {}; attrs.forEach((attr) => { nextStates[attr] = isClose(answers[attr] || "", valuesMap[attr].gain) ? "correct" : "wrong"; }); setStates(nextStates); if (Object.values(nextStates).every((state) => state === "correct")) setNumbersDone(true); else { setNumbersDone(false); setAttempts((value) => value + 1); } };
-  const reveal = () => { setAnswers(Object.fromEntries(attrs.map((attr) => [attr, n(valuesMap[attr].gain)]))); setStates(Object.fromEntries(attrs.map((attr) => [attr, "correct"]))); setNumbersDone(true); };
-  const choose = (attr: BranchAttr) => { if (!numbersDone) return; setSelected(attr); if (attr === correctAttr) { setSelectionFeedback("correct"); onComplete(); } else { setSelectionFeedback("wrong"); onAttempt(); } };
-  return <div className="exercise-layout branch-layout"><section className="card data-column"><div className="section-kicker">현재 데이터 · {rows.length}개</div><h3>{kind === "youth" ? "청소년 데이터 Dᵧₒᵤₜₕ" : "중년 데이터 Dₛₑₙᵢₒᵣ"}</h3><div className="dataset-summary"><Dots rows={rows} /><Count rows={rows} /><span><i>h</i>(D) = <b>0.971</b></span></div><DataTable rows={rows} compact /></section><form className="card worksheet branch-worksheet" onSubmit={checkNumbers}><div className="worksheet-head"><div><span className="section-kicker">하위 노드 계산</span><h2>남은 후보의 정보이득</h2></div><span className="points">Gain = 0.971 − h<sub>A</sub>(D)</span></div><div className="branch-answer-list">{attrs.map((attr) => <div className={`branch-answer-row ${states[attr] || ""}`} key={attr}><div><b>{ATTR_META[attr].label}</b><span className="math"><i>h</i><sub>{ATTR_META[attr].formula}</sub>(D) = {n(valuesMap[attr].after)}</span></div><span className="subtract">0.971 − {n(valuesMap[attr].after)} =</span><NumberField id={`${kind}-${attr}`} label="" value={answers[attr] || ""} onChange={(value) => setAnswers((current) => ({ ...current, [attr]: value }))} state={states[attr] || "idle"} disabled={numbersDone} /></div>)}</div>{numbersDone ? <div className="branch-choice"><h3>가장 큰 정보이득을 선택하세요</h3><div>{attrs.map((attr) => <button type="button" key={attr} onClick={() => choose(attr)} className={`${selected === attr ? "selected" : ""} ${selectionFeedback === "correct" && attr === correctAttr ? "correct" : ""}`}><span>{ATTR_META[attr].label}</span><b>{n(valuesMap[attr].gain)}</b></button>)}</div></div> : attempts > 0 ? <Feedback kind={attempts >= 2 ? "hint" : "bad"}>{attempts === 1 ? "각 후보에서 0.971 − 분할 후 엔트로피를 계산하세요." : `분할 후 엔트로피가 0이면 현재 엔트로피 0.971을 모두 제거합니다.`}</Feedback> : null}{selectionFeedback === "wrong" && <Feedback kind="bad">현재 노드에서 정보이득이 가장 큰 속성을 다시 선택하세요.</Feedback>}{selectionFeedback === "correct" && <Feedback kind="good"><b>{ATTR_META[correctAttr].label}</b>를 선택했습니다. 두 하위 노드의 엔트로피가 모두 0입니다.</Feedback>}<div className="worksheet-actions">{attempts >= 3 && !numbersDone && <button type="button" className="text-button" onClick={reveal}>정답으로 계속하기</button>}<button type="submit" className="primary" disabled={numbersDone}>{numbersDone ? "계산 완료" : "계산값 확인"}</button></div></form></div>;
-}
-
-function TreeDiagram() {
-  return <div className="tree-diagram final"><div className="tree-root">나이는?</div><div className="tree-columns"><section className="tree-branch"><span className="edge-label">청소년</span><div className="decision">학생입니까?</div><div className="leaves two"><div><small>예</small><b className="leaf buy-leaf">구매</b></div><div><small>아니요</small><b className="leaf no-leaf">비구매</b></div></div></section><section className="tree-branch direct"><span className="edge-label">청년</span><b className="leaf buy-leaf">구매</b></section><section className="tree-branch"><span className="edge-label">중년</span><div className="decision">신용등급은?</div><div className="leaves two"><div><small>좋음</small><b className="leaf buy-leaf">구매</b></div><div><small>아주 좋음</small><b className="leaf no-leaf">비구매</b></div></div></section></div></div>;
-}
-
-function FinalPractice({ solved, onComplete, onAttempt }: { solved: boolean; onComplete: () => void; onAttempt: () => void }) {
-  const [answers, setAnswers] = useState<Record<string, boolean>>(solved ? { a: false, b: true } : {});
-  const [checked, setChecked] = useState(solved);
-  const correct = answers.a === false && answers.b === true;
-  const select = (question: string, value: boolean) => { setAnswers((current) => ({ ...current, [question]: value })); setChecked(false); };
-  const check = () => { setChecked(true); onAttempt(); if (correct) onComplete(); };
-  return <div className="final-layout"><TreeDiagram /><section className="card final-practice"><span className="section-kicker">마지막 확인</span><h2>새로운 고객을 분류하세요</h2><div className="prediction-card"><span>고객 A</span><p><b>청소년</b> · 학생 여부 <b>아니요</b></p><div><button type="button" onClick={() => select("a", true)} className={answers.a === true ? "selected" : ""}>구매</button><button type="button" onClick={() => select("a", false)} className={answers.a === false ? "selected" : ""}>비구매</button></div></div><div className="prediction-card"><span>고객 B</span><p><b>중년</b> · 신용등급 <b>좋음</b></p><div><button type="button" onClick={() => select("b", true)} className={answers.b === true ? "selected" : ""}>구매</button><button type="button" onClick={() => select("b", false)} className={answers.b === false ? "selected" : ""}>비구매</button></div></div><button type="button" className="primary full" disabled={solved || answers.a === undefined || answers.b === undefined} onClick={check}>{solved ? "분류 완료" : "예측 확인"}</button>{checked && (correct ? <Feedback kind="good">정답입니다. 정보이득으로 완성한 트리를 따라 두 고객을 올바르게 분류했습니다.</Feedback> : <Feedback kind="bad">각 고객의 나이 가지에서 어떤 두 번째 질문으로 이동하는지 확인하세요.</Feedback>)}<div className="key-formula">Gain(D, A) = <i>h</i>(D) − <i>h</i><sub>A</sub>(D)</div></section></div>;
-}
-
-function SummaryStage({ onContinue, quizCompleted }: { onContinue: () => void; quizCompleted: boolean }) {
-  const concepts = [
-    { number: "01", title: "의사결정나무", body: <><b>질문</b>을 던지고, 답에 따라 데이터를 <strong>분할</strong>하는 모델입니다.</> },
-    { number: "02", title: "엔트로피", body: <>데이터의 <b>불확실성</b>을 나타냅니다.</> },
-    { number: "03", title: "분할 후 엔트로피", body: <>각 하위 집단의 <b>크기를 고려한 가중평균</b>입니다.</> },
-    { number: "04", title: "정보이득", body: <>분할 전 엔트로피에서 <b>분할 후 엔트로피를 뺀 값</b>입니다.</> },
-    { number: "05", title: "ID3의 선택", body: <>정보이득이 <b>가장 큰 속성</b>을 분할속성으로 선택합니다.</> },
-    { number: "06", title: "분할 종료", body: <>하위 노드의 엔트로피가 <b>0</b>이면 해당 가지의 분할을 종료합니다.</> },
-  ];
-  return <div className="summary-stage"><section className="summary-hero card"><span className="section-kicker">오늘의 핵심 구조</span><h2>좋은 <em>질문</em>으로 데이터를<br /><strong>분할</strong>해 불확실성을 줄입니다</h2><div className="summary-flow" aria-label="의사결정나무의 핵심 흐름"><span>데이터</span><i>→</i><b>질문</b><i>→</i><strong>분할</strong><i>→</i><span>불확실성 감소</span></div></section><section className="summary-concepts">{concepts.map((concept) => <article className="card concept-card" key={concept.number}><span>{concept.number}</span><div><h3>{concept.title}</h3><p>{concept.body}</p></div></article>)}</section><div className="summary-callout"><span>수업 핵심어</span><b>질문</b><i>×</i><strong>분할</strong><p>각 노드에서 어떤 질문을 선택하느냐에 따라 분할 결과와 트리의 구조가 달라집니다.</p></div><button type="button" className="primary summary-next" onClick={onContinue}>{quizCompleted ? "완료 화면으로 돌아가기 →" : "확인 퀴즈 풀기 →"}</button></div>;
-}
-
-type QuizOption = { label: string; correct?: boolean };
-type QuizItem = { id: number; kind: "fill" | "choice"; question: string; options?: QuizOption[]; explanation: string; };
-
-const QUIZ_ITEMS: QuizItem[] = [
-  { id: 1, kind: "fill", question: "의사결정나무는 각 노드에서 데이터에 대한 (     )을 던지고, 답에 따라 데이터를 여러 집단으로 (     )한다.", explanation: "각 노드는 질문을 하나 선택하고, 그 답을 기준으로 데이터를 분할합니다." },
-  { id: 2, kind: "choice", question: "엔트로피가 나타내는 것은 무엇인가요?", options: [{ label: "데이터의 개수" }, { label: "데이터의 불확실성", correct: true }, { label: "트리의 깊이" }, { label: "속성의 개수" }], explanation: "엔트로피는 데이터에 여러 클래스가 얼마나 섞여 있는지, 즉 불확실성의 정도를 나타냅니다." },
-  { id: 3, kind: "choice", question: "정보이득을 올바르게 설명한 것은 무엇인가요?", options: [{ label: "분할 후 엔트로피 − 분할 전 엔트로피" }, { label: "분할 전 엔트로피 + 분할 후 엔트로피" }, { label: "분할 전 엔트로피 − 분할 후 엔트로피", correct: true }, { label: "하위 노드 엔트로피의 단순합" }], explanation: "정보이득은 분할을 통해 불확실성이 얼마나 감소했는지를 나타냅니다." },
-  { id: 4, kind: "choice", question: "ID3가 분할속성으로 선택하는 것은 무엇인가요?", options: [{ label: "정보이득이 가장 큰 속성", correct: true }, { label: "엔트로피가 가장 큰 속성" }, { label: "값의 종류가 가장 많은 속성" }, { label: "가장 먼저 기록된 속성" }], explanation: "ID3는 현재 노드에서 후보별 정보이득을 비교하고 가장 큰 속성을 선택합니다." },
-  { id: 5, kind: "choice", question: "하위 노드의 엔트로피가 0이면 왜 분할을 종료할까요?", options: [{ label: "데이터가 너무 많기 때문에" }, { label: "더 사용할 속성이 없기 때문에" }, { label: "모든 데이터가 같은 클래스로 순수하기 때문에", correct: true }, { label: "정보이득을 계산할 수 없기 때문에" }], explanation: "엔트로피 0은 모든 데이터의 클래스가 같아 불확실성이 없다는 뜻이므로 더 나눌 필요가 없습니다." },
+const testMails: Mail[] = [
+  { id: "신규 1", subject: "긴급 보안패치 안내", sender: "내부", link: "아니오", urgency: "긴급", label: "해킹메일" },
+  { id: "신규 2", subject: "외부기관 교육자료", sender: "확인된 외부", link: "아니오", urgency: "보통", label: "정상 메일" },
+  { id: "신규 3", subject: "계정 상태 확인 요청", sender: "미확인 외부", link: "예", urgency: "보통", label: "해킹메일" },
 ];
 
-function QuizStage({ onComplete }: { onComplete: (score: number) => void }) {
-  const [index, setIndex] = useState(0);
-  const [firstBlank, setFirstBlank] = useState("");
-  const [secondBlank, setSecondBlank] = useState("");
-  const [selected, setSelected] = useState<number | null>(null);
-  const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">("idle");
-  const [attempted, setAttempted] = useState(false);
-  const [score, setScore] = useState(0);
-  const item = QUIZ_ITEMS[index];
-  const normalize = (value: string) => value.replace(/\s+/g, "").trim();
-  const canSubmit = item.kind === "fill" ? Boolean(firstBlank.trim() && secondBlank.trim()) : selected !== null;
-  const check = (event: FormEvent) => {
-    event.preventDefault();
-    const isCorrect = item.kind === "fill" ? normalize(firstBlank) === "질문" && normalize(secondBlank) === "분할" : Boolean(item.options?.[selected ?? -1]?.correct);
-    if (isCorrect && !attempted) setScore((value) => value + 1);
-    setAttempted(true);
-    setFeedback(isCorrect ? "correct" : "wrong");
-  };
-  const nextQuestion = () => {
-    if (index === QUIZ_ITEMS.length - 1) { onComplete(score); return; }
-    setIndex((value) => value + 1); setFirstBlank(""); setSecondBlank(""); setSelected(null); setFeedback("idle"); setAttempted(false);
-  };
-  const retryChoice = (optionIndex: number) => { setSelected(optionIndex); if (feedback === "wrong") setFeedback("idle"); };
-  const retryBlank = (setter: (value: string) => void, value: string) => { setter(value); if (feedback === "wrong") setFeedback("idle"); };
-  return <div className="quiz-layout"><aside className="card quiz-status"><span className="section-kicker">확인 퀴즈</span><div className="quiz-number"><b>{index + 1}</b><span>/ {QUIZ_ITEMS.length}</span></div><div className="quiz-mini-progress">{QUIZ_ITEMS.map((quiz, quizIndex) => <i key={quiz.id} className={quizIndex < index ? "done" : quizIndex === index ? "current" : ""}>{quizIndex < index ? "✓" : quiz.id}</i>)}</div><p>정답을 맞히면 다음 문제로 이동합니다.</p><small>점수는 첫 제출 기준입니다.</small></aside><form className="card quiz-card" onSubmit={check}><span className="quiz-label">문제 {item.id}</span><h2>{item.question}</h2>{item.kind === "fill" ? <div className="fill-answer"><label htmlFor="quiz-blank-one"><span>첫 번째 빈칸</span><input id="quiz-blank-one" value={firstBlank} onChange={(event) => retryBlank(setFirstBlank, event.target.value)} placeholder="핵심 단어 입력" disabled={feedback === "correct"} autoComplete="off" /></label><label htmlFor="quiz-blank-two"><span>두 번째 빈칸</span><input id="quiz-blank-two" value={secondBlank} onChange={(event) => retryBlank(setSecondBlank, event.target.value)} placeholder="핵심 단어 입력" disabled={feedback === "correct"} autoComplete="off" /></label></div> : <div className="quiz-options">{item.options?.map((option, optionIndex) => <button type="button" key={option.label} onClick={() => retryChoice(optionIndex)} disabled={feedback === "correct"} className={`${selected === optionIndex ? "selected" : ""} ${feedback === "correct" && option.correct ? "correct" : ""} ${feedback === "wrong" && selected === optionIndex ? "wrong" : ""}`}><i>{String.fromCharCode(65 + optionIndex)}</i><span>{option.label}</span></button>)}</div>}{feedback === "correct" && <Feedback kind="good"><b>정답입니다.</b> {item.explanation}</Feedback>}{feedback === "wrong" && <Feedback kind="bad">아쉽습니다. 답을 바꾼 뒤 다시 확인해 보세요.</Feedback>}<div className="quiz-actions">{feedback === "correct" ? <button type="button" className="primary" onClick={nextQuestion}>{index === QUIZ_ITEMS.length - 1 ? "결과 보기 →" : "다음 문제 →"}</button> : <button type="submit" className="primary" disabled={!canSubmit}>{feedback === "wrong" ? "다시 확인" : "정답 확인"}</button>}</div></form></div>;
+const featureOf = (key: FeatureKey) => FEATURES.find((feature) => feature.key === key)!;
+const valueOf = (mail: Mail, key: FeatureKey) => mail[key];
+
+function entropy(items: Array<{ label: MailLabel }>) {
+  if (!items.length) return 0;
+  const normal = items.filter((item) => item.label === "정상 메일").length;
+  return [normal / items.length, (items.length - normal) / items.length]
+    .filter(Boolean)
+    .reduce((sum, probability) => sum - probability * Math.log2(probability), 0);
 }
 
-function CompletionStage({ score, onSummary, onReset }: { score: number; onSummary: () => void; onReset: () => void }) {
-  const message = score === QUIZ_ITEMS.length ? "핵심 개념을 정확히 이해했습니다!" : score >= 3 ? "핵심 흐름을 잘 이해했습니다!" : "핵심 정리를 한 번 더 보면 더 확실해집니다.";
-  return <div className="completion-stage"><section className="card completion-card"><div className="completion-mark">✓</div><span className="section-kicker">실습 완료</span><h2>{message}</h2><p>정보이득을 계산해 트리를 완성하고, 질문과 분할의 원리까지 확인했습니다.</p><div className="score-board"><span>확인 퀴즈 점수</span><b>{score}<small> / {QUIZ_ITEMS.length}</small></b><div><i style={{ width: `${(score / QUIZ_ITEMS.length) * 100}%` }} /></div></div><div className="completion-keywords"><span>기억할 두 단어</span><b>질문</b><i>→</i><strong>분할</strong></div><div className="completion-actions"><button type="button" className="secondary" onClick={onSummary}>핵심 정리 다시 보기</button><button type="button" className="primary" onClick={onReset}>실습 처음부터 다시 하기</button></div></section></div>;
+function counts(items: Array<{ label: MailLabel }>) {
+  const normal = items.filter((item) => item.label === "정상 메일").length;
+  return { normal, hack: items.length - normal };
 }
 
-export function AppShell() {
-  const [step, setStep] = useState(0);
-  const [solved, setSolved] = useState<Set<number>>(new Set());
-  const [attempts, setAttempts] = useState(0);
-  const [quizScore, setQuizScore] = useState(0);
-  const youth = useMemo(() => DATA.filter((row) => row.age === "청소년"), []);
-  const senior = useMemo(() => DATA.filter((row) => row.age === "중년"), []);
-  const complete = (index: number) => setSolved((current) => new Set(current).add(index));
-  const unlocked = (index: number) => index === 0 || solved.has(index - 1);
-  const reset = () => { setStep(0); setSolved(new Set()); setAttempts(0); setQuizScore(0); };
-  const next = () => { if (solved.has(step)) setStep((current) => Math.min(STEPS.length - 1, current + 1)); };
-
-  return <main><header className="app-header"><div className="brand-mark">ID3</div><div><b>의사결정 트리 실습</b><span>계산하고 선택하며 트리 완성하기</span></div><div className="attempt-counter"><small>확인 횟수</small><b>{attempts}</b></div><button type="button" className="reset" onClick={reset}>처음부터</button></header><nav className="progress ten" aria-label="실습 진행 단계">{STEPS.map((label, index) => <button type="button" key={label} disabled={!unlocked(index)} onClick={() => unlocked(index) && setStep(index)} className={index === step ? "current" : solved.has(index) ? "done" : ""}><i>{solved.has(index) ? "✓" : index + 1}</i><span>{label}</span></button>)}</nav><div className="stage-heading"><span>STEP {step + 1}</span><h1>{STEP_TITLES[step]}</h1><p>{STEP_DESCRIPTIONS[step]}</p></div><div className="stage-content">{step === 0 && <IntroStage onStart={() => { complete(0); setStep(1); }} />}{step === 1 && <AgeCalculation solved={solved.has(1)} onComplete={() => complete(1)} onAttempt={() => setAttempts((value) => value + 1)} />}{step === 2 && <RootComparison solved={solved.has(2)} onComplete={() => complete(2)} onAttempt={() => setAttempts((value) => value + 1)} />}{step === 3 && <NodeInspection solved={solved.has(3)} onComplete={() => complete(3)} onAttempt={() => setAttempts((value) => value + 1)} />}{step === 4 && <BranchExercise key="youth" kind="youth" rows={youth} solved={solved.has(4)} onComplete={() => complete(4)} onAttempt={() => setAttempts((value) => value + 1)} />}{step === 5 && <BranchExercise key="senior" kind="senior" rows={senior} solved={solved.has(5)} onComplete={() => complete(5)} onAttempt={() => setAttempts((value) => value + 1)} />}{step === 6 && <FinalPractice solved={solved.has(6)} onComplete={() => complete(6)} onAttempt={() => setAttempts((value) => value + 1)} />}{step === 7 && <SummaryStage quizCompleted={solved.has(8)} onContinue={() => { complete(7); setStep(solved.has(8) ? 9 : 8); }} />}{step === 8 && <QuizStage onComplete={(score) => { setQuizScore(score); setSolved((current) => new Set(current).add(8).add(9)); setStep(9); }} />}{step === 9 && <CompletionStage score={quizScore} onSummary={() => setStep(7)} onReset={reset} />}</div>{step > 0 && step < 7 && <footer className="controls"><button type="button" className="secondary" onClick={() => setStep((current) => Math.max(0, current - 1))}>← 이전</button><span>{step + 1} / {STEPS.length}</span><button type="button" className="primary" onClick={next} disabled={!solved.has(step)}>{solved.has(step) ? "다음 단계 →" : "문제를 먼저 해결하세요"}</button></footer>}{step <= 6 && <DotLegend />}</main>;
+function groupsFor(items: Mail[], key: FeatureKey) {
+  return featureOf(key).values.map((value) => ({ value, items: items.filter((mail) => valueOf(mail, key) === value) }));
 }
 
-export default function Home() { return <AppShell />; }
+function informationGain(items: Mail[], key: FeatureKey) {
+  const weighted = groupsFor(items, key).reduce((sum, group) => sum + group.items.length / items.length * entropy(group.items), 0);
+  return entropy(items) - weighted;
+}
+
+function findNode(node: TreeNode, id: string): TreeNode | undefined {
+  if (node.id === id) return node;
+  for (const child of node.children ?? []) {
+    const found = findNode(child, id);
+    if (found) return found;
+  }
+}
+
+function replaceNode(node: TreeNode, id: string, replacement: TreeNode): TreeNode {
+  if (node.id === id) return replacement;
+  return { ...node, children: node.children?.map((child) => replaceNode(child, id, replacement)) };
+}
+
+function firstOpen(node: TreeNode): TreeNode | undefined {
+  if (!node.label && !node.split) return node;
+  for (const child of node.children ?? []) {
+    const open = firstOpen(child);
+    if (open) return open;
+  }
+}
+
+function complete(node: TreeNode): boolean {
+  if (node.label) return true;
+  return !!node.children?.length && node.children.every(complete);
+}
+
+function pathTo(node: TreeNode, id: string, path: string[] = ["전체 메일"]): string[] | undefined {
+  if (node.id === id) return path;
+  for (const child of node.children ?? []) {
+    const next = node.split ? [...path, `${featureOf(node.split).name}: ${child.edge}`] : path;
+    const found = pathTo(child, id, next);
+    if (found) return found;
+  }
+}
+
+function predict(node: TreeNode, mail: Mail, path: string[] = []): { label: MailLabel; path: string[] } {
+  if (node.label) return { label: node.label, path };
+  const value = valueOf(mail, node.split!);
+  const child = node.children!.find((item) => item.edge === value)!;
+  return predict(child, mail, [...path, `${featureOf(node.split!).name} → ${value}`]);
+}
+
+function Fraction({ numerator, denominator }: { numerator: number; denominator: number }) {
+  return <span className="fraction" aria-label={`${numerator}/${denominator}`}><span>{numerator}</span><span>{denominator}</span></span>;
+}
+
+function EntropyFormula({ items, label }: { items: Mail[]; label: string }) {
+  const result = counts(items);
+  const total = items.length;
+  if (!total) return <div className="entropy-formula"><span>H({label})</span><strong>= 0</strong><small>데이터 없음</small></div>;
+  return (
+    <div className="entropy-formula">
+      <span>H({label})</span>
+      <div>
+        <b>− <Fraction numerator={result.normal} denominator={total} /> log₂(<Fraction numerator={result.normal} denominator={total} />)</b>
+        <b>− <Fraction numerator={result.hack} denominator={total} /> log₂(<Fraction numerator={result.hack} denominator={total} />)</b>
+      </div>
+      <strong>= {entropy(items).toFixed(3)}</strong>
+    </div>
+  );
+}
+
+function MailTile({ mail, delay = 0 }: { mail: Mail; delay?: number }) {
+  return (
+    <div className={`mail-tile ${mail.label === "정상 메일" ? "normal" : "hack"}`} style={{ animationDelay: `${delay}ms` }} title={`${mail.id} · ${mail.subject} · ${mail.label}`}>
+      <span>{mail.label === "정상 메일" ? "✓" : "!"}</span><b>{mail.id}</b>
+    </div>
+  );
+}
+
+function PurityBar({ items }: { items: Mail[] }) {
+  const result = counts(items);
+  const total = items.length || 1;
+  return <div className="purity-bar" aria-label={`정상 ${result.normal}, 해킹 ${result.hack}`}><i className="normal" style={{ width: `${result.normal / total * 100}%` }} /><i className="hack" style={{ width: `${result.hack / total * 100}%` }} /></div>;
+}
+
+function TreeView({ node, selectedId, justSplitId }: { node: TreeNode; selectedId: string; justSplitId: string | null }) {
+  const items = mails.filter((mail) => node.mailIds.includes(mail.id));
+  const result = counts(items);
+  return (
+    <div className="tree-branch">
+      <div className={`tree-node ${node.id === selectedId ? "current" : ""} ${node.id === justSplitId ? "just-split" : ""} ${node.label === "정상 메일" ? "normal-leaf" : node.label === "해킹메일" ? "hack-leaf" : ""}`}>
+        {node.label ? <><span className="leaf-icon">{node.label === "정상 메일" ? "✓" : "!"}</span><strong>{node.label}</strong><p>{items.length}개 · H=0</p></> : node.split ? <><span className="tree-kicker">질문</span><strong>{featureOf(node.split).question}</strong><p>{items.length}개</p></> : <><span className="tree-kicker">현재 노드</span><strong>어떤 속성?</strong><p>정상 {result.normal} · 해킹 {result.hack}</p></>}
+      </div>
+      {!!node.children?.length && <div className="tree-children">{node.children.map((child) => <div className="tree-branch" key={child.id}><span className="edge-label">{child.edge}</span><TreeView node={child} selectedId={selectedId} justSplitId={justSplitId} /></div>)}</div>}
+    </div>
+  );
+}
+
+function TreeViewport({ node, selectedId, justSplitId, fit }: { node: TreeNode; selectedId: string; justSplitId: string | null; fit: boolean }) {
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [height, setHeight] = useState<number>();
+
+  useLayoutEffect(() => {
+    const viewport = viewportRef.current;
+    const content = contentRef.current;
+    if (!viewport || !content) return;
+
+    let frame = 0;
+    const measure = () => {
+      const naturalWidth = Math.max(content.scrollWidth, 1);
+      const availableWidth = Math.max(viewport.clientWidth - 32, 1);
+      const nextScale = fit ? Math.min(1, availableWidth / naturalWidth) : 1;
+      setScale(nextScale);
+      setHeight(fit ? Math.ceil(content.scrollHeight * nextScale) + 48 : undefined);
+    };
+
+    measure();
+    frame = window.requestAnimationFrame(measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(viewport);
+    observer.observe(content);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [node, fit]);
+
+  return (
+    <div ref={viewportRef} className={`tree-canvas ${fit ? "fit-complete" : ""}`} style={fit && height ? { height } : undefined}>
+      <div ref={contentRef} className="tree-fit-content" style={{ transform: `scale(${scale})` }}>
+        <TreeView node={node} selectedId={selectedId} justSplitId={justSplitId} />
+      </div>
+    </div>
+  );
+}
+
+const initialTree: TreeNode = { id: "root", mailIds: mails.map((mail) => mail.id), used: [] };
+
+export default function Home() {
+  const [phase, setPhase] = useState<"observe" | "build">("observe");
+  const [dataPage, setDataPage] = useState(0);
+  const [tree, setTree] = useState<TreeNode>(initialTree);
+  const [selectedId, setSelectedId] = useState("root");
+  const [previewKey, setPreviewKey] = useState<FeatureKey | null>(null);
+  const [calcStep, setCalcStep] = useState<0 | 1 | 2 | 3>(0);
+  const [evaluations, setEvaluations] = useState<Record<string, Partial<Record<FeatureKey, number>>>>({});
+  const [reviewMode, setReviewMode] = useState(false);
+  const [justSplitId, setJustSplitId] = useState<string | null>(null);
+  const [message, setMessage] = useState("● 속성 카드 클릭");
+  const [history, setHistory] = useState<TreeNode[]>([]);
+  const [quizAnswers, setQuizAnswers] = useState<Partial<Record<string, MailLabel>>>({});
+
+  const selectedNode = findNode(tree, selectedId) ?? tree;
+  const currentItems = mails.filter((mail) => selectedNode.mailIds.includes(mail.id));
+  const available = FEATURES.filter((feature) => !selectedNode.used.includes(feature.key));
+  const currentEvaluations = evaluations[selectedId] ?? {};
+  const previewGroups = previewKey ? groupsFor(currentItems, previewKey) : [];
+  const parentEntropy = entropy(currentItems);
+  const previewGain = previewKey ? informationGain(currentItems, previewKey) : 0;
+  const weightedEntropy = previewKey ? parentEntropy - previewGain : 0;
+  const tried = available.filter((feature) => currentEvaluations[feature.key] !== undefined).length;
+  const best = available.length ? available.reduce((winner, feature) => informationGain(currentItems, feature.key) > informationGain(currentItems, winner.key) ? feature : winner) : null;
+  const isComplete = complete(tree);
+  const currentPath = pathTo(tree, selectedId) ?? ["전체 메일"];
+  const quizAnswered = Object.keys(quizAnswers).length;
+  const quizScore = isComplete ? testMails.filter((mail) => quizAnswers[mail.id] === predict(tree, mail).label).length : 0;
+
+  function tryFeature(key: FeatureKey) {
+    if (selectedNode.used.includes(key) || selectedNode.split || selectedNode.label) return;
+    setPreviewKey(key);
+    setCalcStep(currentEvaluations[key] !== undefined ? 3 : 0);
+    setMessage("● 점 이동 · 색상 혼합 비교");
+  }
+
+  function advanceCalculation() {
+    if (!previewKey) return;
+    const next = Math.min(calcStep + 1, 3) as 0 | 1 | 2 | 3;
+    setCalcStep(next);
+    if (next === 1) setMessage("● 개수 → 비율 → H");
+    if (next === 2) setMessage("● 데이터 비율 × 그룹 H");
+    if (next === 3) {
+      setEvaluations((previous) => ({ ...previous, [selectedId]: { ...(previous[selectedId] ?? {}), [previewKey]: previewGain } }));
+      setMessage("● H(D) − 가중평균 H = IG");
+    }
+  }
+
+  function confirmSplit() {
+    if (!previewKey || !best) return;
+    if (tried < available.length) { setMessage(`● 후보 ${available.length - tried}개 남음`); return; }
+    if (previewKey !== best.key) { setMessage("● 정보이득 최댓값 선택"); return; }
+    const children: TreeNode[] = groupsFor(currentItems, previewKey).map((group, index) => {
+      const result = counts(group.items);
+      return {
+        id: `${selectedNode.id}-${previewKey}-${index}`,
+        mailIds: group.items.map((item) => item.id),
+        used: [...selectedNode.used, previewKey],
+        edge: group.value,
+        label: result.hack === 0 ? "정상 메일" : result.normal === 0 ? "해킹메일" : undefined,
+      };
+    });
+    const nextTree = replaceNode(tree, selectedNode.id, { ...selectedNode, split: previewKey, children });
+    const next = firstOpen(nextTree);
+    setHistory((previous) => [...previous, tree]);
+    setTree(nextTree);
+    setJustSplitId(selectedNode.id);
+    setSelectedId(next?.id ?? "done");
+    setPreviewKey(null);
+    setCalcStep(0);
+    setReviewMode(true);
+    setMessage(next ? "● 질문 추가 · 다음 노드" : "● 트리 완성");
+    setQuizAnswers({});
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function continueBuilding() {
+    setReviewMode(false);
+    setJustSplitId(null);
+    setMessage("● 현재 노드 · 후보 비교");
+  }
+
+  function reset() {
+    setTree(initialTree); setSelectedId("root"); setPreviewKey(null); setCalcStep(0); setEvaluations({}); setReviewMode(false); setJustSplitId(null); setHistory([]); setQuizAnswers({}); setMessage("● 속성 카드 클릭");
+  }
+
+  function undo() {
+    const previous = history.at(-1);
+    if (!previous) return;
+    setTree(previous); setHistory((items) => items.slice(0, -1)); setSelectedId(firstOpen(previous)?.id ?? "root"); setPreviewKey(null); setCalcStep(0); setReviewMode(false); setJustSplitId(null); setQuizAnswers({}); setMessage("● 이전 분할");
+  }
+
+  return (
+    <main className="app-shell">
+      <header className="app-header">
+        <div className="brand"><span>DT</span><div><small>인공지능 개론</small><strong>8. 의사결정 나무 실습</strong></div></div>
+        <div className="header-actions">{phase === "build" && <button onClick={undo} disabled={!history.length} type="button">↶ 이전 분할</button>}{phase === "build" && <button onClick={reset} type="button">↻ 처음부터</button>}</div>
+      </header>
+
+      <nav className="progress-nav" aria-label="실습 진행 단계">
+        {["데이터 확인", "분할 체험", "트리 생성", "신규메일 퀴즈"].map((label, index) => {
+          const active = phase === "observe" ? index === 0 : isComplete ? index === 3 : reviewMode ? index === 2 : index === 1;
+          return <div className={active ? "active" : ""} key={label}><b>{index + 1}</b><span>{label}</span></div>;
+        })}
+      </nav>
+
+      {phase === "observe" ? (
+        <section className="observe-page">
+          <div className="observe-hero">
+            <div><span className="eyebrow">STEP 1 · DATA</span><h1>학습 데이터 확인</h1></div>
+            <div className="class-summary"><div className="normal"><span>✓</span><p>정상 메일<strong>17개</strong></p></div><div className="hack"><span>!</span><p>해킹메일<strong>13개</strong></p></div><div className="entropy-summary"><p>엔트로피</p><strong>0.987</strong></div></div>
+          </div>
+
+          <div className="data-table-card">
+            <div className="table-title"><div><h2>가상 메일 30개</h2><p>속성 3개 · 클래스 2개</p></div><div className="legend"><span className="normal">✓ 정상</span><span className="hack">! 해킹</span></div></div>
+            <div className="table-scroll">
+              <table><thead><tr><th>번호</th><th>메일 제목</th><th>발신자 유형</th><th>외부 링크</th><th>긴급 여부</th><th>실제 클래스</th></tr></thead><tbody>{mails.slice(dataPage * 10, dataPage * 10 + 10).map((mail) => <tr key={mail.id}><td><b>{mail.id}</b></td><td>{mail.subject}</td><td>{mail.sender}</td><td>{mail.link}</td><td>{mail.urgency}</td><td><span className={`class-pill ${mail.label === "정상 메일" ? "normal" : "hack"}`}>{mail.label === "정상 메일" ? "✓" : "!"} {mail.label}</span></td></tr>)}</tbody></table>
+            </div>
+            <div className="table-footer"><div className="pagination">{[0, 1, 2].map((page) => <button type="button" className={dataPage === page ? "active" : ""} onClick={() => setDataPage(page)} key={page}>{page * 10 + 1}–{page * 10 + 10}</button>)}</div><p>● 카드 클릭 · 점 분할 · 정보이득 비교</p><button className="primary large" type="button" onClick={() => { setPhase("build"); window.scrollTo({ top: 0 }); }}>ID3 분할 실습 →</button></div>
+          </div>
+
+          <div className="starting-formula"><div><span>분할 전 엔트로피</span><strong>정상 17 · 해킹 13</strong></div><EntropyFormula items={mails} label="D" /><p><b><Fraction numerator={17} denominator={30} /></b> 정상 · <b><Fraction numerator={13} denominator={30} /></b> 해킹</p></div>
+          <p className="disclaimer">※ 교육용 가상 데이터 · 실제 보안 판정 기준 아님</p>
+        </section>
+      ) : (
+        <section className="build-page">
+          <div className="path-banner"><span>현재 위치</span>{currentPath.map((item, index) => <div key={`${item}-${index}`}><b>{item}</b>{index < currentPath.length - 1 && <i>›</i>}</div>)}</div>
+
+          <section className={`tree-stage ${reviewMode ? "review" : ""}`}>
+            <div className="stage-heading"><div><span className="eyebrow">DECISION TREE</span><h2>{reviewMode ? (isComplete ? "트리 완성" : "질문 추가") : "현재 트리"}</h2></div><div className="current-badge">{isComplete ? "파랑 정상 · 주황 해킹" : "주황 = 현재 노드"}</div></div>
+            <TreeViewport node={tree} selectedId={selectedId} justSplitId={justSplitId} fit={isComplete} />
+            {reviewMode && <div className="review-action"><p>{message}</p>{!isComplete && <button className="primary large" type="button" onClick={continueBuilding}>다음 노드 분할 ↓</button>}</div>}
+          </section>
+
+          {!reviewMode && <>
+            <section className="question-builder">
+              <div className="section-heading"><span>1</span><div><h2>후보 속성 선택</h2><p>속성 카드 클릭</p></div></div>
+              <div className="feature-row">{FEATURES.map((feature) => {
+                const disabled = selectedNode.used.includes(feature.key);
+                const value = currentEvaluations[feature.key];
+                return <button key={feature.key} type="button" disabled={disabled} className={`feature-card ${previewKey === feature.key ? "active" : ""}`} onClick={() => tryFeature(feature.key)}><span>{feature.icon}</span><div><strong>{feature.name}</strong><small>{feature.values.join(" · ")}</small></div>{value !== undefined && <em>IG {value.toFixed(3)}</em>}</button>;
+              })}</div>
+            </section>
+
+            <section className="visual-split">
+              <div className="section-heading"><span>2</span><div><h2>점 분할 보드</h2><p>{message}</p></div></div>
+              {!previewKey ? <div className="unsplit-pool"><div className="pool-title"><h3>분할 전</h3><strong>정상 {counts(currentItems).normal} · 해킹 {counts(currentItems).hack}</strong></div><div className="tile-grid">{currentItems.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 18} />)}</div><PurityBar items={currentItems} /><div className="pool-entropy"><span>엔트로피</span><strong>{parentEntropy.toFixed(3)}</strong></div></div> : <div className={`split-groups columns-${previewGroups.length}`}>{previewGroups.map((group, groupIndex) => {
+                const result = counts(group.items);
+                return <article className="split-group" key={group.value}><div className="group-header"><span>영역 {groupIndex + 1}</span><h3>{group.value}</h3><b>{group.items.length}개</b></div><div className="tile-grid">{group.items.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 28} />)}</div><div className="count-row"><span className="normal">✓ 정상 <b>{result.normal}</b></span><span className="hack">! 해킹 <b>{result.hack}</b></span></div><PurityBar items={group.items} />{calcStep >= 1 ? <EntropyFormula items={group.items} label={group.value} /> : <div className="look-first">● 색상 혼합 비교</div>}</article>;
+              })}</div>}
+              {previewKey && calcStep === 0 && <div className="reveal-row"><p>● 분리 상태 확인</p><button className="primary large" type="button" onClick={advanceCalculation}>① 그룹별 엔트로피 →</button></div>}
+            </section>
+
+            {previewKey && calcStep >= 1 && <section className="calculation-section">
+              <div className="section-heading"><span>3</span><div><h2>정보이득 계산</h2></div></div>
+              <div className="calc-roadmap" aria-label="계산 진행 단계">{["그룹별 H", "가중평균 H", "정보이득"].map((label, index) => <div key={label} className={calcStep > index + 1 ? "done" : calcStep === index + 1 ? "current" : ""}><b>{index + 1}</b><span>{label}</span></div>)}</div>
+              <div className="parent-formula"><span>분할 전</span><EntropyFormula items={currentItems} label="D" /></div>
+              {calcStep === 1 && <div className="calculation-action"><p>● 정상/전체 · 해킹/전체</p><button className="primary large" type="button" onClick={advanceCalculation}>② 가중평균 →</button></div>}
+              {calcStep >= 2 && <div className="weighted-formula"><span>분할 후 가중평균 H</span><div className="formula-expression">{previewGroups.map((group, index) => <span key={group.value}>{index > 0 && <i>＋</i>}<b>(<Fraction numerator={group.items.length} denominator={currentItems.length} />)</b> × {entropy(group.items).toFixed(3)}</span>)}</div><strong>= {weightedEntropy.toFixed(3)}</strong><small>데이터 비율 × 그룹 H</small></div>}
+              {calcStep === 2 && <div className="calculation-action"><p>● H(D) − 가중평균 H</p><button className="primary large" type="button" onClick={advanceCalculation}>③ 정보이득 →</button></div>}
+              {calcStep >= 3 && <div className={`gain-formula ${selectedId === "root" ? "first-split" : ""}`}><span>{selectedId === "root" ? "첫 분할 정보이득" : "정보이득"} IG(D, {featureOf(previewKey).name})</span><div><b>{parentEntropy.toFixed(3)}</b><i>−</i><b>{weightedEntropy.toFixed(3)}</b><i>=</i><strong>{previewGain.toFixed(3)}</strong></div><p>불확실성 감소량</p></div>}
+            </section>}
+
+            <section className="comparison-section">
+              <div className="section-heading"><span>4</span><div><h2>후보별 정보이득</h2></div><b>{tried}/{available.length}</b></div>
+              <div className="comparison-grid">{available.map((feature) => {
+                const value = currentEvaluations[feature.key];
+                const groups = groupsFor(currentItems, feature.key);
+                const isBestTried = value !== undefined && Object.values(currentEvaluations).every((other) => other === undefined || value >= other);
+                return <button key={feature.key} className={`${previewKey === feature.key ? "active" : ""} ${isBestTried && tried > 1 ? "best" : ""} ${selectedId === "root" && value !== undefined ? "root-gain" : ""}`} type="button" onClick={() => tryFeature(feature.key)}><div className="comparison-name"><strong>{feature.name}</strong>{isBestTried && tried > 1 && <span>최댓값</span>}</div>{value === undefined ? <div className="not-tried">미확인</div> : <div className="mini-groups">{groups.map((group) => <div key={group.value}><small>{group.value}</small><PurityBar items={group.items} /></div>)}</div>}<div className="comparison-value"><span>IG</span><strong>{value === undefined ? "—" : value.toFixed(3)}</strong></div></button>;
+              })}</div>
+              <div className="confirm-row"><p>{tried < available.length ? `● 후보 ${available.length - tried}개 남음` : "● IG 최댓값 선택"}</p><button className="primary large" type="button" disabled={calcStep < 3 || tried < available.length} onClick={confirmSplit}>최댓값으로 분할 →</button></div>
+            </section>
+          </>}
+
+          {reviewMode && isComplete && <section className="prediction-section">
+            <div className="quiz-heading"><div className="section-heading"><span>4</span><div><h2>신규메일 분류 퀴즈</h2><p>예측 선택 → 정답·경로</p></div></div><div className="quiz-score"><span>SCORE</span><strong>{quizScore}/{testMails.length}</strong></div></div>
+            <div className="prediction-grid">{testMails.map((mail) => {
+              const result = predict(tree, mail);
+              const answer = quizAnswers[mail.id];
+              const isCorrect = answer === result.label;
+              return <article className={answer ? (isCorrect ? "answered correct" : "answered wrong") : ""} key={mail.id}><div className="prediction-title"><span>✉</span><div><b>{mail.id}</b><h3>{mail.subject}</h3></div></div><div className="mail-facts"><div><span>발신자</span><strong>{mail.sender}</strong></div><div><span>외부 링크</span><strong>{mail.link}</strong></div><div><span>긴급 여부</span><strong>{mail.urgency}</strong></div></div>{!answer ? <div className="prediction-choice"><b>나의 예측</b><div><button type="button" className="normal" onClick={() => setQuizAnswers((items) => ({ ...items, [mail.id]: "정상 메일" }))}>✓ 정상 메일</button><button type="button" className="hack" onClick={() => setQuizAnswers((items) => ({ ...items, [mail.id]: "해킹메일" }))}>! 해킹메일</button></div></div> : <div className="prediction-feedback"><div className={`feedback-title ${isCorrect ? "correct" : "wrong"}`}><span>{isCorrect ? "✓" : "×"}</span><strong>{isCorrect ? "정답!" : "오답"}</strong><b>정답: {result.label}</b></div><div className="prediction-path">{result.path.map((step, index) => <div key={step}><b>{index + 1}</b><span>{step}</span></div>)}</div></div>}</article>;
+            })}</div>
+            {quizAnswered === testMails.length && <div className="quiz-complete"><div><span>완료</span><strong>{quizScore === testMails.length ? "3문제 모두 정답!" : `${quizScore}개 정답 · 경로 다시 확인`}</strong></div><button type="button" onClick={() => setQuizAnswers({})}>↻ 다시 풀기</button></div>}
+          </section>}
+          <p className="disclaimer">※ 교육용 가상 데이터 · 실제 보안 판정 기준 아님</p>
+        </section>
+      )}
+    </main>
+  );
+}
