@@ -12,6 +12,8 @@
 
 GitHub Pages: https://xognsdl1019.github.io/information-gain-tree-lab/
 
+산점도 분할 체험: https://xognsdl1019.github.io/information-gain-tree-lab/scatter/
+
 ## 로컬 실행
 
 ```bash
