@@ -309,12 +309,12 @@ export default function Home() {
   return (
     <main className="app-shell">
       <header className="app-header">
-        <div className="brand"><span>DT</span><div><small>인공지능 개론</small><strong>8. 의사결정 나무 실습</strong></div></div>
+        <div className="brand"><span>IG</span><div><small>인공지능 개론</small><strong>8. 정보이득 계산 실습</strong></div></div>
         <div className="header-actions">{phase === "build" && <button onClick={undo} disabled={!history.length} type="button">↶ 이전 분할</button>}{phase === "build" && <button onClick={reset} type="button">↻ 처음부터</button>}</div>
       </header>
 
       <nav className="progress-nav" aria-label="실습 진행 단계">
-        {["데이터 확인", "분할 체험", "트리 생성", "신규메일 퀴즈"].map((label, index) => {
+        {["데이터 확인", "엔트로피 계산", "정보이득 비교", "트리·적용"].map((label, index) => {
           const active = phase === "observe" ? index === 0 : isComplete ? index === 3 : reviewMode ? index === 2 : index === 1;
           return <div className={active ? "active" : ""} key={label}><b>{index + 1}</b><span>{label}</span></div>;
         })}

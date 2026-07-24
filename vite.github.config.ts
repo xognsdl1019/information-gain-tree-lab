@@ -13,6 +13,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, "static-site/index.html"),
         scatter: resolve(import.meta.dirname, "static-site/scatter/index.html"),
+        summary: resolve(import.meta.dirname, "static-site/summary/index.html"),
       },
     },
   },
