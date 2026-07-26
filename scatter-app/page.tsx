@@ -28,6 +28,8 @@ const META = {
   x: { name: "외부 연결 위험도", direction: "세로 분할" },
   y: { name: "의심 표현 점수", direction: "가로 분할" },
 };
+const INITIAL_AXIS: Axis = "y";
+const INITIAL_THRESHOLD = 2;
 
 function count(items: Point[]) {
   const normal = items.filter((p) => p.label === "normal").length;
@@ -75,10 +77,10 @@ function Result({ title, items }: { title: string; items: Point[] }) {
 export default function ScatterLab() {
   const [intro, setIntro] = useState(true);
   const [stage, setStage] = useState<1|2|3>(1);
-  const [axis, setAxis] = useState<Axis>("x");
-  const [threshold, setThreshold] = useState(4);
+  const [axis, setAxis] = useState<Axis>(INITIAL_AXIS);
+  const [threshold, setThreshold] = useState(INITIAL_THRESHOLD);
   const [locked, setLocked] = useState<Locked|null>(null);
-  const [secondThreshold, setSecondThreshold] = useState(4);
+  const [secondThreshold, setSecondThreshold] = useState(INITIAL_THRESHOLD);
   const [dragging, setDragging] = useState(false);
 
   const plot = { left:80, right:810, top:34, bottom:474 };
@@ -122,12 +124,12 @@ export default function ScatterLab() {
   function confirmFirst() {
     const groups = split(POINTS, axis, threshold);
     setLocked({ axis, threshold, side: entropy(groups.low) >= entropy(groups.high) ? "low" : "high" });
-    setSecondThreshold(4);
+    setSecondThreshold(INITIAL_THRESHOLD);
     setStage(2);
   }
 
   function reset() {
-    setIntro(true); setStage(1); setAxis("x"); setThreshold(4); setLocked(null); setSecondThreshold(4); setDragging(false);
+    setIntro(true); setStage(1); setAxis(INITIAL_AXIS); setThreshold(INITIAL_THRESHOLD); setLocked(null); setSecondThreshold(INITIAL_THRESHOLD); setDragging(false);
   }
 
   function inParent(point: Point) {
@@ -205,13 +207,13 @@ export default function ScatterLab() {
           <div className="toolbar">
             <div>
               <small>{stage===1?"분할 방향 선택":stage===2?"두 번째 질문":"분할 확정"}</small>
-              {stage===1 ? <div className="axis-buttons">{(["x","y"] as Axis[]).map((a)=><button type="button" className={axis===a?"active":""} onClick={()=>{setAxis(a);setThreshold(4);}} key={a}>{a==="x"?"│ 세로 분할":"─ 가로 분할"}</button>)}</div> : <strong>{META[secondAxis].direction}</strong>}
+              {stage===1 ? <div className="axis-buttons">{(["x","y"] as Axis[]).map((a)=><button type="button" className={axis===a?"active":""} onClick={()=>{setAxis(a);setThreshold(INITIAL_THRESHOLD);}} key={a}>{a==="x"?"│ 세로 분할":"─ 가로 분할"}</button>)}</div> : <strong>{META[secondAxis].direction}</strong>}
             </div>
             <div className="question"><small>현재 질문</small><strong>{question(activeAxis,activeThreshold)}</strong></div>
           </div>
 
           <div className="plot-wrap">
-            <svg className={dragging?"dragging":""} viewBox="0 0 880 540" onPointerDown={start} onPointerMove={move} onPointerUp={(e)=>{setDragging(false);e.currentTarget.releasePointerCapture(e.pointerId);}} onPointerCancel={()=>setDragging(false)} role="img" aria-label="이동 가능한 분할선이 있는 해킹메일 산점도">
+            <svg className={dragging?"dragging":""} viewBox="0 0 880 570" onPointerDown={start} onPointerMove={move} onPointerUp={(e)=>{setDragging(false);e.currentTarget.releasePointerCapture(e.pointerId);}} onPointerCancel={()=>setDragging(false)} role="img" aria-label="이동 가능한 분할선이 있는 해킹메일 산점도">
               <rect className="plot-paper" x={plot.left} y={plot.top} width={w} height={h} rx="15" />
               {[1,2,3,4,5,6,7,8,9].map(t=><g key={`x${t}`}><line className="grid" x1={xAt(t)} x2={xAt(t)} y1={plot.top} y2={plot.bottom}/><text className="tick" x={xAt(t)} y={plot.bottom+27}>{t}</text></g>)}
               {[1,2,3,4,5,6,7,8,9].map(t=><g key={`y${t}`}><line className="grid" x1={plot.left} x2={plot.right} y1={yAt(t)} y2={yAt(t)}/><text className="tick" x={plot.left-24} y={yAt(t)+4}>{t}</text></g>)}
@@ -226,7 +228,7 @@ export default function ScatterLab() {
               {activeAxis==="x"
                 ? <g className={`split-line ${stage===3?"done":""}`}><line x1={currentLine} x2={currentLine} y1={stage>=2&&locked?.axis==="y"&&locked.side==="high"?plot.top:stage>=2&&locked?.axis==="y"?yAt(locked.threshold+.5):plot.top} y2={stage>=2&&locked?.axis==="y"&&locked.side==="high"?yAt(locked.threshold+.5):plot.bottom}/><circle cx={currentLine} cy={plot.top+28} r="18"/><text x={currentLine} y={plot.top+33}>{activeThreshold}</text></g>
                 : <g className={`split-line ${stage===3?"done":""}`}><line x1={stage>=2&&locked?.axis==="x"&&locked.side==="high"?xAt(locked.threshold+.5):plot.left} x2={stage>=2&&locked?.axis==="x"&&locked.side==="low"?xAt(locked.threshold+.5):plot.right} y1={currentLine} y2={currentLine}/><circle cx={plot.left+31} cy={currentLine} r="18"/><text x={plot.left+31} y={currentLine+5}>{activeThreshold}</text></g>}
-              <text className="axis-label" x={(plot.left+plot.right)/2} y="528">외부 연결 위험도 (X)</text>
+              <text className="axis-label" x={(plot.left+plot.right)/2} y="545">외부 연결 위험도 (X)</text>
               <text className="axis-label" transform={`translate(24 ${(plot.top+plot.bottom)/2}) rotate(-90)`}>의심 표현 점수 (Y)</text>
             </svg>
             {stage<3&&<div className="tip">↔ 클릭하거나 선을 끌면 정수 단위로 이동합니다</div>}

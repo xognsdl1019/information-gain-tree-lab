@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 type FeatureKey = "sender" | "link" | "urgency";
 type MailLabel = "정상 메일" | "해킹메일";
@@ -60,6 +60,18 @@ const testMails: Mail[] = [
 
 const featureOf = (key: FeatureKey) => FEATURES.find((feature) => feature.key === key)!;
 const valueOf = (mail: Mail, key: FeatureKey) => mail[key];
+
+function shuffledCadets(count: number, avoidFirst?: number) {
+  const order = Array.from({ length: count }, (_, index) => index);
+  for (let index = order.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
+  }
+  if (order.length > 1 && order[0] === avoidFirst) {
+    [order[0], order[1]] = [order[1], order[0]];
+  }
+  return order;
+}
 
 function entropy(items: Array<{ label: MailLabel }>) {
   if (!items.length) return 0;
@@ -127,6 +139,15 @@ function predict(node: TreeNode, mail: Mail, path: string[] = []): { label: Mail
 
 function Fraction({ numerator, denominator }: { numerator: number; denominator: number }) {
   return <span className="fraction" aria-label={`${numerator}/${denominator}`}><span>{numerator}</span><span>{denominator}</span></span>;
+}
+
+function CadetPrompt({ cadet, children }: { cadet: number; children: ReactNode }) {
+  return (
+    <div className="cadet-prompt">
+      <span><b>{cadet}</b>번 생도</span>
+      <strong>{children}</strong>
+    </div>
+  );
 }
 
 function EntropyFormula({ items, label }: { items: Mail[]; label: string }) {
@@ -215,7 +236,12 @@ function TreeViewport({ node, selectedId, justSplitId, fit }: { node: TreeNode; 
 const initialTree: TreeNode = { id: "root", mailIds: mails.map((mail) => mail.id), used: [] };
 
 export default function Home() {
-  const [phase, setPhase] = useState<"observe" | "build">("observe");
+  const [phase, setPhase] = useState<"setup" | "observe" | "build">("setup");
+  const [cadetInput, setCadetInput] = useState("12");
+  const [cadetCount, setCadetCount] = useState(12);
+  const [cadetOrder, setCadetOrder] = useState<number[]>([]);
+  const [cadetCursor, setCadetCursor] = useState(0);
+  const [startingFormulaRevealed, setStartingFormulaRevealed] = useState(false);
   const [dataPage, setDataPage] = useState(0);
   const [tree, setTree] = useState<TreeNode>(initialTree);
   const [selectedId, setSelectedId] = useState("root");
@@ -239,11 +265,36 @@ export default function Home() {
   const previewGain = previewKey ? informationGain(currentItems, previewKey) : 0;
   const weightedEntropy = previewKey ? parentEntropy - previewGain : 0;
   const tried = available.filter((feature) => currentEvaluations[feature.key] !== undefined).length;
+  const quickCalculation = !!previewKey && currentEvaluations[previewKey] === undefined && tried > 0;
   const best = available.length ? available.reduce((winner, feature) => informationGain(currentItems, feature.key) > informationGain(currentItems, winner.key) ? feature : winner) : null;
   const isComplete = complete(tree);
   const currentPath = pathTo(tree, selectedId) ?? ["전체 메일"];
   const quizAnswered = Object.keys(quizAnswers).length;
   const quizScore = isComplete ? testMails.filter((mail) => quizAnswers[mail.id] === predict(tree, mail).label).length : 0;
+  const assignedCadet = cadetOrder[cadetCursor] ?? 0;
+  const previewCadetCount = Math.max(1, Math.min(200, Number.parseInt(cadetInput, 10) || 1));
+
+  function advanceCadet() {
+    if (cadetCursor < cadetOrder.length - 1) {
+      setCadetCursor((current) => current + 1);
+      return;
+    }
+    const nextOrder = shuffledCadets(cadetCount, cadetOrder.at(-1));
+    setCadetOrder(nextOrder);
+    setCadetCursor(0);
+  }
+
+  function startExercise(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const count = Math.max(1, Math.min(200, Number.parseInt(cadetInput, 10) || 1));
+    setCadetInput(String(count));
+    setCadetCount(count);
+    setCadetOrder(shuffledCadets(count));
+    setCadetCursor(0);
+    setStartingFormulaRevealed(false);
+    setPhase("observe");
+    window.scrollTo({ top: 0 });
+  }
 
   function tryFeature(key: FeatureKey) {
     if (selectedNode.used.includes(key) || selectedNode.split || selectedNode.label) return;
@@ -256,7 +307,8 @@ export default function Home() {
 
   function advanceCalculation() {
     if (!previewKey) return;
-    const next = Math.min(calcStep + 1, 3) as 0 | 1 | 2 | 3;
+    const next = (quickCalculation && calcStep === 0 ? 3 : Math.min(calcStep + 1, 3)) as 0 | 1 | 2 | 3;
+    if (calcStep === 0) advanceCadet();
     setCalcStep(next);
     if (next === 1) setMessage("● 개수 → 비율 → H");
     if (next === 2) setMessage("● 데이터 비율 × 그룹 H");
@@ -267,9 +319,9 @@ export default function Home() {
       if (allCalculated) {
         setChosenKey(null);
         setSelectionError(false);
-        setMessage("● 세 값을 비교하고 분할속성 선택");
+        setMessage("● 정보이득 값을 비교하고 분할속성 선택");
       } else {
-        setMessage("● H(D) − 가중평균 H = IG");
+        setMessage(quickCalculation ? "● 핵심 계산을 한 번에 확인" : "● H(D) − 가중평균 H = IG");
       }
     }
   }
@@ -294,6 +346,7 @@ export default function Home() {
       setMessage("● 정보이득이 가장 큰 값을 다시 선택");
       return;
     }
+    advanceCadet();
     const children: TreeNode[] = groupsFor(currentItems, chosenKey).map((group, index) => {
       const result = counts(group.items);
       return {
@@ -329,7 +382,7 @@ export default function Home() {
   }
 
   function reset() {
-    setTree(initialTree); setSelectedId("root"); setPreviewKey(null); setChosenKey(null); setSelectionError(false); setCalcStep(0); setEvaluations({}); setReviewMode(false); setJustSplitId(null); setHistory([]); setQuizAnswers({}); setMessage("● 속성 카드 클릭");
+    setTree(initialTree); setSelectedId("root"); setPreviewKey(null); setChosenKey(null); setSelectionError(false); setCalcStep(0); setEvaluations({}); setReviewMode(false); setJustSplitId(null); setHistory([]); setQuizAnswers({}); setStartingFormulaRevealed(false); setMessage("● 속성 카드 클릭");
   }
 
   function undo() {
@@ -342,17 +395,44 @@ export default function Home() {
     <main className="app-shell">
       <header className="app-header">
         <div className="brand"><span>IG</span><div><small>인공지능 개론</small><strong>8. 정보이득 계산 실습</strong></div></div>
-        <div className="header-actions">{phase === "build" && <button onClick={undo} disabled={!history.length} type="button">↶ 이전 분할</button>}{phase === "build" && <button onClick={reset} type="button">↻ 처음부터</button>}</div>
+        <div className="header-actions">
+          {phase !== "setup" && <button onClick={() => { reset(); setPhase("setup"); }} type="button">♟ 인원 변경</button>}
+          {phase === "build" && <button onClick={undo} disabled={!history.length} type="button">↶ 이전 분할</button>}
+          {phase === "build" && <button onClick={reset} type="button">↻ 처음부터</button>}
+        </div>
       </header>
 
-      <nav className="progress-nav" aria-label="실습 진행 단계">
+      {phase !== "setup" && <nav className="progress-nav" aria-label="실습 진행 단계">
         {["데이터 확인", "엔트로피 계산", "정보이득 비교", "트리·적용"].map((label, index) => {
           const active = phase === "observe" ? index === 0 : isComplete ? index === 3 : reviewMode ? index === 2 : index === 1;
           return <div className={active ? "active" : ""} key={label}><b>{index + 1}</b><span>{label}</span></div>;
         })}
-      </nav>
+      </nav>}
 
-      {phase === "observe" ? (
+      {phase === "setup" ? (
+        <section className="setup-page">
+          <div className="setup-card">
+            <div className="setup-copy">
+              <span className="eyebrow">CLASS SETUP</span>
+              <h1>실습 인원을 먼저 설정합니다</h1>
+              <p>인원수만 입력하면 <b>0번부터 순서대로 번호를 부여</b>하고, 계산·선택 질문마다 담당 생도를 자동으로 지정합니다.</p>
+            </div>
+            <form className="cadet-form" onSubmit={startExercise}>
+              <label htmlFor="cadet-count">참여 생도 수</label>
+              <div><input id="cadet-count" type="number" min="1" max="200" inputMode="numeric" value={cadetInput} onChange={(event) => setCadetInput(event.target.value)} /><span>명</span></div>
+              <button className="primary large" type="submit">번호 배정하고 시작 →</button>
+            </form>
+            <div className="roster-preview">
+              <div><span>번호 배정</span><strong>0번–{previewCadetCount - 1}번</strong></div>
+              <div className="cadet-chips">
+                {Array.from({ length: Math.min(previewCadetCount, 18) }, (_, index) => <b key={index}>{index}</b>)}
+                {previewCadetCount > 18 && <><i>…</i><b>{previewCadetCount - 1}</b></>}
+              </div>
+              <p>질문마다 한 명씩 무작위 선정 · 전체가 한 번씩 참여한 뒤 다시 배정</p>
+            </div>
+          </div>
+        </section>
+      ) : phase === "observe" ? (
         <section className="observe-page">
           <div className="observe-hero">
             <div><span className="eyebrow">STEP 1 · DATA</span><h1>학습 데이터 확인</h1></div>
@@ -362,12 +442,19 @@ export default function Home() {
           <div className="data-table-card">
             <div className="table-title"><div><h2>가상 메일 30개</h2><p>속성 3개 · 클래스 2개</p></div><div className="legend"><span className="normal">✓ 정상</span><span className="hack">! 해킹</span></div></div>
             <div className="table-scroll">
-              <table><thead><tr><th>번호</th><th>메일 제목</th><th>발신자 유형</th><th>외부 링크</th><th>긴급 여부</th><th>실제 클래스</th></tr></thead><tbody>{mails.slice(dataPage * 10, dataPage * 10 + 10).map((mail) => <tr key={mail.id}><td><b>{mail.id}</b></td><td>{mail.subject}</td><td>{mail.sender}</td><td>{mail.link}</td><td>{mail.urgency}</td><td><span className={`class-pill ${mail.label === "정상 메일" ? "normal" : "hack"}`}>{mail.label === "정상 메일" ? "✓" : "!"} {mail.label}</span></td></tr>)}</tbody></table>
+              <table><thead><tr><th>번호</th><th>메일 제목</th><th>발신자 유형</th><th>외부 링크</th><th>긴급 여부</th><th>실제값</th></tr></thead><tbody>{mails.slice(dataPage * 10, dataPage * 10 + 10).map((mail) => <tr key={mail.id}><td><b>{mail.id}</b></td><td>{mail.subject}</td><td>{mail.sender}</td><td>{mail.link}</td><td>{mail.urgency}</td><td><span className={`class-pill ${mail.label === "정상 메일" ? "normal" : "hack"}`}>{mail.label === "정상 메일" ? "✓" : "!"} {mail.label}</span></td></tr>)}</tbody></table>
             </div>
-            <div className="table-footer"><div className="pagination">{[0, 1, 2].map((page) => <button type="button" className={dataPage === page ? "active" : ""} onClick={() => setDataPage(page)} key={page}>{page * 10 + 1}–{page * 10 + 10}</button>)}</div><p>● 카드 클릭 · 점 분할 · 정보이득 비교</p><button className="primary large" type="button" onClick={() => { setPhase("build"); window.scrollTo({ top: 0 }); }}>ID3 분할 실습 →</button></div>
+            <div className="table-footer"><div className="pagination">{[0, 1, 2].map((page) => <button type="button" className={dataPage === page ? "active" : ""} onClick={() => setDataPage(page)} key={page}>{page * 10 + 1}–{page * 10 + 10}</button>)}</div><p>{startingFormulaRevealed ? "● 카드 클릭 · 점 분할 · 정보이득 비교" : "● 아래에서 분할 전 엔트로피 식 확인"}</p><button className="primary large" type="button" disabled={!startingFormulaRevealed} onClick={() => { setPhase("build"); window.scrollTo({ top: 0 }); }}>ID3 분할 실습 →</button></div>
           </div>
 
-          <div className="starting-formula"><div><span>분할 전 엔트로피</span><strong>정상 17 · 해킹 13</strong></div><EntropyFormula items={mails} label="D" /><p><b><Fraction numerator={17} denominator={30} /></b> 정상 · <b><Fraction numerator={13} denominator={30} /></b> 해킹</p></div>
+          {!startingFormulaRevealed ? (
+            <div className="starting-formula prompt-only">
+              <CadetPrompt cadet={assignedCadet}>분할 전 엔트로피 식을 이야기해 볼까요?</CadetPrompt>
+              <button className="primary large" type="button" onClick={() => { setStartingFormulaRevealed(true); advanceCadet(); }}>식 확인 →</button>
+            </div>
+          ) : (
+            <div className="starting-formula"><div><span>분할 전 엔트로피</span><strong>정상 17 · 해킹 13</strong></div><EntropyFormula items={mails} label="D" /><p><b><Fraction numerator={17} denominator={30} /></b> 정상 · <b><Fraction numerator={13} denominator={30} /></b> 해킹</p></div>
+          )}
           <p className="disclaimer">※ 교육용 가상 데이터 · 실제 보안 판정 기준 아님</p>
         </section>
       ) : (
@@ -396,11 +483,11 @@ export default function Home() {
                 const result = counts(group.items);
                 return <article className="split-group" key={group.value}><div className="group-header"><span>영역 {groupIndex + 1}</span><h3>{group.value}</h3><b>{group.items.length}개</b></div><div className="tile-grid">{group.items.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 28} />)}</div><div className="count-row"><span className="normal">✓ 정상 <b>{result.normal}</b></span><span className="hack">! 해킹 <b>{result.hack}</b></span></div><PurityBar items={group.items} />{calcStep >= 1 ? <EntropyFormula items={group.items} label={group.value} /> : <div className="look-first">● 색상 혼합 비교</div>}</article>;
               })}</div>}
-              {previewKey && calcStep === 0 && <div className="reveal-row"><p>● 분리 상태 확인</p><button className="primary large" type="button" onClick={advanceCalculation}>① 그룹별 엔트로피 →</button></div>}
+              {previewKey && calcStep === 0 && <div className="reveal-row cadet-reveal"><CadetPrompt cadet={assignedCadet}>{quickCalculation ? "분할 결과를 보고 정보이득의 크기를 예상해 볼까요?" : "각 그룹의 엔트로피 식을 이야기해 볼까요?"}</CadetPrompt><button className="primary large" type="button" onClick={advanceCalculation}>{quickCalculation ? "정보이득 결과 한 번에 확인 →" : "① 그룹별 엔트로피 →"}</button></div>}
             </section>
 
             {previewKey && calcStep >= 1 && <section className="calculation-section">
-              <div className="section-heading"><span>3</span><div><h2>정보이득 계산</h2></div></div>
+              <div className="section-heading"><span>3</span><div><h2>정보이득 계산</h2><p>첫 후보는 단계별 계산 · 이후 후보는 결과를 한 번에 확인</p></div></div>
               <div className="calc-roadmap" aria-label="계산 진행 단계">{["그룹별 H", "가중평균 H", "정보이득"].map((label, index) => <div key={label} className={calcStep > index + 1 ? "done" : calcStep === index + 1 ? "current" : ""}><b>{index + 1}</b><span>{label}</span></div>)}</div>
               <div className="parent-formula"><span>분할 전</span><EntropyFormula items={currentItems} label="D" /></div>
               {calcStep === 1 && <div className="calculation-action"><p>● 정상/전체 · 해킹/전체</p><button className="primary large" type="button" onClick={advanceCalculation}>② 가중평균 →</button></div>}
@@ -410,14 +497,15 @@ export default function Home() {
             </section>}
 
             <section className="comparison-section">
-              <div className="section-heading"><span>4</span><div><h2>정보이득 비교 및 분할속성 선택</h2><p>{tried < available.length ? "먼저 모든 후보의 정보이득을 계산하세요." : "세 값을 직접 비교한 뒤 가장 큰 속성을 클릭하세요."}</p></div><b>{tried}/{available.length}</b></div>
+              <div className="section-heading"><span>4</span><div><h2>정보이득 비교 및 분할속성 선택</h2><p>{tried < available.length ? "먼저 모든 후보의 정보이득을 계산하세요." : "정보이득 값을 직접 비교한 뒤 가장 큰 속성을 클릭하세요."}</p></div><b>{tried}/{available.length}</b></div>
+              {tried === available.length && (!chosenKey || selectionError) && <div className="selection-cadet"><CadetPrompt cadet={assignedCadet}>{selectionError ? "값을 다시 비교해 분할속성을 골라볼까요?" : "어떤 속성을 분할속성으로 선택해야 할까요?"}</CadetPrompt></div>}
               <div className="comparison-grid">{available.map((feature) => {
                 const value = currentEvaluations[feature.key];
                 const groups = groupsFor(currentItems, feature.key);
                 const isChosen = chosenKey === feature.key;
                 return <button key={feature.key} aria-pressed={isChosen} className={`${tried < available.length && previewKey === feature.key ? "active" : ""} ${isChosen ? "chosen" : ""} ${selectionError && isChosen ? "selection-error" : ""} ${selectedId === "root" && value !== undefined ? "root-gain" : ""}`} type="button" onClick={() => chooseCandidate(feature.key)}><div className="comparison-name"><strong>{feature.name}</strong>{isChosen && <span>나의 선택</span>}</div>{value === undefined ? <div className="not-tried">미확인</div> : <div className="mini-groups">{groups.map((group) => <div key={group.value}><small>{group.value}</small><PurityBar items={group.items} /></div>)}</div>}<div className="comparison-value"><span>IG</span><strong>{value === undefined ? "—" : value.toFixed(3)}</strong></div></button>;
               })}</div>
-              <div className={`confirm-row ${selectionError ? "error" : chosenKey ? "ready" : ""}`}><p>{tried < available.length ? `● 계산하지 않은 후보 ${available.length - tried}개` : selectionError ? "● 선택한 값이 최댓값인지 다시 비교하세요." : chosenKey ? `● 선택한 속성: ${featureOf(chosenKey).name}` : "● 위 세 카드의 IG 값을 비교하고 하나를 선택하세요."}</p><button className="primary large" type="button" disabled={tried < available.length || !chosenKey} onClick={confirmSplit}>선택한 속성으로 분할 →</button></div>
+              <div className={`confirm-row ${selectionError ? "error" : chosenKey ? "ready" : ""}`}><p>{tried < available.length ? `● 계산하지 않은 후보 ${available.length - tried}개` : selectionError ? "● 선택한 값이 최댓값인지 다시 비교하세요." : chosenKey ? `● 선택한 속성: ${featureOf(chosenKey).name}` : "● 위 카드의 IG 값을 비교하고 하나를 선택하세요."}</p><button className="primary large" type="button" disabled={tried < available.length || !chosenKey} onClick={confirmSplit}>선택한 속성으로 분할 →</button></div>
             </section>
           </>}
 
