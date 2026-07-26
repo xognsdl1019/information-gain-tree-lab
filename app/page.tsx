@@ -220,6 +220,8 @@ export default function Home() {
   const [tree, setTree] = useState<TreeNode>(initialTree);
   const [selectedId, setSelectedId] = useState("root");
   const [previewKey, setPreviewKey] = useState<FeatureKey | null>(null);
+  const [chosenKey, setChosenKey] = useState<FeatureKey | null>(null);
+  const [selectionError, setSelectionError] = useState(false);
   const [calcStep, setCalcStep] = useState<0 | 1 | 2 | 3>(0);
   const [evaluations, setEvaluations] = useState<Record<string, Partial<Record<FeatureKey, number>>>>({});
   const [reviewMode, setReviewMode] = useState(false);
@@ -246,6 +248,8 @@ export default function Home() {
   function tryFeature(key: FeatureKey) {
     if (selectedNode.used.includes(key) || selectedNode.split || selectedNode.label) return;
     setPreviewKey(key);
+    setChosenKey(null);
+    setSelectionError(false);
     setCalcStep(currentEvaluations[key] !== undefined ? 3 : 0);
     setMessage("● 점 이동 · 색상 혼합 비교");
   }
@@ -257,32 +261,58 @@ export default function Home() {
     if (next === 1) setMessage("● 개수 → 비율 → H");
     if (next === 2) setMessage("● 데이터 비율 × 그룹 H");
     if (next === 3) {
-      setEvaluations((previous) => ({ ...previous, [selectedId]: { ...(previous[selectedId] ?? {}), [previewKey]: previewGain } }));
-      setMessage("● H(D) − 가중평균 H = IG");
+      const nodeEvaluations = { ...currentEvaluations, [previewKey]: previewGain };
+      const allCalculated = available.every((feature) => nodeEvaluations[feature.key] !== undefined);
+      setEvaluations((previous) => ({ ...previous, [selectedId]: nodeEvaluations }));
+      if (allCalculated) {
+        setChosenKey(null);
+        setSelectionError(false);
+        setMessage("● 세 값을 비교하고 분할속성 선택");
+      } else {
+        setMessage("● H(D) − 가중평균 H = IG");
+      }
     }
   }
 
+  function chooseCandidate(key: FeatureKey) {
+    if (currentEvaluations[key] === undefined || tried < available.length) {
+      tryFeature(key);
+      return;
+    }
+    setChosenKey(key);
+    setPreviewKey(key);
+    setCalcStep(3);
+    setSelectionError(false);
+    setMessage(`● 나의 선택: ${featureOf(key).name}`);
+  }
+
   function confirmSplit() {
-    if (!previewKey || !best) return;
+    if (!chosenKey || !best) return;
     if (tried < available.length) { setMessage(`● 후보 ${available.length - tried}개 남음`); return; }
-    if (previewKey !== best.key) { setMessage("● 정보이득 최댓값 선택"); return; }
-    const children: TreeNode[] = groupsFor(currentItems, previewKey).map((group, index) => {
+    if (chosenKey !== best.key) {
+      setSelectionError(true);
+      setMessage("● 정보이득이 가장 큰 값을 다시 선택");
+      return;
+    }
+    const children: TreeNode[] = groupsFor(currentItems, chosenKey).map((group, index) => {
       const result = counts(group.items);
       return {
-        id: `${selectedNode.id}-${previewKey}-${index}`,
+        id: `${selectedNode.id}-${chosenKey}-${index}`,
         mailIds: group.items.map((item) => item.id),
-        used: [...selectedNode.used, previewKey],
+        used: [...selectedNode.used, chosenKey],
         edge: group.value,
         label: result.hack === 0 ? "정상 메일" : result.normal === 0 ? "해킹메일" : undefined,
       };
     });
-    const nextTree = replaceNode(tree, selectedNode.id, { ...selectedNode, split: previewKey, children });
+    const nextTree = replaceNode(tree, selectedNode.id, { ...selectedNode, split: chosenKey, children });
     const next = firstOpen(nextTree);
     setHistory((previous) => [...previous, tree]);
     setTree(nextTree);
     setJustSplitId(selectedNode.id);
     setSelectedId(next?.id ?? "done");
     setPreviewKey(null);
+    setChosenKey(null);
+    setSelectionError(false);
     setCalcStep(0);
     setReviewMode(true);
     setMessage(next ? "● 질문 추가 · 다음 노드" : "● 트리 완성");
@@ -293,17 +323,19 @@ export default function Home() {
   function continueBuilding() {
     setReviewMode(false);
     setJustSplitId(null);
+    setChosenKey(null);
+    setSelectionError(false);
     setMessage("● 현재 노드 · 후보 비교");
   }
 
   function reset() {
-    setTree(initialTree); setSelectedId("root"); setPreviewKey(null); setCalcStep(0); setEvaluations({}); setReviewMode(false); setJustSplitId(null); setHistory([]); setQuizAnswers({}); setMessage("● 속성 카드 클릭");
+    setTree(initialTree); setSelectedId("root"); setPreviewKey(null); setChosenKey(null); setSelectionError(false); setCalcStep(0); setEvaluations({}); setReviewMode(false); setJustSplitId(null); setHistory([]); setQuizAnswers({}); setMessage("● 속성 카드 클릭");
   }
 
   function undo() {
     const previous = history.at(-1);
     if (!previous) return;
-    setTree(previous); setHistory((items) => items.slice(0, -1)); setSelectedId(firstOpen(previous)?.id ?? "root"); setPreviewKey(null); setCalcStep(0); setReviewMode(false); setJustSplitId(null); setQuizAnswers({}); setMessage("● 이전 분할");
+    setTree(previous); setHistory((items) => items.slice(0, -1)); setSelectedId(firstOpen(previous)?.id ?? "root"); setPreviewKey(null); setChosenKey(null); setSelectionError(false); setCalcStep(0); setReviewMode(false); setJustSplitId(null); setQuizAnswers({}); setMessage("● 이전 분할");
   }
 
   return (
@@ -378,14 +410,14 @@ export default function Home() {
             </section>}
 
             <section className="comparison-section">
-              <div className="section-heading"><span>4</span><div><h2>후보별 정보이득</h2></div><b>{tried}/{available.length}</b></div>
+              <div className="section-heading"><span>4</span><div><h2>정보이득 비교 및 분할속성 선택</h2><p>{tried < available.length ? "먼저 모든 후보의 정보이득을 계산하세요." : "세 값을 직접 비교한 뒤 가장 큰 속성을 클릭하세요."}</p></div><b>{tried}/{available.length}</b></div>
               <div className="comparison-grid">{available.map((feature) => {
                 const value = currentEvaluations[feature.key];
                 const groups = groupsFor(currentItems, feature.key);
-                const isBestTried = value !== undefined && Object.values(currentEvaluations).every((other) => other === undefined || value >= other);
-                return <button key={feature.key} className={`${previewKey === feature.key ? "active" : ""} ${isBestTried && tried > 1 ? "best" : ""} ${selectedId === "root" && value !== undefined ? "root-gain" : ""}`} type="button" onClick={() => tryFeature(feature.key)}><div className="comparison-name"><strong>{feature.name}</strong>{isBestTried && tried > 1 && <span>최댓값</span>}</div>{value === undefined ? <div className="not-tried">미확인</div> : <div className="mini-groups">{groups.map((group) => <div key={group.value}><small>{group.value}</small><PurityBar items={group.items} /></div>)}</div>}<div className="comparison-value"><span>IG</span><strong>{value === undefined ? "—" : value.toFixed(3)}</strong></div></button>;
+                const isChosen = chosenKey === feature.key;
+                return <button key={feature.key} aria-pressed={isChosen} className={`${tried < available.length && previewKey === feature.key ? "active" : ""} ${isChosen ? "chosen" : ""} ${selectionError && isChosen ? "selection-error" : ""} ${selectedId === "root" && value !== undefined ? "root-gain" : ""}`} type="button" onClick={() => chooseCandidate(feature.key)}><div className="comparison-name"><strong>{feature.name}</strong>{isChosen && <span>나의 선택</span>}</div>{value === undefined ? <div className="not-tried">미확인</div> : <div className="mini-groups">{groups.map((group) => <div key={group.value}><small>{group.value}</small><PurityBar items={group.items} /></div>)}</div>}<div className="comparison-value"><span>IG</span><strong>{value === undefined ? "—" : value.toFixed(3)}</strong></div></button>;
               })}</div>
-              <div className="confirm-row"><p>{tried < available.length ? `● 후보 ${available.length - tried}개 남음` : "● IG 최댓값 선택"}</p><button className="primary large" type="button" disabled={calcStep < 3 || tried < available.length} onClick={confirmSplit}>최댓값으로 분할 →</button></div>
+              <div className={`confirm-row ${selectionError ? "error" : chosenKey ? "ready" : ""}`}><p>{tried < available.length ? `● 계산하지 않은 후보 ${available.length - tried}개` : selectionError ? "● 선택한 값이 최댓값인지 다시 비교하세요." : chosenKey ? `● 선택한 속성: ${featureOf(chosenKey).name}` : "● 위 세 카드의 IG 값을 비교하고 하나를 선택하세요."}</p><button className="primary large" type="button" disabled={tried < available.length || !chosenKey} onClick={confirmSplit}>선택한 속성으로 분할 →</button></div>
             </section>
           </>}
 
