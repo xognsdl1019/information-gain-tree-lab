@@ -320,7 +320,6 @@ function Quiz({
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">(
     "idle",
   );
-  const [attempted, setAttempted] = useState(false);
   const [score, setScore] = useState(0);
   const item = ITEMS[index];
   const assignedCadet = assignments[item.id];
@@ -341,8 +340,7 @@ function Quiz({
           ? Boolean(item.options?.[selected ?? -1]?.correct)
           : order.every((step, stepIndex) => step === ID3_STEPS[stepIndex]);
 
-    if (ok && !attempted) setScore((value) => value + 1);
-    setAttempted(true);
+    if (ok) setScore((value) => value + 1);
     setFeedback(ok ? "correct" : "wrong");
   }
 
@@ -367,7 +365,6 @@ function Quiz({
     setB("");
     setSelected(null);
     setFeedback("idle");
-    setAttempted(false);
   }
 
   return (
@@ -395,7 +392,7 @@ function Quiz({
           ))}
         </nav>
         <p>정답을 맞히면 다음 문제로 이동합니다.</p>
-        <small>점수는 첫 제출 기준입니다.</small>
+        <small>최종적으로 맞힌 문제 수를 집계합니다.</small>
         <button onClick={back}>← 핵심 정리</button>
       </aside>
 
