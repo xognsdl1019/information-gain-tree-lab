@@ -62,7 +62,7 @@ const featureOf = (key: FeatureKey) => FEATURES.find((feature) => feature.key ==
 const valueOf = (mail: Mail, key: FeatureKey) => mail[key];
 
 function shuffledCadets(count: number, avoidFirst?: number) {
-  const order = Array.from({ length: count }, (_, index) => index);
+  const order = Array.from({ length: count }, (_, index) => index + 1);
   for (let index = order.length - 1; index > 0; index -= 1) {
     const swapIndex = Math.floor(Math.random() * (index + 1));
     [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
@@ -271,7 +271,7 @@ export default function Home() {
   const currentPath = pathTo(tree, selectedId) ?? ["전체 메일"];
   const quizAnswered = Object.keys(quizAnswers).length;
   const quizScore = isComplete ? testMails.filter((mail) => quizAnswers[mail.id] === predict(tree, mail).label).length : 0;
-  const assignedCadet = cadetOrder[cadetCursor] ?? 0;
+  const assignedCadet = cadetOrder[cadetCursor] ?? 1;
   const previewCadetCount = Math.max(1, Math.min(200, Number.parseInt(cadetInput, 10) || 1));
 
   function advanceCadet() {
@@ -415,7 +415,7 @@ export default function Home() {
             <div className="setup-copy">
               <span className="eyebrow">CLASS SETUP</span>
               <h1>실습 인원을 먼저 설정합니다</h1>
-              <p>인원수만 입력하면 <b>0번부터 순서대로 번호를 부여</b>하고, 계산·선택 질문마다 담당 생도를 자동으로 지정합니다.</p>
+              <p>인원수만 입력하면 <b>1번부터 순서대로 번호를 부여</b>하고, 계산·선택 질문마다 담당 생도를 자동으로 지정합니다.</p>
             </div>
             <form className="cadet-form" onSubmit={startExercise}>
               <label htmlFor="cadet-count">참여 생도 수</label>
@@ -423,10 +423,10 @@ export default function Home() {
               <button className="primary large" type="submit">번호 배정하고 시작 →</button>
             </form>
             <div className="roster-preview">
-              <div><span>번호 배정</span><strong>0번–{previewCadetCount - 1}번</strong></div>
+              <div><span>번호 배정</span><strong>1번–{previewCadetCount}번</strong></div>
               <div className="cadet-chips">
-                {Array.from({ length: Math.min(previewCadetCount, 18) }, (_, index) => <b key={index}>{index}</b>)}
-                {previewCadetCount > 18 && <><i>…</i><b>{previewCadetCount - 1}</b></>}
+                {Array.from({ length: Math.min(previewCadetCount, 18) }, (_, index) => <b key={index + 1}>{index + 1}</b>)}
+                {previewCadetCount > 18 && <><i>…</i><b>{previewCadetCount}</b></>}
               </div>
               <p>질문마다 한 명씩 무작위 선정 · 전체가 한 번씩 참여한 뒤 다시 배정</p>
             </div>
