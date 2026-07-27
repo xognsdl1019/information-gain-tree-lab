@@ -372,6 +372,170 @@ main {
   cursor: pointer;
 }
 
+.cadet-setup-page {
+  width: min(980px, calc(100% - 54px));
+  margin: 38px auto 0;
+}
+
+.cadet-setup-card {
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 22px;
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 11px 31px #17335414;
+}
+
+.setup-heading > span {
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.09em;
+}
+
+.setup-heading h1 {
+  margin: 8px 0 11px;
+  font-size: 32px;
+  letter-spacing: -0.04em;
+}
+
+.setup-heading p {
+  margin: 0;
+  color: #566a82;
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+.setup-heading p b {
+  color: var(--navy);
+}
+
+.cadet-count-form {
+  padding: 19px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 2px solid #b9d1e4;
+  background: #f2f8fc;
+  border-radius: 14px;
+}
+
+.cadet-count-form label {
+  color: #4f657e;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.cadet-count-form > div {
+  height: 66px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 2px solid #8eafd0;
+  background: #fff;
+  border-radius: 11px;
+}
+
+.cadet-count-form input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 15px;
+  border: 0;
+  outline: 0;
+  color: var(--navy);
+  background: transparent;
+  font-size: 32px;
+  font-weight: 950;
+}
+
+.cadet-count-form > div span {
+  padding-right: 16px;
+  color: #61758d;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.cadet-count-form > button {
+  min-height: 48px;
+  border: 0;
+  color: #fff;
+  background: var(--orange);
+  border-radius: 9px;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.cadet-preview {
+  grid-column: 1 / -1;
+  padding: 18px;
+  border: 1px solid #d9e3ec;
+  background: #f8fafc;
+  border-radius: 13px;
+}
+
+.cadet-preview > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.cadet-preview > div:first-child span {
+  color: #66798f;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.cadet-preview > div:first-child strong {
+  color: var(--navy);
+  font-size: 22px;
+}
+
+.cadet-number-list {
+  margin-top: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cadet-number-list b {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--navy);
+  border-radius: 50%;
+  font-size: 14px;
+}
+
+.cadet-number-list i {
+  color: #8a98aa;
+  font-size: 23px;
+  font-style: normal;
+}
+
+.cadet-preview p {
+  margin: 12px 0 0;
+  color: #61748b;
+  font-size: 15px;
+}
+
+.setup-back {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  color: var(--blue);
+  background: transparent;
+  font-weight: 850;
+  cursor: pointer;
+}
+
 .quiz-page {
   width: min(1200px, calc(100% - 54px));
   margin: 37px auto 0;
@@ -479,6 +643,40 @@ main {
   color: var(--orange);
   font-size: 13px;
   font-weight: 950;
+}
+
+.quiz-cadet {
+  margin-top: 13px;
+  padding: 11px 14px;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #a9c7df;
+  background: #f1f7fc;
+  border-radius: 11px;
+}
+
+.quiz-cadet > span {
+  color: #526c87;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.quiz-cadet > strong {
+  padding: 7px 11px;
+  color: #fff;
+  background: var(--navy);
+  border-radius: 8px;
+  font-size: 21px;
+}
+
+.quiz-cadet > p {
+  margin: 0;
+  color: #294968;
+  font-size: 18px;
+  font-weight: 850;
+  text-align: right;
 }
 
 .quiz-card h1 {

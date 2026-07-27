@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 
-type Phase = "summary" | "quiz" | "complete";
+type Phase = "summary" | "setup" | "quiz" | "complete";
 type Option = { label: string; correct?: boolean };
+type CadetAssignments = Partial<Record<number, number>>;
 type Item = {
   id: number;
   kind: "fill" | "choice" | "order";
@@ -64,6 +65,27 @@ const INITIAL_ORDER = [
   ID3_STEPS[0],
   ID3_STEPS[2],
 ];
+
+const ASSIGNED_ITEM_IDS = [1, 3, 6];
+
+function shuffledCadets(count: number) {
+  const cadets = Array.from({ length: count }, (_, index) => index + 1);
+  for (let index = cadets.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [cadets[index], cadets[swapIndex]] = [cadets[swapIndex], cadets[index]];
+  }
+  return cadets;
+}
+
+function assignCadets(count: number): CadetAssignments {
+  const assignments: CadetAssignments = {};
+  let pool = shuffledCadets(count);
+  for (const itemId of ASSIGNED_ITEM_IDS) {
+    if (!pool.length) pool = shuffledCadets(count);
+    assignments[itemId] = pool.shift();
+  }
+  return assignments;
+}
 
 const ITEMS: Item[] = [
   {
@@ -212,12 +234,91 @@ function Summary({ start }: { start: () => void }) {
   );
 }
 
+function CadetSetup({
+  initialCount,
+  start,
+  back,
+}: {
+  initialCount: number;
+  start: (count: number) => void;
+  back: () => void;
+}) {
+  const [input, setInput] = useState(String(initialCount));
+  const count = Math.max(1, Math.min(200, Number.parseInt(input, 10) || 1));
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    start(count);
+  }
+
+  return (
+    <section className="cadet-setup-page">
+      <div className="cadet-setup-card">
+        <div className="setup-heading">
+          <span>QUIZ SETUP</span>
+          <h1>퀴즈 담당 생도를 배정합니다</h1>
+          <p>
+            참여 인원수를 입력하면 <b>1번부터 차례대로 번호를 부여</b>하고,
+            핵심 문제 일부에 담당 생도를 자동으로 지정합니다.
+          </p>
+        </div>
+
+        <form className="cadet-count-form" onSubmit={submit}>
+          <label htmlFor="summary-cadet-count">참여 생도 수</label>
+          <div>
+            <input
+              id="summary-cadet-count"
+              type="number"
+              min="1"
+              max="200"
+              inputMode="numeric"
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+            />
+            <span>명</span>
+          </div>
+          <button type="submit">담당 생도 배정 →</button>
+        </form>
+
+        <div className="cadet-preview">
+          <div>
+            <span>번호 범위</span>
+            <strong>
+              1번–{count}번
+            </strong>
+          </div>
+          <div className="cadet-number-list">
+            {Array.from({ length: Math.min(count, 18) }, (_, index) => (
+              <b key={index + 1}>{index + 1}</b>
+            ))}
+            {count > 18 && (
+              <>
+                <i>…</i>
+                <b>{count}</b>
+              </>
+            )}
+          </div>
+          <p>
+            문제 1 · 문제 3 · 문제 6에 서로 다른 담당 생도를 우선 배정합니다.
+          </p>
+        </div>
+
+        <button className="setup-back" type="button" onClick={back}>
+          ← 핵심 정리로 돌아가기
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function Quiz({
   finish,
   back,
+  assignments,
 }: {
   finish: (score: number) => void;
   back: () => void;
+  assignments: CadetAssignments;
 }) {
   const [index, setIndex] = useState(0);
   const [a, setA] = useState("");
@@ -230,6 +331,7 @@ function Quiz({
   const [attempted, setAttempted] = useState(false);
   const [score, setScore] = useState(0);
   const item = ITEMS[index];
+  const assignedCadet = assignments[item.id];
   const ready =
     item.kind === "fill"
       ? Boolean(a.trim() && b.trim())
@@ -307,6 +409,13 @@ function Quiz({
 
       <form className="quiz-card" onSubmit={check}>
         <span>문제 {item.id}</span>
+        {assignedCadet && (
+          <div className="quiz-cadet">
+            <span>담당 생도</span>
+            <strong>{assignedCadet}번</strong>
+            <p>{assignedCadet}번 생도, 이 문제를 풀어볼까요?</p>
+          </div>
+        )}
         <h1>{item.question}</h1>
 
         {item.kind === "fill" ? (
@@ -475,6 +584,19 @@ function Complete({
 export default function SummaryQuiz() {
   const [phase, setPhase] = useState<Phase>("summary");
   const [score, setScore] = useState(0);
+  const [cadetCount, setCadetCount] = useState(10);
+  const [assignments, setAssignments] = useState<CadetAssignments>({});
+
+  function beginQuiz(count: number) {
+    setCadetCount(count);
+    setAssignments(assignCadets(count));
+    setPhase("quiz");
+  }
+
+  function retryQuiz() {
+    setAssignments(assignCadets(cadetCount));
+    setPhase("quiz");
+  }
 
   return (
     <main>
@@ -489,14 +611,24 @@ export default function SummaryQuiz() {
         <nav>
           <span className={phase === "summary" ? "active" : ""}>핵심 정리</span>
           <i>→</i>
+          <span className={phase === "setup" ? "active" : ""}>생도 배정</span>
+          <i>→</i>
           <span className={phase === "quiz" ? "active" : ""}>확인 퀴즈</span>
           <i>→</i>
           <span className={phase === "complete" ? "active" : ""}>완료</span>
         </nav>
       </header>
-      {phase === "summary" && <Summary start={() => setPhase("quiz")} />}
+      {phase === "summary" && <Summary start={() => setPhase("setup")} />}
+      {phase === "setup" && (
+        <CadetSetup
+          initialCount={cadetCount}
+          start={beginQuiz}
+          back={() => setPhase("summary")}
+        />
+      )}
       {phase === "quiz" && (
         <Quiz
+          assignments={assignments}
           back={() => setPhase("summary")}
           finish={(finalScore) => {
             setScore(finalScore);
@@ -508,7 +640,7 @@ export default function SummaryQuiz() {
         <Complete
           score={score}
           summary={() => setPhase("summary")}
-          retry={() => setPhase("quiz")}
+          retry={retryQuiz}
         />
       )}
     </main>
