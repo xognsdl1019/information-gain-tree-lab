@@ -255,12 +255,7 @@ function CadetSetup({
     <section className="cadet-setup-page">
       <div className="cadet-setup-card">
         <div className="setup-heading">
-          <span>QUIZ SETUP</span>
-          <h1>퀴즈 담당 생도를 배정합니다</h1>
-          <p>
-            참여 인원수를 입력하면 <b>1번부터 차례대로 번호를 부여</b>하고,
-            핵심 문제 일부에 담당 생도를 자동으로 지정합니다.
-          </p>
+          <h1>생도 배정</h1>
         </div>
 
         <form className="cadet-count-form" onSubmit={submit}>
@@ -277,7 +272,7 @@ function CadetSetup({
             />
             <span>명</span>
           </div>
-          <button type="submit">담당 생도 배정 →</button>
+          <button type="submit">퀴즈 시작 →</button>
         </form>
 
         <div className="cadet-preview">
@@ -298,9 +293,6 @@ function CadetSetup({
               </>
             )}
           </div>
-          <p>
-            문제 1 · 문제 3 · 문제 6에 서로 다른 담당 생도를 우선 배정합니다.
-          </p>
         </div>
 
         <button className="setup-back" type="button" onClick={back}>
