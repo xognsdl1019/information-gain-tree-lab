@@ -14,6 +14,10 @@ export default defineConfig({
         main: resolve(import.meta.dirname, "static-site/index.html"),
         scatter: resolve(import.meta.dirname, "static-site/scatter/index.html"),
         summary: resolve(import.meta.dirname, "static-site/summary/index.html"),
+        purchaseTree: resolve(
+          import.meta.dirname,
+          "static-site/purchase-tree/index.html",
+        ),
       },
     },
   },
