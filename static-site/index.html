@@ -3,12 +3,1335 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="30개 가상 해킹메일 데이터로 엔트로피와 정보이득을 계산하며 ID3 의사결정 나무를 완성하는 수업용 실습입니다." />
+    <meta
+      name="description"
+      content="컴퓨터 구매·미구매 데이터로 엔트로피와 정보이득 계산식을 완성하고, 가장 큰 정보이득을 선택하는 수업용 실습입니다."
+    />
     <meta name="theme-color" content="#17365f" />
     <title>인공지능 개론 | 정보이득 계산 실습</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --navy: #17365f;
+        --navy-2: #254f7a;
+        --blue: #2877b5;
+        --blue-soft: #eaf4fb;
+        --orange: #d8553a;
+        --orange-soft: #fff0eb;
+        --ink: #172b42;
+        --muted: #607086;
+        --line: #d9e1ea;
+        --panel: #ffffff;
+        --bg: #f3f6f9;
+        --success: #177249;
+        --success-soft: #e9f7f0;
+        --danger: #ad3f2b;
+        --shadow: 0 12px 32px rgba(24, 50, 80, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--bg);
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          system-ui, sans-serif;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.45;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .app-header {
+        min-height: 72px;
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        color: #fff;
+        background: var(--navy);
+        box-shadow: 0 4px 16px rgba(12, 37, 66, 0.18);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        color: var(--navy);
+        background: #fff;
+        border-radius: 11px;
+        font-size: 18px;
+        font-weight: 950;
+      }
+
+      .brand small {
+        display: block;
+        margin-bottom: 3px;
+        color: #bcd0e5;
+        font-size: 13px;
+        font-weight: 850;
+        letter-spacing: 0.08em;
+      }
+
+      .brand strong {
+        font-size: 20px;
+      }
+
+      .ghost-button {
+        min-height: 42px;
+        padding: 0 15px;
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 9px;
+        font-weight: 850;
+      }
+
+      .page {
+        width: min(1480px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 56px;
+      }
+
+      .setup-wrap {
+        min-height: calc(100vh - 128px);
+        display: grid;
+        place-items: center;
+      }
+
+      .setup-card {
+        width: min(820px, 100%);
+        padding: 46px;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--orange);
+        font-size: 15px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+      }
+
+      .setup-card h1 {
+        margin: 0;
+        color: var(--navy);
+        font-size: clamp(34px, 5vw, 52px);
+        line-height: 1.18;
+        letter-spacing: -0.04em;
+      }
+
+      .setup-card > p {
+        margin: 18px 0 30px;
+        color: var(--muted);
+        font-size: 20px;
+        line-height: 1.65;
+      }
+
+      .setup-summary {
+        margin-bottom: 28px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .setup-summary div {
+        min-height: 94px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 6px;
+        border: 2px solid #dce4ed;
+        background: #f8fafc;
+        border-radius: 13px;
+      }
+
+      .setup-summary b {
+        color: var(--navy-2);
+        font-size: 25px;
+      }
+
+      .setup-summary span {
+        color: var(--muted);
+        font-size: 15px;
+        font-weight: 750;
+      }
+
+      .setup-form {
+        padding: 18px;
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        background: var(--blue-soft);
+        border-radius: 14px;
+      }
+
+      .setup-form label {
+        flex: 1;
+        display: grid;
+        gap: 8px;
+        color: var(--navy-2);
+        font-weight: 900;
+      }
+
+      .setup-form input {
+        width: 100%;
+        height: 54px;
+        padding: 0 15px;
+        border: 2px solid #a9c4da;
+        background: #fff;
+        border-radius: 10px;
+        color: var(--ink);
+        font-size: 21px;
+        font-weight: 850;
+      }
+
+      .primary-button {
+        min-height: 54px;
+        padding: 0 22px;
+        border: 0;
+        color: #fff;
+        background: var(--orange);
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: 900;
+        box-shadow: 0 7px 16px rgba(216, 85, 58, 0.23);
+      }
+
+      .secondary-button {
+        min-height: 50px;
+        padding: 0 20px;
+        border: 2px solid #86aac8;
+        color: var(--navy-2);
+        background: #fff;
+        border-radius: 10px;
+        font-size: 17px;
+        font-weight: 900;
+      }
+
+      .progress {
+        margin-bottom: 22px;
+        padding: 15px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(24, 50, 80, 0.06);
+      }
+
+      .progress-item {
+        min-height: 60px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: #7a8798;
+        background: #f4f6f8;
+        border: 2px solid transparent;
+        border-radius: 10px;
+        font-weight: 850;
+      }
+
+      .progress-item b {
+        width: 32px;
+        height: 32px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        color: #718096;
+        background: #e2e7ed;
+        border-radius: 50%;
+      }
+
+      .progress-item.active {
+        color: var(--danger);
+        border-color: #e69b8b;
+        background: var(--orange-soft);
+      }
+
+      .progress-item.active b {
+        color: #fff;
+        background: var(--orange);
+      }
+
+      .progress-item.done {
+        color: #23648f;
+        border-color: #a6c5dc;
+        background: var(--blue-soft);
+      }
+
+      .progress-item.done b {
+        color: #fff;
+        background: var(--blue);
+      }
+
+      .data-panel,
+      .question-panel {
+        border: 1px solid var(--line);
+        background: #fff;
+        border-radius: 17px;
+        box-shadow: 0 8px 24px rgba(24, 50, 80, 0.07);
+      }
+
+      .data-panel {
+        margin-bottom: 22px;
+        overflow: hidden;
+      }
+
+      .panel-heading {
+        padding: 20px 23px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .panel-heading h2,
+      .question-title h2 {
+        margin: 0;
+        color: var(--navy);
+        font-size: 27px;
+        letter-spacing: -0.025em;
+      }
+
+      .panel-heading p,
+      .question-title p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 17px;
+      }
+
+      .class-counts {
+        display: flex;
+        gap: 9px;
+      }
+
+      .count-chip {
+        min-width: 112px;
+        padding: 10px 13px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-radius: 10px;
+        font-weight: 850;
+      }
+
+      .count-chip strong {
+        font-size: 23px;
+      }
+
+      .count-chip.purchase {
+        color: #1d6394;
+        background: var(--blue-soft);
+      }
+
+      .count-chip.no-purchase {
+        color: #a94431;
+        background: var(--orange-soft);
+      }
+
+      .data-tables {
+        padding: 16px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        overflow: hidden;
+        border: 1px solid #d9e2eb;
+        border-radius: 11px;
+        font-size: 15px;
+      }
+
+      th,
+      td {
+        padding: 9px 10px;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      th {
+        color: #fff;
+        background: var(--navy-2);
+        font-weight: 900;
+      }
+
+      td {
+        border-top: 1px solid #e5eaf0;
+        font-weight: 730;
+      }
+
+      tbody tr.purchase {
+        background: #f5fafe;
+      }
+
+      tbody tr.no-purchase {
+        background: #fff8f5;
+      }
+
+      .label-pill {
+        padding: 4px 8px;
+        display: inline-block;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .label-pill.purchase {
+        color: #1d6394;
+        background: #dceefa;
+      }
+
+      .label-pill.no-purchase {
+        color: #a94431;
+        background: #ffe3da;
+      }
+
+      .question-panel {
+        padding: 26px;
+      }
+
+      .question-title {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+      .step-number {
+        width: 44px;
+        height: 44px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        background: var(--navy-2);
+        border-radius: 50%;
+        font-size: 19px;
+        font-weight: 950;
+      }
+
+      .cadet-prompt {
+        margin: 20px 0;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 2px solid #9dbdd5;
+        color: #294c6d;
+        background: #f2f8fc;
+        border-radius: 12px;
+      }
+
+      .cadet-prompt span {
+        flex: 0 0 auto;
+        padding: 7px 11px;
+        color: #fff;
+        background: var(--blue);
+        border-radius: 8px;
+        font-weight: 950;
+      }
+
+      .cadet-prompt strong {
+        font-size: 20px;
+        line-height: 1.5;
+      }
+
+      .formula-card {
+        padding: 24px;
+        overflow-x: auto;
+        border: 2px solid #cad8e5;
+        color: var(--navy);
+        background: #f8fbfd;
+        border-radius: 14px;
+      }
+
+      .formula {
+        min-width: max-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 9px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: clamp(21px, 2.2vw, 31px);
+        font-weight: 700;
+      }
+
+      .formula select {
+        min-width: 70px;
+        height: 48px;
+        padding: 0 10px;
+        border: 2px solid var(--orange);
+        color: var(--danger);
+        background: #fff;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 23px;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .fraction {
+        min-width: 64px;
+        display: inline-grid;
+        grid-template-rows: 1fr 1fr;
+        align-items: center;
+        text-align: center;
+        line-height: 1.08;
+      }
+
+      .fraction > span:first-child {
+        padding: 0 7px 4px;
+        border-bottom: 2px solid currentColor;
+      }
+
+      .fraction > span:last-child {
+        padding-top: 4px;
+      }
+
+      .formula-result {
+        margin-top: 16px;
+        padding: 15px 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: var(--navy);
+        background: var(--blue-soft);
+        border-radius: 11px;
+        font-size: 21px;
+        font-weight: 850;
+      }
+
+      .formula-result strong {
+        color: var(--orange);
+        font-size: 31px;
+      }
+
+      .group-grid {
+        margin: 18px 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .group-card {
+        padding: 17px;
+        border: 2px solid #dbe3eb;
+        background: #fafbfd;
+        border-radius: 13px;
+      }
+
+      .group-card h3 {
+        margin: 0 0 11px;
+        color: var(--navy-2);
+        font-size: 22px;
+      }
+
+      .group-card p {
+        margin: 7px 0;
+        color: var(--muted);
+        font-size: 17px;
+        font-weight: 750;
+      }
+
+      .group-card .group-entropy {
+        margin-top: 12px;
+        padding: 9px;
+        display: block;
+        color: var(--navy);
+        background: var(--blue-soft);
+        border-radius: 8px;
+        text-align: center;
+        font-size: 19px;
+        font-weight: 900;
+      }
+
+      .zero-note {
+        color: var(--success) !important;
+        background: var(--success-soft) !important;
+      }
+
+      .action-row {
+        margin-top: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .feedback {
+        min-height: 28px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        font-weight: 800;
+      }
+
+      .feedback.error {
+        color: var(--danger);
+      }
+
+      .feedback.correct {
+        color: var(--success);
+      }
+
+      .gain-result {
+        margin-top: 17px;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 8px 18px;
+        color: #fff;
+        background: linear-gradient(130deg, #c94931, #e46a4c);
+        border-radius: 13px;
+      }
+
+      .gain-result span {
+        font-size: 18px;
+        font-weight: 850;
+      }
+
+      .gain-result div {
+        grid-row: 1 / 3;
+        grid-column: 2;
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 27px;
+        font-weight: 800;
+      }
+
+      .gain-result strong {
+        padding: 7px 13px;
+        color: var(--danger);
+        background: #fff;
+        border-radius: 9px;
+        font-size: 38px;
+      }
+
+      .gain-result small {
+        color: #fff0ec;
+        font-size: 15px;
+      }
+
+      .reveal-box {
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        color: #365571;
+        background: #eef5fa;
+        border-radius: 13px;
+      }
+
+      .reveal-box strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 20px;
+      }
+
+      .reveal-box p {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .gain-grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+      }
+
+      .gain-card {
+        min-height: 155px;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        border: 2px solid #d6dfe8;
+        color: var(--ink);
+        background: #fff;
+        border-radius: 13px;
+        text-align: left;
+        transition: 0.18s ease;
+      }
+
+      .gain-card:hover,
+      .gain-card.selected {
+        border-color: var(--blue);
+        background: #f3f9fd;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 19px rgba(31, 85, 125, 0.12);
+      }
+
+      .gain-card.wrong {
+        border-color: var(--orange);
+        background: var(--orange-soft);
+      }
+
+      .gain-card span {
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 850;
+      }
+
+      .gain-card b {
+        font-size: 23px;
+      }
+
+      .gain-card strong {
+        align-self: flex-end;
+        color: var(--orange);
+        font-size: 40px;
+      }
+
+      .final-card {
+        margin-top: 19px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        color: #155a3c;
+        background: var(--success-soft);
+        border: 2px solid #8cc8ac;
+        border-radius: 14px;
+      }
+
+      .final-card h3 {
+        margin: 0 0 6px;
+        font-size: 24px;
+      }
+
+      .final-card p {
+        margin: 0;
+        font-size: 17px;
+      }
+
+      .final-card strong {
+        color: var(--orange);
+        font-size: 36px;
+      }
+
+      @media (max-width: 1050px) {
+        .data-tables {
+          grid-template-columns: 1fr;
+        }
+
+        .gain-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .app-header {
+          padding: 0 14px;
+        }
+
+        .brand small {
+          display: none;
+        }
+
+        .page {
+          width: min(100% - 20px, 1480px);
+          padding-top: 14px;
+        }
+
+        .setup-card {
+          padding: 25px 19px;
+        }
+
+        .setup-summary,
+        .progress,
+        .group-grid,
+        .gain-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .setup-form,
+        .panel-heading,
+        .action-row,
+        .reveal-box,
+        .final-card,
+        .cadet-prompt {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .class-counts {
+          width: 100%;
+        }
+
+        .count-chip {
+          flex: 1;
+        }
+
+        .question-panel {
+          padding: 19px 14px;
+        }
+
+        .gain-result {
+          grid-template-columns: 1fr;
+        }
+
+        .gain-result div {
+          grid-row: auto;
+          grid-column: 1;
+          flex-wrap: wrap;
+        }
+
+        th,
+        td {
+          padding: 8px 5px;
+          font-size: 12px;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/main.tsx"></script>
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark">IG</div>
+        <div>
+          <small>인공지능 개론</small>
+          <strong>8. 정보이득 계산 실습</strong>
+        </div>
+      </div>
+      <button id="changeClassButton" class="ghost-button hidden" type="button">
+        인원 변경
+      </button>
+    </header>
+
+    <main class="page">
+      <section id="setupView" class="setup-wrap">
+        <div class="setup-card">
+          <p class="eyebrow">INFORMATION GAIN LAB</p>
+          <h1>계산식을 완성하고<br />가장 좋은 분할을 선택합니다</h1>
+          <p>
+            강의에서 사용한 컴퓨터 구매 데이터로 전체 엔트로피와 나이
+            속성의 정보이득을 계산한 뒤, 가장 큰 정보이득을 직접 선택합니다.
+          </p>
+          <div class="setup-summary">
+            <div><b>14명</b><span>컴퓨터 구매 데이터</span></div>
+            <div><b>4개</b><span>후보 속성</span></div>
+            <div><b>3회</b><span>생도 참여 질문</span></div>
+          </div>
+          <form id="setupForm" class="setup-form">
+            <label>
+              참여 생도 수
+              <input
+                id="cadetCountInput"
+                type="number"
+                min="1"
+                max="200"
+                value="12"
+                inputmode="numeric"
+              />
+            </label>
+            <button class="primary-button" type="submit">번호 배정하고 시작 →</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="exerciseView" class="hidden">
+        <nav class="progress" aria-label="실습 진행 단계">
+          <div class="progress-item active" data-progress="1">
+            <b>1</b><span>전체 엔트로피 식</span>
+          </div>
+          <div class="progress-item" data-progress="2">
+            <b>2</b><span>나이 정보이득 식</span>
+          </div>
+          <div class="progress-item" data-progress="3">
+            <b>3</b><span>가장 큰 값 선택</span>
+          </div>
+        </nav>
+
+        <section class="data-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>컴퓨터 구매 데이터</h2>
+              <p>입력 속성 4개 · 실제값 2개 · 총 14명</p>
+            </div>
+            <div class="class-counts">
+              <div class="count-chip purchase"><span>구매</span><strong>9명</strong></div>
+              <div class="count-chip no-purchase">
+                <span>미구매</span><strong>5명</strong>
+              </div>
+            </div>
+          </div>
+          <div id="dataTables" class="data-tables"></div>
+        </section>
+
+        <section id="step1" class="question-panel">
+          <div class="question-title">
+            <span class="step-number">1</span>
+            <div>
+              <h2>전체 데이터의 엔트로피 식 완성</h2>
+              <p>구매와 미구매 인원수를 식의 빈칸에 넣으세요.</p>
+            </div>
+          </div>
+          <div class="cadet-prompt">
+            <span><b data-cadet="1">1</b>번 생도</span>
+            <strong>구매와 미구매의 비율을 이용해 전체 엔트로피 식을 완성해 볼까요?</strong>
+          </div>
+          <div class="formula-card">
+            <div class="formula" aria-label="전체 엔트로피 계산식">
+              <span>H(D) = −</span>
+              <span class="fraction">
+                <span><select id="purchaseCount" aria-label="구매 인원"></select></span>
+                <span>14</span>
+              </span>
+              <span>log₂(</span>
+              <span class="fraction">
+                <span id="purchaseMirror">?</span>
+                <span>14</span>
+              </span>
+              <span>) −</span>
+              <span class="fraction">
+                <span><select id="noPurchaseCount" aria-label="미구매 인원"></select></span>
+                <span>14</span>
+              </span>
+              <span>log₂(</span>
+              <span class="fraction">
+                <span id="noPurchaseMirror">?</span>
+                <span>14</span>
+              </span>
+              <span>)</span>
+            </div>
+            <div id="entropyResult" class="formula-result hidden">
+              <span>전체 엔트로피</span><strong>H(D) = 0.940</strong>
+            </div>
+          </div>
+          <div class="action-row">
+            <p id="step1Feedback" class="feedback">구매 9명, 미구매 5명을 식에 적용합니다.</p>
+            <button id="checkEntropyButton" class="primary-button" type="button">
+              계산식 확인
+            </button>
+            <button id="toStep2Button" class="secondary-button hidden" type="button">
+              나이 속성 계산 →
+            </button>
+          </div>
+        </section>
+
+        <section id="step2" class="question-panel hidden">
+          <div class="question-title">
+            <span class="step-number">2</span>
+            <div>
+              <h2>나이로 분할한 가중평균 엔트로피 식 완성</h2>
+              <p>각 집단의 데이터 수를 가중치의 분자에 넣으세요.</p>
+            </div>
+          </div>
+          <div class="group-grid">
+            <article class="group-card">
+              <h3>청소년 · 5명</h3>
+              <p>구매 2명 · 미구매 3명</p>
+              <span class="group-entropy">H = 0.971</span>
+            </article>
+            <article class="group-card">
+              <h3>청년 · 4명</h3>
+              <p>구매 4명 · 미구매 0명</p>
+              <span class="group-entropy zero-note">H = 0</span>
+            </article>
+            <article class="group-card">
+              <h3>중년 · 5명</h3>
+              <p>구매 3명 · 미구매 2명</p>
+              <span class="group-entropy">H = 0.971</span>
+            </article>
+          </div>
+          <div class="cadet-prompt">
+            <span><b data-cadet="2">2</b>번 생도</span>
+            <strong>세 집단의 크기를 이용해 가중평균 엔트로피 식을 완성해 볼까요?</strong>
+          </div>
+          <div class="formula-card">
+            <div class="formula" aria-label="나이 속성의 가중평균 엔트로피 계산식">
+              <span>H<sub>나이</sub>(D) =</span>
+              <span class="fraction">
+                <span><select id="youthWeight" aria-label="청소년 집단 크기"></select></span>
+                <span>14</span>
+              </span>
+              <span>× 0.971 +</span>
+              <span class="fraction">
+                <span><select id="youngWeight" aria-label="청년 집단 크기"></select></span>
+                <span>14</span>
+              </span>
+              <span>× 0 +</span>
+              <span class="fraction">
+                <span><select id="middleWeight" aria-label="중년 집단 크기"></select></span>
+                <span>14</span>
+              </span>
+              <span>× 0.971</span>
+            </div>
+            <div id="weightedResult" class="formula-result hidden">
+              <span>가중평균 엔트로피</span>
+              <strong>H<sub>나이</sub>(D) ≈ 0.694</strong>
+            </div>
+            <div id="ageGainResult" class="gain-result hidden">
+              <span>나이 속성의 정보이득</span>
+              <div>
+                <span>0.940 − 0.694 =</span>
+                <strong>0.247</strong>
+              </div>
+              <small>정보이득은 반올림 전 값을 이용해 계산했습니다.</small>
+            </div>
+          </div>
+          <div class="action-row">
+            <p id="step2Feedback" class="feedback">각 집단의 크기는 5명, 4명, 5명입니다.</p>
+            <button id="checkWeightedButton" class="primary-button" type="button">
+              계산식 확인
+            </button>
+            <button id="toStep3Button" class="secondary-button hidden" type="button">
+              속성별 결과 비교 →
+            </button>
+          </div>
+        </section>
+
+        <section id="step3" class="question-panel hidden">
+          <div class="question-title">
+            <span class="step-number">3</span>
+            <div>
+              <h2>가장 큰 정보이득 선택</h2>
+              <p>나머지 속성은 같은 방식으로 계산하고 결과만 한 번에 확인합니다.</p>
+            </div>
+          </div>
+          <div id="revealBox" class="reveal-box">
+            <div>
+              <strong>반복 계산은 생략합니다.</strong>
+              <p>수입·학생 여부·신용등급의 정보이득 결과를 한 번에 확인하세요.</p>
+            </div>
+            <button id="revealGainsButton" class="secondary-button" type="button">
+              나머지 계산 결과 확인
+            </button>
+          </div>
+          <div id="gainSelectionArea" class="hidden">
+            <div class="cadet-prompt">
+              <span><b data-cadet="3">3</b>번 생도</span>
+              <strong>네 속성 가운데 정보이득이 가장 큰 속성을 선택해 볼까요?</strong>
+            </div>
+            <div class="gain-grid">
+              <button class="gain-card" type="button" data-feature="나이" data-value="0.247">
+                <span>후보 속성 1</span><b>나이</b><strong>0.247</strong>
+              </button>
+              <button class="gain-card" type="button" data-feature="수입" data-value="0.029">
+                <span>후보 속성 2</span><b>수입</b><strong>0.029</strong>
+              </button>
+              <button class="gain-card" type="button" data-feature="학생 여부" data-value="0.152">
+                <span>후보 속성 3</span><b>학생 여부</b><strong>0.152</strong>
+              </button>
+              <button class="gain-card" type="button" data-feature="신용등급" data-value="0.048">
+                <span>후보 속성 4</span><b>신용등급</b><strong>0.048</strong>
+              </button>
+            </div>
+            <p id="step3Feedback" class="feedback" style="margin-top: 17px">
+              정보이득 값을 비교하여 하나를 선택하세요.
+            </p>
+            <div id="finalCard" class="final-card hidden">
+              <div>
+                <h3>첫 번째 분할속성: 나이</h3>
+                <p>정보이득이 가장 크므로 루트 노드의 질문으로 선택합니다.</p>
+              </div>
+              <strong>0.247</strong>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const customers = [
+        ["01", "청소년", "높음", "아니요", "양호", "미구매"],
+        ["02", "청소년", "높음", "아니요", "우수", "미구매"],
+        ["03", "청년", "높음", "아니요", "양호", "구매"],
+        ["04", "중년", "중간", "아니요", "양호", "구매"],
+        ["05", "중년", "낮음", "예", "양호", "구매"],
+        ["06", "중년", "낮음", "예", "우수", "미구매"],
+        ["07", "청년", "낮음", "예", "우수", "구매"],
+        ["08", "청소년", "중간", "아니요", "양호", "미구매"],
+        ["09", "청소년", "낮음", "예", "양호", "구매"],
+        ["10", "중년", "중간", "예", "양호", "구매"],
+        ["11", "청소년", "중간", "예", "우수", "구매"],
+        ["12", "청년", "중간", "아니요", "우수", "구매"],
+        ["13", "청년", "높음", "예", "양호", "구매"],
+        ["14", "중년", "중간", "아니요", "우수", "미구매"],
+      ];
+
+      const setupView = document.getElementById("setupView");
+      const exerciseView = document.getElementById("exerciseView");
+      const changeClassButton = document.getElementById("changeClassButton");
+      const setupForm = document.getElementById("setupForm");
+      const cadetCountInput = document.getElementById("cadetCountInput");
+      const dataTables = document.getElementById("dataTables");
+
+      function tableMarkup(rows) {
+        return `
+          <table>
+            <thead>
+              <tr>
+                <th>번호</th>
+                <th>나이</th>
+                <th>수입</th>
+                <th>학생</th>
+                <th>신용</th>
+                <th>실제값</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows
+                .map((row) => {
+                  const className = row[5] === "구매" ? "purchase" : "no-purchase";
+                  return `
+                    <tr class="${className}">
+                      ${row
+                        .map((cell, index) =>
+                          index === 5
+                            ? `<td><span class="label-pill ${className}">${cell}</span></td>`
+                            : `<td>${cell}</td>`,
+                        )
+                        .join("")}
+                    </tr>
+                  `;
+                })
+                .join("")}
+            </tbody>
+          </table>
+        `;
+      }
+
+      dataTables.innerHTML =
+        tableMarkup(customers.slice(0, 7)) + tableMarkup(customers.slice(7));
+
+      function shuffledCadets(count) {
+        const pool = Array.from({ length: count }, (_, index) => index + 1);
+        for (let index = pool.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [pool[index], pool[swapIndex]] = [pool[swapIndex], pool[index]];
+        }
+        const result = [];
+        while (result.length < 3) {
+          for (const cadet of pool) {
+            if (result.length < 3) result.push(cadet);
+          }
+        }
+        return result;
+      }
+
+      function setCadets(count) {
+        const assignments = shuffledCadets(count);
+        assignments.forEach((cadet, index) => {
+          document.querySelector(`[data-cadet="${index + 1}"]`).textContent = cadet;
+        });
+      }
+
+      function populateSelect(select, values) {
+        select.innerHTML =
+          `<option value="">?</option>` +
+          values.map((value) => `<option value="${value}">${value}</option>`).join("");
+      }
+
+      const numberOptions = Array.from({ length: 15 }, (_, index) => index);
+      const purchaseCount = document.getElementById("purchaseCount");
+      const noPurchaseCount = document.getElementById("noPurchaseCount");
+      const youthWeight = document.getElementById("youthWeight");
+      const youngWeight = document.getElementById("youngWeight");
+      const middleWeight = document.getElementById("middleWeight");
+
+      [purchaseCount, noPurchaseCount, youthWeight, youngWeight, middleWeight].forEach(
+        (select) => populateSelect(select, numberOptions),
+      );
+
+      purchaseCount.addEventListener("change", () => {
+        document.getElementById("purchaseMirror").textContent =
+          purchaseCount.value || "?";
+      });
+
+      noPurchaseCount.addEventListener("change", () => {
+        document.getElementById("noPurchaseMirror").textContent =
+          noPurchaseCount.value || "?";
+      });
+
+      function updateProgress(activeStep) {
+        document.querySelectorAll("[data-progress]").forEach((item) => {
+          const step = Number(item.dataset.progress);
+          item.classList.toggle("active", step === activeStep);
+          item.classList.toggle("done", step < activeStep);
+        });
+      }
+
+      function showStep(step) {
+        ["step1", "step2", "step3"].forEach((id, index) => {
+          document.getElementById(id).classList.toggle("hidden", index + 1 !== step);
+        });
+        updateProgress(step);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function resetExercise() {
+        [purchaseCount, noPurchaseCount, youthWeight, youngWeight, middleWeight].forEach(
+          (select) => {
+            select.value = "";
+          },
+        );
+        document.getElementById("purchaseMirror").textContent = "?";
+        document.getElementById("noPurchaseMirror").textContent = "?";
+        ["entropyResult", "weightedResult", "ageGainResult", "gainSelectionArea", "finalCard"].forEach(
+          (id) => document.getElementById(id).classList.add("hidden"),
+        );
+        document.getElementById("revealBox").classList.remove("hidden");
+        document.getElementById("checkEntropyButton").classList.remove("hidden");
+        document.getElementById("checkWeightedButton").classList.remove("hidden");
+        document.getElementById("toStep2Button").classList.add("hidden");
+        document.getElementById("toStep3Button").classList.add("hidden");
+        document.getElementById("step1Feedback").className = "feedback";
+        document.getElementById("step1Feedback").textContent =
+          "구매 9명, 미구매 5명을 식에 적용합니다.";
+        document.getElementById("step2Feedback").className = "feedback";
+        document.getElementById("step2Feedback").textContent =
+          "각 집단의 크기는 5명, 4명, 5명입니다.";
+        document.getElementById("step3Feedback").className = "feedback";
+        document.getElementById("step3Feedback").textContent =
+          "정보이득 값을 비교하여 하나를 선택하세요.";
+        document.querySelectorAll(".gain-card").forEach((card) => {
+          card.classList.remove("selected", "wrong");
+          card.disabled = false;
+        });
+        showStep(1);
+      }
+
+      setupForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const count = Math.max(
+          1,
+          Math.min(200, Number.parseInt(cadetCountInput.value, 10) || 1),
+        );
+        cadetCountInput.value = String(count);
+        setCadets(count);
+        resetExercise();
+        setupView.classList.add("hidden");
+        exerciseView.classList.remove("hidden");
+        changeClassButton.classList.remove("hidden");
+      });
+
+      changeClassButton.addEventListener("click", () => {
+        exerciseView.classList.add("hidden");
+        setupView.classList.remove("hidden");
+        changeClassButton.classList.add("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      document.getElementById("checkEntropyButton").addEventListener("click", () => {
+        const feedback = document.getElementById("step1Feedback");
+        if (purchaseCount.value === "9" && noPurchaseCount.value === "5") {
+          feedback.className = "feedback correct";
+          feedback.textContent = "맞았습니다. 전체 엔트로피는 0.940입니다.";
+          document.getElementById("entropyResult").classList.remove("hidden");
+          document.getElementById("checkEntropyButton").classList.add("hidden");
+          document.getElementById("toStep2Button").classList.remove("hidden");
+        } else {
+          feedback.className = "feedback error";
+          feedback.textContent = "구매 9명과 미구매 5명을 다시 확인하세요.";
+        }
+      });
+
+      document.getElementById("toStep2Button").addEventListener("click", () => showStep(2));
+
+      document.getElementById("checkWeightedButton").addEventListener("click", () => {
+        const feedback = document.getElementById("step2Feedback");
+        const correct =
+          youthWeight.value === "5" &&
+          youngWeight.value === "4" &&
+          middleWeight.value === "5";
+        if (correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent =
+            "맞았습니다. 나이 속성의 정보이득은 약 0.247입니다.";
+          document.getElementById("weightedResult").classList.remove("hidden");
+          document.getElementById("ageGainResult").classList.remove("hidden");
+          document.getElementById("checkWeightedButton").classList.add("hidden");
+          document.getElementById("toStep3Button").classList.remove("hidden");
+        } else {
+          feedback.className = "feedback error";
+          feedback.textContent = "청소년 5명, 청년 4명, 중년 5명을 다시 적용하세요.";
+        }
+      });
+
+      document.getElementById("toStep3Button").addEventListener("click", () => showStep(3));
+
+      document.getElementById("revealGainsButton").addEventListener("click", () => {
+        document.getElementById("revealBox").classList.add("hidden");
+        document.getElementById("gainSelectionArea").classList.remove("hidden");
+      });
+
+      document.querySelectorAll(".gain-card").forEach((card) => {
+        card.addEventListener("click", () => {
+          const feedback = document.getElementById("step3Feedback");
+          document.querySelectorAll(".gain-card").forEach((item) => {
+            item.classList.remove("selected", "wrong");
+          });
+          if (card.dataset.feature === "나이") {
+            card.classList.add("selected");
+            feedback.className = "feedback correct";
+            feedback.textContent =
+              "맞았습니다. 나이의 정보이득 0.247이 가장 큽니다.";
+            document.getElementById("finalCard").classList.remove("hidden");
+            document.querySelectorAll(".gain-card").forEach((item) => {
+              item.disabled = true;
+            });
+            card.disabled = false;
+          } else {
+            card.classList.add("wrong");
+            feedback.className = "feedback error";
+            feedback.textContent =
+              `${card.dataset.feature}의 정보이득은 ${card.dataset.value}입니다. 더 큰 값을 다시 선택하세요.`;
+          }
+        });
+      });
+    </script>
   </body>
 </html>
