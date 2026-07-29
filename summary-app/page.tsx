@@ -169,11 +169,6 @@ function Summary({ start }: { start: () => void }) {
     <section className="summary-page">
       <div className="summary-title">
         <span>의사결정나무 핵심 정리</span>
-        <h1>
-          엔트로피로 분할의 효과를 계산하고,
-          <br />
-          <strong>정보이득이 가장 큰 속성</strong>을 선택합니다
-        </h1>
       </div>
 
       <div className="summary-body">
