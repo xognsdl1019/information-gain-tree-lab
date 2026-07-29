@@ -590,6 +590,213 @@
         font-weight: 900;
       }
 
+      .group-formula {
+        min-height: 38px;
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #425b76;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .calc-breakdown {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        align-items: stretch;
+        gap: 9px;
+      }
+
+      .calc-breakdown > div {
+        min-height: 92px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: 2px solid #cfdae5;
+        color: #34536f;
+        background: #fff;
+        border-radius: 10px;
+      }
+
+      .calc-breakdown > i {
+        align-self: center;
+        color: #8593a4;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 26px;
+        font-style: normal;
+        font-weight: 900;
+      }
+
+      .calc-breakdown span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .calc-breakdown b,
+      .calc-breakdown strong {
+        font-family: Cambria, "Times New Roman", serif;
+      }
+
+      .calc-breakdown b {
+        font-size: 18px;
+      }
+
+      .calc-breakdown strong {
+        color: var(--blue);
+        font-size: 21px;
+      }
+
+      .calc-breakdown .total {
+        border-color: #e4a08e;
+        color: #9f402d;
+        background: var(--orange-soft);
+      }
+
+      .repeat-calc-area {
+        padding: 18px;
+        border: 2px solid #a9c4d9;
+        background: #f7fbfe;
+        border-radius: 13px;
+      }
+
+      .repeat-split-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .repeat-split-grid article {
+        padding: 15px;
+        border: 2px solid #d5e0ea;
+        background: #fff;
+        border-radius: 11px;
+      }
+
+      .repeat-split-grid article > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .repeat-split-grid span {
+        color: var(--navy-2);
+        font-size: 17px;
+        font-weight: 900;
+      }
+
+      .repeat-split-grid article b {
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .repeat-split-grid article p {
+        margin: 13px 0 9px;
+        color: #3d5772;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 18px;
+        text-align: center;
+      }
+
+      .repeat-split-grid article > strong {
+        display: block;
+        color: var(--orange);
+        font-size: 22px;
+        text-align: center;
+      }
+
+      .repeat-formulas {
+        margin-top: 12px;
+        display: grid;
+        gap: 9px;
+      }
+
+      .repeat-formulas > div {
+        min-height: 66px;
+        padding: 12px 15px;
+        display: grid;
+        grid-template-columns: 170px 1fr auto;
+        align-items: center;
+        gap: 12px;
+        color: #31526f;
+        background: var(--blue-soft);
+        border-radius: 10px;
+      }
+
+      .repeat-formulas span {
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .repeat-formulas b,
+      .repeat-formulas strong,
+      .repeat-gain-formula select {
+        font-family: Cambria, "Times New Roman", serif;
+      }
+
+      .repeat-formulas b {
+        font-size: 20px;
+        text-align: center;
+      }
+
+      .repeat-formulas strong {
+        color: var(--orange);
+        font-size: 25px;
+      }
+
+      .repeat-gain-formula {
+        border: 2px solid #dfa08f;
+        background: var(--orange-soft) !important;
+      }
+
+      .repeat-gain-formula select {
+        width: 104px;
+        height: 46px;
+        border: 2px solid var(--orange);
+        color: var(--danger);
+        background: #fff;
+        border-radius: 8px;
+        font-size: 21px;
+        font-weight: 850;
+        text-align: center;
+      }
+
+      .child-calc-result {
+        margin-top: 15px;
+        padding: 14px 16px;
+        display: grid;
+        grid-template-columns: 180px 1fr auto;
+        align-items: center;
+        gap: 13px;
+        color: #285a7f;
+        background: var(--blue-soft);
+        border: 2px solid #9fc0d8;
+        border-radius: 11px;
+      }
+
+      .child-calc-result span {
+        font-weight: 900;
+      }
+
+      .child-calc-result div,
+      .child-calc-result strong {
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 19px;
+      }
+
+      .child-calc-result strong {
+        color: var(--orange);
+        font-size: 22px;
+      }
+
       .tile-row {
         min-height: 44px;
         margin-top: 12px;
@@ -1465,8 +1672,8 @@
           <p class="eyebrow">INFORMATION GAIN LAB</p>
           <h1>계산식을 완성하고<br />가장 좋은 분할을 선택합니다</h1>
           <p>
-            강의에서 사용한 컴퓨터 구매 데이터로 전체 엔트로피와 나이
-            속성의 정보이득을 계산한 뒤, 가장 큰 정보이득을 직접 선택합니다.
+            전체 엔트로피와 나이 속성의 정보이득을 계산하고, 학생 여부의
+            계산을 한 번 더 반복한 뒤 가장 큰 정보이득을 직접 선택합니다.
           </p>
           <div class="setup-summary">
             <div><b>14명</b><span>컴퓨터 구매 데이터</span></div>
@@ -1499,10 +1706,10 @@
             <b>2</b><span>나이 정보이득 식</span>
           </div>
           <div class="progress-item" data-progress="3">
-            <b>3</b><span>첫 질문 선택</span>
+            <b>3</b><span>후보 계산·첫 질문</span>
           </div>
           <div class="progress-item" data-progress="4">
-            <b>4</b><span>하위 노드 분할</span>
+            <b>4</b><span>하위 노드 반복</span>
           </div>
           <div class="progress-item" data-progress="5">
             <b>5</b><span>트리 완성</span>
@@ -1621,6 +1828,25 @@
             <div id="entropyResult" class="formula-result hidden">
               <span>전체 엔트로피</span><strong>H(D) = 0.940</strong>
             </div>
+            <div id="entropyBreakdown" class="calc-breakdown hidden">
+              <div>
+                <span>구매 항</span>
+                <b>−(9/14) log₂(9/14)</b>
+                <strong>≈ 0.410</strong>
+              </div>
+              <i>+</i>
+              <div>
+                <span>미구매 항</span>
+                <b>−(5/14) log₂(5/14)</b>
+                <strong>≈ 0.530</strong>
+              </div>
+              <i>=</i>
+              <div class="total">
+                <span>전체 엔트로피</span>
+                <b>0.410 + 0.530</b>
+                <strong>0.940</strong>
+              </div>
+            </div>
           </div>
           <div class="action-row">
             <p id="step1Feedback" class="feedback">구매 9명, 미구매 5명을 식에 적용합니다.</p>
@@ -1652,6 +1878,8 @@
                 <span class="person-tile purchase">09</span>
                 <span class="person-tile purchase">11</span>
               </div>
+              <small class="group-formula">−(2/5)log₂(2/5) − (3/5)log₂(3/5)</small>
+              <small class="group-formula">−(3/5)log₂(3/5) − (2/5)log₂(2/5)</small>
               <span class="group-entropy">H = 0.971</span>
             </article>
             <article class="group-card">
@@ -1663,6 +1891,7 @@
                 <span class="person-tile purchase">12</span>
                 <span class="person-tile purchase">13</span>
               </div>
+              <small class="group-formula">−(4/4)log₂(4/4) − (0/4)log₂(0/4)</small>
               <span class="group-entropy zero-note">H = 0</span>
             </article>
             <article class="group-card">
@@ -1741,10 +1970,13 @@
           <div class="action-row">
             <p id="step2Feedback" class="feedback">각 집단의 크기는 5명, 4명, 5명입니다.</p>
             <button id="checkWeightedButton" class="primary-button" type="button">
-              계산식 확인
+              가중평균 확인
+            </button>
+            <button id="calculateAgeGainButton" class="secondary-button hidden" type="button">
+              정보이득 계산 →
             </button>
             <button id="toStep3Button" class="secondary-button hidden" type="button">
-              속성별 결과 비교 →
+              다음 후보 계산 →
             </button>
           </div>
         </section>
@@ -1753,19 +1985,70 @@
           <div class="question-title">
             <span class="step-number">3</span>
             <div>
-              <h2>가장 큰 정보이득 선택</h2>
-              <p>나머지 속성은 같은 방식으로 계산하고 결과만 한 번에 확인합니다.</p>
+              <h2>후보 속성 계산과 첫 질문 선택</h2>
+              <p>학생 여부의 정보이득을 한 번 더 계산한 후 네 속성을 비교합니다.</p>
             </div>
           </div>
           <div id="revealBox" class="reveal-box">
             <div>
-              <strong>반복 계산은 생략합니다.</strong>
-              <p>수입·학생 여부·신용등급의 정보이득 결과를 한 번에 확인하세요.</p>
+              <strong>같은 계산을 한 번 더 반복합니다.</strong>
+              <p>이번에는 학생 여부로 분할한 가중평균 엔트로피와 정보이득을 확인하세요.</p>
             </div>
             <button id="revealGainsButton" class="secondary-button" type="button">
-              나머지 계산 결과 확인
+              학생 여부 계산 시작
             </button>
           </div>
+
+          <div id="repeatCalcArea" class="repeat-calc-area hidden">
+            <div class="repeat-split-grid">
+              <article>
+                <div>
+                  <span>학생: 아니요 · 7명</span>
+                  <b>구매 3 · 미구매 4</b>
+                </div>
+                <p>−(3/7)log₂(3/7) − (4/7)log₂(4/7)</p>
+                <strong>H = 0.985</strong>
+              </article>
+              <article>
+                <div>
+                  <span>학생: 예 · 7명</span>
+                  <b>구매 6 · 미구매 1</b>
+                </div>
+                <p>−(6/7)log₂(6/7) − (1/7)log₂(1/7)</p>
+                <strong>H = 0.592</strong>
+              </article>
+            </div>
+            <div class="repeat-formulas">
+              <div>
+                <span>가중평균 엔트로피</span>
+                <b>H<sub>학생 여부</sub>(D) = 7/14 × 0.985 + 7/14 × 0.592</b>
+                <strong>≈ 0.788</strong>
+              </div>
+              <div class="repeat-gain-formula">
+                <span>정보이득</span>
+                <b>Gain(D, 학생 여부) = 0.940 − 0.788 =</b>
+                <select id="studentGainAnswer" aria-label="학생 여부 정보이득">
+                  <option value="">?</option>
+                  <option value="0.029">0.029</option>
+                  <option value="0.048">0.048</option>
+                  <option value="0.152">0.152</option>
+                  <option value="0.247">0.247</option>
+                </select>
+              </div>
+            </div>
+            <div class="action-row">
+              <p id="studentCalcFeedback" class="feedback">
+                분할 전 엔트로피에서 가중평균 엔트로피를 빼세요.
+              </p>
+              <button id="checkStudentGainButton" class="primary-button" type="button">
+                정보이득 확인
+              </button>
+              <button id="showGainComparisonButton" class="secondary-button hidden" type="button">
+                네 속성 비교 →
+              </button>
+            </div>
+          </div>
+
           <div id="gainSelectionArea" class="hidden">
             <div class="cadet-prompt">
               <span><b data-cadet="3">3</b>번 생도</span>
@@ -1815,6 +2098,7 @@
               </button>
             </div>
           </div>
+
         </section>
 
         <section id="step4" class="question-panel hidden">
@@ -1869,6 +2153,11 @@
                 <div class="child-metric"><span>분할 후 가중평균 H</span><b>0.951</b></div>
               </button>
             </div>
+            <div id="youthCalcResult" class="child-calc-result hidden">
+              <span>학생 여부로 분할한 후</span>
+              <div>H<sub>학생 여부</sub>(D) = 3/5 × 0 + 2/5 × 0 = <b>0</b></div>
+              <strong>Gain = 0.971 − 0 = 0.971</strong>
+            </div>
             <div class="action-row">
               <p id="youthFeedback" class="feedback">가중평균 엔트로피가 가장 작고 정보이득이 가장 큰 속성을 선택하세요.</p>
               <button id="toMiddleButton" class="secondary-button hidden" type="button">
@@ -1918,6 +2207,11 @@
                 </div>
                 <div class="child-metric"><span>분할 후 가중평균 H</span><b>0</b></div>
               </button>
+            </div>
+            <div id="middleCalcResult" class="child-calc-result hidden">
+              <span>신용등급으로 분할한 후</span>
+              <div>H<sub>신용등급</sub>(D) = 3/5 × 0 + 2/5 × 0 = <b>0</b></div>
+              <strong>Gain = 0.971 − 0 = 0.971</strong>
             </div>
             <div class="action-row">
               <p id="middleFeedback" class="feedback">마지막으로 정보이득이 가장 큰 속성을 선택하세요.</p>
@@ -2061,6 +2355,7 @@
       const youthWeight = document.getElementById("youthWeight");
       const youngWeight = document.getElementById("youngWeight");
       const middleWeight = document.getElementById("middleWeight");
+      const studentGainAnswer = document.getElementById("studentGainAnswer");
 
       [purchaseCount, noPurchaseCount, youthWeight, youngWeight, middleWeight].forEach(
         (select) => populateSelect(select, numberOptions),
@@ -2112,19 +2407,25 @@
             select.value = "";
           },
         );
+        studentGainAnswer.value = "";
+        studentGainAnswer.disabled = false;
         document.getElementById("purchaseMirror").textContent = "?";
         document.getElementById("noPurchaseMirror").textContent = "?";
         [
           "entropyResult",
+          "entropyBreakdown",
           "weightedResult",
           "weightedBlocks",
           "ageGainResult",
           "entropyCompare",
+          "repeatCalcArea",
           "gainSelectionArea",
           "finalCard",
           "treePanel",
           "treeYouthLeaves",
           "treeMiddleLeaves",
+          "youthCalcResult",
+          "middleCalcResult",
         ].forEach(
           (id) => document.getElementById(id).classList.add("hidden"),
         );
@@ -2133,6 +2434,9 @@
         document.getElementById("revealBox").classList.remove("hidden");
         document.getElementById("checkEntropyButton").classList.remove("hidden");
         document.getElementById("checkWeightedButton").classList.remove("hidden");
+        document.getElementById("checkStudentGainButton").classList.remove("hidden");
+        document.getElementById("calculateAgeGainButton").classList.add("hidden");
+        document.getElementById("showGainComparisonButton").classList.add("hidden");
         document.getElementById("toStep2Button").classList.add("hidden");
         document.getElementById("toStep3Button").classList.add("hidden");
         document.getElementById("toMiddleButton").classList.add("hidden");
@@ -2143,6 +2447,9 @@
         document.getElementById("step2Feedback").className = "feedback";
         document.getElementById("step2Feedback").textContent =
           "각 집단의 크기는 5명, 4명, 5명입니다.";
+        document.getElementById("studentCalcFeedback").className = "feedback";
+        document.getElementById("studentCalcFeedback").textContent =
+          "분할 전 엔트로피에서 가중평균 엔트로피를 빼세요.";
         document.getElementById("step3Feedback").className = "feedback";
         document.getElementById("step3Feedback").textContent =
           "정보이득 값을 비교하여 하나를 선택하세요.";
@@ -2194,6 +2501,7 @@
           feedback.className = "feedback correct";
           feedback.textContent = "맞았습니다. 전체 엔트로피는 0.940입니다.";
           document.getElementById("entropyResult").classList.remove("hidden");
+          document.getElementById("entropyBreakdown").classList.remove("hidden");
           document.getElementById("checkEntropyButton").classList.add("hidden");
           document.getElementById("toStep2Button").classList.remove("hidden");
         } else {
@@ -2213,23 +2521,53 @@
         if (correct) {
           feedback.className = "feedback correct";
           feedback.textContent =
-            "맞았습니다. 나이 속성의 정보이득은 약 0.247입니다.";
+            "맞았습니다. 가중평균 엔트로피는 약 0.694입니다.";
           document.getElementById("weightedResult").classList.remove("hidden");
           document.getElementById("weightedBlocks").classList.remove("hidden");
-          document.getElementById("ageGainResult").classList.remove("hidden");
-          document.getElementById("entropyCompare").classList.remove("hidden");
           document.getElementById("checkWeightedButton").classList.add("hidden");
-          document.getElementById("toStep3Button").classList.remove("hidden");
+          document.getElementById("calculateAgeGainButton").classList.remove("hidden");
         } else {
           feedback.className = "feedback error";
           feedback.textContent = "청소년 5명, 청년 4명, 중년 5명을 다시 적용하세요.";
         }
       });
 
+      document.getElementById("calculateAgeGainButton").addEventListener("click", () => {
+        const feedback = document.getElementById("step2Feedback");
+        document.getElementById("ageGainResult").classList.remove("hidden");
+        document.getElementById("entropyCompare").classList.remove("hidden");
+        document.getElementById("calculateAgeGainButton").classList.add("hidden");
+        document.getElementById("toStep3Button").classList.remove("hidden");
+        feedback.className = "feedback correct";
+        feedback.textContent =
+          "0.940에서 0.694를 빼면 나이의 정보이득은 약 0.247입니다.";
+      });
+
       document.getElementById("toStep3Button").addEventListener("click", () => showStep(3));
 
       document.getElementById("revealGainsButton").addEventListener("click", () => {
         document.getElementById("revealBox").classList.add("hidden");
+        document.getElementById("repeatCalcArea").classList.remove("hidden");
+      });
+
+      document.getElementById("checkStudentGainButton").addEventListener("click", () => {
+        const feedback = document.getElementById("studentCalcFeedback");
+        if (studentGainAnswer.value === "0.152") {
+          feedback.className = "feedback correct";
+          feedback.textContent =
+            "맞았습니다. 학생 여부의 정보이득은 약 0.152입니다.";
+          document.getElementById("checkStudentGainButton").classList.add("hidden");
+          document.getElementById("showGainComparisonButton").classList.remove("hidden");
+          studentGainAnswer.disabled = true;
+        } else {
+          feedback.className = "feedback error";
+          feedback.textContent =
+            "0.940 − 0.788을 다시 계산하세요.";
+        }
+      });
+
+      document.getElementById("showGainComparisonButton").addEventListener("click", () => {
+        document.getElementById("repeatCalcArea").classList.add("hidden");
         document.getElementById("gainSelectionArea").classList.remove("hidden");
       });
 
@@ -2283,6 +2621,7 @@
             card.disabled = false;
             setTreeNode("treeYouthNode", "질문", "학생 여부", "question");
             document.getElementById("treeYouthLeaves").classList.remove("hidden");
+            document.getElementById("youthCalcResult").classList.remove("hidden");
             setTreeNode("treeMiddleNode", "현재 노드", "어떤 속성?", "current");
             document.getElementById("treeStatus").textContent = "중년 노드 계산 대기";
             document.getElementById("toMiddleButton").classList.remove("hidden");
@@ -2325,6 +2664,7 @@
             card.disabled = false;
             setTreeNode("treeMiddleNode", "질문", "신용등급", "question");
             document.getElementById("treeMiddleLeaves").classList.remove("hidden");
+            document.getElementById("middleCalcResult").classList.remove("hidden");
             const status = document.getElementById("treeStatus");
             status.className = "tree-status complete";
             status.textContent = "트리 완성";
