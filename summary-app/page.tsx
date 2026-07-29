@@ -66,7 +66,7 @@ const ID3_STEPS = [
   "선택한 속성값에 따라 데이터 분할",
 ];
 
-const INITIAL_ORDER = [const INITIAL_ORDER = [
+const INITIAL_ORDER = [
   ID3_STEPS[1],
   ID3_STEPS[3],
   ID3_STEPS[0],
