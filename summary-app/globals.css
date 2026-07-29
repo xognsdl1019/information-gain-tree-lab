@@ -698,6 +698,22 @@ main {
   font-weight: 800;
 }
 
+.options button.formula-option span {
+  font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+  font-size: 21px;
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.options button.formula-option sub {
+  position: relative;
+  bottom: -0.18em;
+  font-size: 68%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
 .options button.selected {
   border-color: var(--blue);
   background: #f7fbff;
