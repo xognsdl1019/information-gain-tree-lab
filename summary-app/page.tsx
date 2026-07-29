@@ -228,7 +228,7 @@ function Summary({ start }: { start: () => void }) {
   );
 }
 
-function CadetSetupfunction CadetSetup({
+function CadetSetup({
   initialCount,
   start,
   back,
