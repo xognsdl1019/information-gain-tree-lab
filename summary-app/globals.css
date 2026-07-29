@@ -112,7 +112,7 @@ main {
 }
 
 .summary-title {
-  padding: 23px 28px 25px;
+  padding: 17px 24px;
   color: #fff;
   background: linear-gradient(120deg, #173c68, #285f97);
   border-radius: 18px;
@@ -120,8 +120,8 @@ main {
 }
 
 .summary-title > span {
-  color: #b9dcf5;
-  font-size: 14px;
+  color: #fff;
+  font-size: 18px;
   font-weight: 950;
   letter-spacing: 0.08em;
 }
