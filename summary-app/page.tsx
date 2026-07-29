@@ -13,40 +13,47 @@ type Item = {
   explanation: string;
 };
 
-const CONCEPTS: Array<{ label: string; title: string; body: ReactNode }> = [
+const CONCEPTS: Array<{
+  title: string;
+  symbol: ReactNode;
+  body: ReactNode;
+  detail: ReactNode;
+}> = [
   {
-    label: "핵심 1",
-    title: "질문과 분할",
-    body: (
-      <>
-        하나의 <b>질문</b>을 선택하고, 답에 따라 데이터를 <strong>분할</strong>
-      </>
-    ),
-  },
-  {
-    label: "핵심 2",
     title: "엔트로피",
+    symbol: <i>H(D)</i>,
     body: (
       <>
-        데이터가 가진 <b>불확실성</b>
+        현재 노드의 <b>클래스 분포</b>에 대한 불확실성
       </>
     ),
+    detail: "한 클래스만 남으면 H(D) = 0",
   },
   {
-    label: "핵심 3",
-    title: "분할 후 엔트로피",
+    title: "가중평균 엔트로피",
+    symbol: (
+      <i>
+        H<sub>A</sub>(D)
+      </i>
+    ),
     body: (
       <>
-        하위 집단의 크기를 반영한 <b>가중평균</b>
+        하위 노드의 엔트로피를 <b>데이터 비율</b>에 따라 가중평균한 값
       </>
     ),
+    detail: "속성 A로 분할한 이후의 불확실성",
   },
   {
-    label: "핵심 4",
     title: "정보이득",
+    symbol: <i>Gain(D, A)</i>,
     body: (
       <>
-        <strong>분할 전 엔트로피 − 분할 후 엔트로피</strong>
+        속성 A로 분할했을 때 <b>감소한 엔트로피의 양</b>
+      </>
+    ),
+    detail: (
+      <>
+        Gain(D, A) = H(D) − H<sub>A</sub>(D)
       </>
     ),
   },
@@ -54,12 +61,12 @@ const CONCEPTS: Array<{ label: string; title: string; body: ReactNode }> = [
 
 const ID3_STEPS = [
   "후보 속성 설정",
-  "각 후보의 정보이득 계산",
-  "정보이득이 가장 큰 분할속성 선택",
-  "선택한 속성으로 분할하고 하위 노드에서 반복",
+  "후보 속성별 정보이득 계산",
+  "정보이득이 가장 큰 속성을 분할 기준으로 선택",
+  "선택한 속성값에 따라 데이터 분할",
 ];
 
-const INITIAL_ORDER = [
+const INITIAL_ORDER = [const INITIAL_ORDER = [
   ID3_STEPS[1],
   ID3_STEPS[3],
   ID3_STEPS[0],
@@ -92,68 +99,68 @@ const ITEMS: Item[] = [
     id: 1,
     kind: "fill",
     question:
-      "의사결정나무는 각 노드에서 데이터에 대한 (     )을 던지고, 답에 따라 데이터를 여러 집단으로 (     )한다.",
+      "의사결정나무는 각 노드에서 하나의 (     )을 선택하고, 그 기준에 따라 데이터를 하위 노드로 (     )한다.",
     explanation:
-      "각 노드는 질문을 하나 선택하고, 그 답을 기준으로 데이터를 분할합니다.",
+      "질문은 현재 노드의 분할 기준이며, 속성값에 따라 데이터가 하위 노드로 분할됩니다.",
   },
   {
     id: 2,
     kind: "choice",
     question: "엔트로피가 나타내는 것은 무엇인가요?",
     options: [
-      { label: "데이터의 개수" },
-      { label: "데이터의 불확실성", correct: true },
-      { label: "트리의 깊이" },
-      { label: "속성의 개수" },
+      { label: "현재 노드의 데이터 개수" },
+      { label: "현재 노드의 클래스 분포에 대한 불확실성", correct: true },
+      { label: "의사결정나무의 깊이" },
+      { label: "후보 속성의 개수" },
     ],
     explanation:
-      "엔트로피는 데이터에 여러 클래스가 얼마나 섞여 있는지, 즉 불확실성을 나타냅니다.",
+      "엔트로피는 현재 노드의 클래스 분포에 대한 불확실성을 나타냅니다.",
   },
   {
     id: 3,
     kind: "choice",
-    question: "정보이득을 올바르게 설명한 것은 무엇인가요?",
+    question: "정보이득의 계산식으로 옳은 것은 무엇인가요?",
     options: [
-      { label: "분할 후 엔트로피 − 분할 전 엔트로피" },
-      { label: "분할 전 엔트로피 + 분할 후 엔트로피" },
-      { label: "분할 전 엔트로피 − 분할 후 엔트로피", correct: true },
+      { label: "H_A(D) − H(D)" },
+      { label: "H(D) + H_A(D)" },
+      { label: "H(D) − H_A(D)", correct: true },
       { label: "하위 노드 엔트로피의 단순합" },
     ],
     explanation:
-      "정보이득은 분할로 불확실성이 얼마나 감소했는지를 나타냅니다.",
+      "정보이득은 분할 전 엔트로피에서 분할 후 가중평균 엔트로피를 뺀 값입니다.",
   },
   {
     id: 4,
     kind: "choice",
-    question: "ID3가 분할속성으로 선택하는 것은 무엇인가요?",
+    question: "ID3는 현재 노드의 분할 속성을 어떻게 결정하나요?",
     options: [
-      { label: "정보이득이 가장 큰 속성", correct: true },
-      { label: "엔트로피가 가장 큰 속성" },
-      { label: "값의 종류가 가장 많은 속성" },
-      { label: "가장 먼저 기록된 속성" },
+      { label: "후보 중 정보이득이 가장 큰 속성", correct: true },
+      { label: "후보 중 엔트로피가 가장 큰 속성" },
+      { label: "속성값의 종류가 가장 많은 속성" },
+      { label: "데이터에 가장 먼저 기록된 속성" },
     ],
     explanation:
-      "ID3는 후보별 정보이득을 비교하고 가장 큰 속성을 선택합니다.",
+      "ID3는 후보 속성별 정보이득을 비교하여 가장 큰 속성을 분할 기준으로 선택합니다.",
   },
   {
     id: 5,
     kind: "choice",
-    question: "하위 노드의 엔트로피가 0이면 왜 분할을 종료할까요?",
+    question: "현재 노드의 엔트로피가 0이면 왜 분할을 종료할까요?",
     options: [
       { label: "데이터가 너무 많기 때문에" },
       { label: "더 사용할 속성이 없기 때문에" },
-      { label: "모든 데이터가 같은 클래스로 순수하기 때문에", correct: true },
+      { label: "한 클래스만 남아 불확실성이 없기 때문에", correct: true },
       { label: "정보이득을 계산할 수 없기 때문에" },
     ],
     explanation:
-      "엔트로피 0은 한 클래스만 남아 불확실성이 없다는 뜻입니다.",
+      "H(D) = 0인 노드는 한 클래스만 포함하므로 리프 노드로 확정합니다.",
   },
   {
     id: 6,
     kind: "order",
     question: "ID3 알고리즘의 4단계를 올바른 순서로 배열하세요.",
     explanation:
-      "분할한 뒤에는 각 하위 노드에서 같은 4단계를 반복하며, 엔트로피가 0인 노드에서는 분할을 종료합니다.",
+      "클래스가 섞인 하위 노드에서는 같은 4단계를 반복하고, H(D) = 0이면 리프 노드로 확정합니다.",
   },
 ];
 
@@ -163,26 +170,22 @@ function Summary({ start }: { start: () => void }) {
       <div className="summary-title">
         <span>의사결정나무 핵심 정리</span>
         <h1>
-          <em>질문</em>으로 데이터를 <strong>분할</strong>해
+          엔트로피로 분할의 효과를 계산하고,
           <br />
-          불확실성을 줄입니다
+          <strong>정보이득이 가장 큰 속성</strong>을 선택합니다
         </h1>
-        <div className="core-flow" aria-label="의사결정나무 핵심 흐름">
-          <b>질문</b>
-          <i>→</i>
-          <strong>분할</strong>
-          <i>→</i>
-          <span>불확실성 감소</span>
-        </div>
       </div>
 
       <div className="summary-body">
         <div className="concepts">
           {CONCEPTS.map((concept) => (
-            <article key={concept.label}>
-              <span>{concept.label}</span>
-              <h2>{concept.title}</h2>
+            <article key={concept.title}>
+              <div className="concept-heading">
+                <h2>{concept.title}</h2>
+                <strong>{concept.symbol}</strong>
+              </div>
               <p>{concept.body}</p>
+              <small>{concept.detail}</small>
             </article>
           ))}
         </div>
@@ -191,50 +194,41 @@ function Summary({ start }: { start: () => void }) {
           <div className="id3-heading">
             <div>
               <span>ID3 알고리즘</span>
-              <h2>4단계와 반복</h2>
+              <h2>분할 속성 결정과 반복</h2>
             </div>
-            <b>정보이득이 가장 큰 속성 선택</b>
           </div>
+
           <ol>
-            <li>
-              <b>1</b>
-              <strong>후보 속성 설정</strong>
-            </li>
-            <li>
-              <b>2</b>
-              <strong>정보이득 계산</strong>
-            </li>
-            <li>
-              <b>3</b>
-              <strong>분할속성 선택</strong>
-            </li>
-            <li>
-              <b>4</b>
-              <strong>분할 및 반복</strong>
-            </li>
+            {ID3_STEPS.map((step, index) => (
+              <li key={step}>
+                <b>{index + 1}</b>
+                <strong>{step}</strong>
+              </li>
+            ))}
           </ol>
-          <div className="stop">
-            <span>종료 조건</span>
-            <strong>H(D) = 0</strong>
-            <p>한 클래스만 남으면 해당 가지의 분할 종료</p>
+
+          <div className="id3-notes">
+            <div className="repeat">
+              <span>반복</span>
+              <p>클래스가 섞인 하위 노드에서 1~4단계 반복</p>
+            </div>
+            <div className="stop">
+              <span>종료</span>
+              <strong>H(D) = 0</strong>
+              <p>리프 노드로 확정</p>
+            </div>
           </div>
         </aside>
       </div>
 
       <div className="summary-action">
-        <div>
-          <span>정보이득</span>
-          <strong>
-            Gain(D, A) = H(D) − H<sub>A</sub>(D)
-          </strong>
-        </div>
         <button onClick={start}>확인 퀴즈 풀기 →</button>
       </div>
     </section>
   );
 }
 
-function CadetSetup({
+function CadetSetupfunction CadetSetup({
   initialCount,
   start,
   back,
@@ -391,8 +385,6 @@ function Quiz({
             </i>
           ))}
         </nav>
-        <p>정답을 맞히면 다음 문제로 이동합니다.</p>
-        <small>최종적으로 맞힌 문제 수를 집계합니다.</small>
         <button onClick={back}>← 핵심 정리</button>
       </aside>
 
@@ -402,7 +394,6 @@ function Quiz({
           <div className="quiz-cadet">
             <span>담당 생도</span>
             <strong>{assignedCadet}번</strong>
-            <p>{assignedCadet}번 생도, 이 문제를 풀어볼까요?</p>
           </div>
         )}
         <h1>{item.question}</h1>
@@ -531,10 +522,10 @@ function Complete({
 }) {
   const message =
     score === ITEMS.length
-      ? "핵심 개념을 정확히 이해했습니다!"
+      ? "핵심 개념을 정확히 이해했습니다"
       : score >= 4
-        ? "핵심 흐름을 잘 이해했습니다!"
-        : "핵심 정리를 한 번 더 보면 더 확실해집니다.";
+        ? "핵심 흐름을 이해했습니다"
+        : "핵심 정리를 다시 확인해 보세요";
 
   return (
     <section className="complete-page">
@@ -542,7 +533,7 @@ function Complete({
         <div className="mark">✓</div>
         <span>학습 완료</span>
         <h1>{message}</h1>
-        <p>엔트로피, 정보이득, ID3 그리고 질문과 분할의 관계를 확인했습니다.</p>
+        <p>엔트로피, 가중평균 엔트로피, 정보이득과 ID3의 흐름을 확인했습니다.</p>
         <div className="score">
           <span>확인 퀴즈 점수</span>
           <b>
@@ -552,12 +543,6 @@ function Complete({
           <div>
             <i style={{ width: `${(score / ITEMS.length) * 100}%` }} />
           </div>
-        </div>
-        <div className="keywords">
-          <span>기억할 두 단어</span>
-          <b>질문</b>
-          <i>→</i>
-          <strong>분할</strong>
         </div>
         <div className="complete-actions">
           <button onClick={summary}>핵심 정리 다시 보기</button>
