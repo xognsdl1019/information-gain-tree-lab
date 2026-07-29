@@ -3,7 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from "react";
 
 type Phase = "summary" | "setup" | "quiz" | "complete";
-type Option = { label: string; correct?: boolean };
+type Option = { label: ReactNode; correct?: boolean; formula?: boolean };
 type CadetAssignments = Partial<Record<number, number>>;
 type Item = {
   id: number;
@@ -24,10 +24,10 @@ const CONCEPTS: Array<{
     symbol: <i>H(D)</i>,
     body: (
       <>
-        현재 노드의 <b>클래스 분포</b>에 대한 불확실성
+        현재 노드의 <b>실제값 분포</b>에 대한 불확실성
       </>
     ),
-    detail: "한 클래스만 남으면 H(D) = 0",
+    detail: "모든 데이터의 실제값이 같으면 H(D) = 0",
   },
   {
     title: "가중평균 엔트로피",
@@ -109,22 +109,51 @@ const ITEMS: Item[] = [
     question: "엔트로피가 나타내는 것은 무엇인가요?",
     options: [
       { label: "현재 노드의 데이터 개수" },
-      { label: "현재 노드의 클래스 분포에 대한 불확실성", correct: true },
+      { label: "현재 노드의 실제값 분포에 대한 불확실성", correct: true },
       { label: "의사결정나무의 깊이" },
       { label: "후보 속성의 개수" },
     ],
     explanation:
-      "엔트로피는 현재 노드의 클래스 분포에 대한 불확실성을 나타냅니다.",
+      "엔트로피는 현재 노드의 실제값 분포에 대한 불확실성을 나타냅니다.",
   },
   {
     id: 3,
     kind: "choice",
     question: "정보이득의 계산식으로 옳은 것은 무엇인가요?",
     options: [
-      { label: "H_A(D) − H(D)" },
-      { label: "H(D) + H_A(D)" },
-      { label: "H(D) − H_A(D)", correct: true },
-      { label: "하위 노드 엔트로피의 단순합" },
+      {
+        label: (
+          <>
+            H<sub>A</sub>(D) − H(D)
+          </>
+        ),
+        formula: true,
+      },
+      {
+        label: (
+          <>
+            H(D) + H<sub>A</sub>(D)
+          </>
+        ),
+        formula: true,
+      },
+      {
+        label: (
+          <>
+            H(D) − H<sub>A</sub>(D)
+          </>
+        ),
+        correct: true,
+        formula: true,
+      },
+      {
+        label: (
+          <>
+            ∑ H(D<sub>v</sub>)
+          </>
+        ),
+        formula: true,
+      },
     ],
     explanation:
       "정보이득은 분할 전 엔트로피에서 분할 후 가중평균 엔트로피를 뺀 값입니다.",
@@ -149,18 +178,18 @@ const ITEMS: Item[] = [
     options: [
       { label: "데이터가 너무 많기 때문에" },
       { label: "더 사용할 속성이 없기 때문에" },
-      { label: "한 클래스만 남아 불확실성이 없기 때문에", correct: true },
+      { label: "모든 데이터의 실제값이 같아 불확실성이 없기 때문에", correct: true },
       { label: "정보이득을 계산할 수 없기 때문에" },
     ],
     explanation:
-      "H(D) = 0인 노드는 한 클래스만 포함하므로 리프 노드로 확정합니다.",
+      "H(D) = 0인 노드는 모든 데이터의 실제값이 같으므로 리프 노드로 확정합니다.",
   },
   {
     id: 6,
     kind: "order",
     question: "ID3 알고리즘의 4단계를 올바른 순서로 배열하세요.",
     explanation:
-      "클래스가 섞인 하위 노드에서는 같은 4단계를 반복하고, H(D) = 0이면 리프 노드로 확정합니다.",
+      "실제값이 섞인 하위 노드에서는 같은 4단계를 반복하고, H(D) = 0이면 리프 노드로 확정합니다.",
   },
 ];
 
@@ -205,7 +234,7 @@ function Summary({ start }: { start: () => void }) {
           <div className="id3-notes">
             <div className="repeat">
               <span>반복</span>
-              <p>클래스가 섞인 하위 노드에서 1~4단계 반복</p>
+              <p>실제값이 섞인 하위 노드에서 1~4단계 반복</p>
             </div>
             <div className="stop">
               <span>종료</span>
@@ -429,13 +458,13 @@ function Quiz({
                   feedback === "correct" && option.correct ? "correct" : ""
                 } ${
                   feedback === "wrong" && selected === optionIndex ? "wrong" : ""
-                }`}
+                } ${option.formula ? "formula-option" : ""}`}
                 onClick={() => {
                   setSelected(optionIndex);
                   if (feedback === "wrong") setFeedback("idle");
                 }}
                 disabled={feedback === "correct"}
-                key={option.label}
+                key={`${item.id}-${optionIndex}`}
               >
                 <i>{String.fromCharCode(65 + optionIndex)}</i>
                 <span>{option.label}</span>
