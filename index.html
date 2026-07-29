@@ -155,17 +155,10 @@
         letter-spacing: -0.04em;
       }
 
-      .setup-card > p {
-        margin: 18px 0 30px;
-        color: var(--muted);
-        font-size: 20px;
-        line-height: 1.65;
-      }
-
       .setup-summary {
-        margin-bottom: 28px;
+        margin: 28px 0;
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 12px;
       }
 
@@ -588,6 +581,37 @@
         text-align: center;
         font-size: 19px;
         font-weight: 900;
+      }
+
+      .student-group-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .student-group-grid .group-card {
+        overflow-x: auto;
+      }
+
+      .compact-formula {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        gap: 5px;
+        font-size: clamp(17px, 1.55vw, 23px);
+      }
+
+      .compact-formula .fraction {
+        min-width: 43px;
+      }
+
+      .selection-kicker {
+        margin-bottom: 16px;
+        padding: 13px 16px;
+        color: var(--navy-2);
+        background: var(--blue-soft);
+        border: 2px solid #aac7dc;
+        border-radius: 11px;
+        font-size: 18px;
+        font-weight: 900;
+        text-align: center;
       }
 
       .tile-row {
@@ -1191,6 +1215,41 @@
         font-weight: 900;
       }
 
+      .subset-data {
+        margin: 15px 0 5px;
+        padding: 14px;
+        border: 1px solid #dbe3eb;
+        background: #fafbfd;
+        border-radius: 11px;
+        overflow-x: auto;
+      }
+
+      .subset-data > strong {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--navy-2);
+        font-size: 17px;
+      }
+
+      .subset-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+        text-align: center;
+      }
+
+      .subset-table th,
+      .subset-table td {
+        padding: 8px 10px;
+        border: 1px solid #d8e2ea;
+        white-space: nowrap;
+      }
+
+      .subset-table th {
+        color: var(--navy-2);
+        background: var(--blue-soft);
+      }
+
       .child-gain-grid {
         margin-top: 18px;
         display: grid;
@@ -1382,7 +1441,9 @@
         .setup-summary,
         .progress,
         .group-grid,
+        .student-group-grid,
         .gain-grid,
+        .child-gain-grid,
         .completion-grid {
           grid-template-columns: 1fr;
         }
@@ -1448,7 +1509,7 @@
   <body>
     <header class="app-header">
       <div class="brand">
-        <div class="brand-mark">IG</div>
+        <div class="brand-mark">정보</div>
         <div>
           <small>인공지능 개론</small>
           <strong>8. 정보이득 계산 실습</strong>
@@ -1462,20 +1523,14 @@
     <main class="page">
       <section id="setupView" class="setup-wrap">
         <div class="setup-card">
-          <p class="eyebrow">INFORMATION GAIN LAB</p>
-          <h1>계산식을 완성하고<br />가장 좋은 분할을 선택합니다</h1>
-          <p>
-            강의에서 사용한 컴퓨터 구매 데이터로 전체 엔트로피와 나이
-            속성의 정보이득을 계산한 뒤, 가장 큰 정보이득을 직접 선택합니다.
-          </p>
+          <h1>정보이득 계산<br />분할 속성 선택</h1>
           <div class="setup-summary">
             <div><b>14명</b><span>컴퓨터 구매 데이터</span></div>
             <div><b>4개</b><span>후보 속성</span></div>
-            <div><b>3회</b><span>생도 참여 질문</span></div>
           </div>
           <form id="setupForm" class="setup-form">
             <label>
-              참여 생도 수
+              참여 인원
               <input
                 id="cadetCountInput"
                 type="number"
@@ -1485,7 +1540,7 @@
                 inputmode="numeric"
               />
             </label>
-            <button class="primary-button" type="submit">번호 배정하고 시작 →</button>
+            <button class="primary-button" type="submit">생도 배정 · 실습 시작 →</button>
           </form>
         </div>
       </section>
@@ -1529,7 +1584,7 @@
           <div class="tree-panel-heading">
             <div>
               <h2>현재 의사결정 트리</h2>
-              <p>정보이득이 가장 큰 속성을 선택할 때마다 질문과 리프가 추가됩니다.</p>
+              <p>정보이득 비교 → 질문 추가 → 리프 확정</p>
             </div>
             <span id="treeStatus" class="tree-status">청소년 노드 계산 중</span>
           </div>
@@ -1543,7 +1598,7 @@
               <div class="tree-branch">
                 <span class="tree-edge">청소년</span>
                 <div id="treeYouthNode" class="tree-node-card current">
-                  <small>현재 노드</small><b>어떤 속성?</b>
+                  <small>현재 노드</small><b>후보 속성</b>
                 </div>
                 <div id="treeYouthLeaves" class="leaf-row hidden">
                   <div class="leaf-item">
@@ -1565,7 +1620,7 @@
               <div class="tree-branch">
                 <span class="tree-edge">중년</span>
                 <div id="treeMiddleNode" class="tree-node-card">
-                  <small>대기 노드</small><b>어떤 속성?</b>
+                  <small>대기 노드</small><b>후보 속성</b>
                 </div>
                 <div id="treeMiddleLeaves" class="leaf-row hidden">
                   <div class="leaf-item">
@@ -1586,13 +1641,13 @@
           <div class="question-title">
             <span class="step-number">1</span>
             <div>
-              <h2>전체 데이터의 엔트로피 식 완성</h2>
-              <p>구매와 미구매 인원수를 식의 빈칸에 넣으세요.</p>
+              <h2>전체 데이터 · 엔트로피 식</h2>
+              <p>구매 9명 · 미구매 5명</p>
             </div>
           </div>
           <div class="cadet-prompt">
             <span><b data-cadet="1">1</b>번 생도</span>
-            <strong>구매와 미구매의 비율을 이용해 전체 엔트로피 식을 완성해 볼까요?</strong>
+            <strong>식의 분자 · 구매 / 미구매</strong>
           </div>
           <div class="formula-card">
             <div class="formula" aria-label="전체 엔트로피 계산식">
@@ -1623,12 +1678,12 @@
             </div>
           </div>
           <div class="action-row">
-            <p id="step1Feedback" class="feedback">구매 9명, 미구매 5명을 식에 적용합니다.</p>
+            <p id="step1Feedback" class="feedback">식의 분자 · 구매 9 / 미구매 5</p>
             <button id="checkEntropyButton" class="primary-button" type="button">
-              계산식 확인
+              식 확인
             </button>
             <button id="toStep2Button" class="secondary-button hidden" type="button">
-              나이 속성 계산 →
+              나이 속성 · 계산 →
             </button>
           </div>
         </section>
@@ -1637,8 +1692,8 @@
           <div class="question-title">
             <span class="step-number">2</span>
             <div>
-              <h2>나이로 분할한 가중평균 엔트로피 식 완성</h2>
-              <p>각 집단의 데이터 수를 가중치의 분자에 넣으세요.</p>
+              <h2>나이 속성 · 가중평균 엔트로피</h2>
+              <p>집단 크기 → 가중치 분자</p>
             </div>
           </div>
           <div class="group-grid">
@@ -1680,11 +1735,11 @@
           </div>
           <div class="cadet-prompt">
             <span><b data-cadet="2">2</b>번 생도</span>
-            <strong>세 집단의 크기를 이용해 가중평균 엔트로피 식을 완성해 볼까요?</strong>
+            <strong>가중치 분자 · 청소년 / 청년 / 중년</strong>
           </div>
           <div class="formula-card">
             <div class="formula" aria-label="나이 속성의 가중평균 엔트로피 계산식">
-              <span>H<sub>나이</sub>(D) =</span>
+              <span>H<sub>age</sub>(D) =</span>
               <span class="fraction">
                 <span><select id="youthWeight" aria-label="청소년 집단 크기"></select></span>
                 <span>14</span>
@@ -1703,26 +1758,26 @@
             </div>
             <div id="weightedResult" class="formula-result hidden">
               <span>가중평균 엔트로피</span>
-              <strong>H<sub>나이</sub>(D) ≈ 0.694</strong>
+              <strong>H<sub>age</sub>(D) ≈ 0.694</strong>
             </div>
             <div id="weightedBlocks" class="weighted-blocks hidden" aria-label="가중평균 구성">
               <div class="weight-block" style="flex: 5">
-                <b>5/14 × 0.971</b><span>청소년 5명의 가중치</span>
+                <b>5/14 × 0.971</b><span>청소년 5 / 전체 14</span>
               </div>
               <div class="weight-block zero" style="flex: 4">
-                <b>4/14 × 0</b><span>청년 4명의 가중치</span>
+                <b>4/14 × 0</b><span>청년 4 / 전체 14</span>
               </div>
               <div class="weight-block" style="flex: 5">
-                <b>5/14 × 0.971</b><span>중년 5명의 가중치</span>
+                <b>5/14 × 0.971</b><span>중년 5 / 전체 14</span>
               </div>
             </div>
             <div id="ageGainResult" class="gain-result hidden">
-              <span>나이 속성의 정보이득</span>
+              <span>나이 속성 · 정보이득</span>
               <div>
                 <span>0.940 − 0.694 =</span>
                 <strong>0.247</strong>
               </div>
-              <small>정보이득은 반올림 전 값을 이용해 계산했습니다.</small>
+              <small>계산 기준 · 반올림 전 값</small>
             </div>
             <div id="entropyCompare" class="entropy-compare hidden">
               <div class="entropy-row">
@@ -1731,20 +1786,20 @@
                 <strong>0.940</strong>
               </div>
               <div class="entropy-row">
-                <span>분할 후 H<sub>나이</sub>(D)</span>
+                <span>분할 후 H<sub>age</sub>(D)</span>
                 <div class="entropy-track"><i class="after" style="width: 69.4%"></i></div>
                 <strong>0.694</strong>
               </div>
-              <div class="gain-drop">줄어든 불확실성 = 정보이득 0.247</div>
+              <div class="gain-drop">엔트로피 감소량 · 정보이득 0.247</div>
             </div>
           </div>
           <div class="action-row">
-            <p id="step2Feedback" class="feedback">각 집단의 크기는 5명, 4명, 5명입니다.</p>
+            <p id="step2Feedback" class="feedback">가중치 분자 · 5 / 4 / 5</p>
             <button id="checkWeightedButton" class="primary-button" type="button">
-              계산식 확인
+              식 확인
             </button>
             <button id="toStep3Button" class="secondary-button hidden" type="button">
-              속성별 결과 비교 →
+              후보 속성 · 계산 →
             </button>
           </div>
         </section>
@@ -1753,24 +1808,82 @@
           <div class="question-title">
             <span class="step-number">3</span>
             <div>
-              <h2>가장 큰 정보이득 선택</h2>
-              <p>나머지 속성은 같은 방식으로 계산하고 결과만 한 번에 확인합니다.</p>
+              <h2>후보 속성 계산과 첫 질문 선택</h2>
+              <p>학생 여부 계산 → 네 속성 비교</p>
             </div>
           </div>
-          <div id="revealBox" class="reveal-box">
-            <div>
-              <strong>반복 계산은 생략합니다.</strong>
-              <p>수입·학생 여부·신용등급의 정보이득 결과를 한 번에 확인하세요.</p>
+          <div id="revealBox" class="student-calculation">
+            <div class="group-grid student-group-grid">
+              <article class="group-card">
+                <h3>학생: 아니요 · 7명</h3>
+                <p>구매 3 · 미구매 4</p>
+                <div class="formula compact-formula" aria-label="학생이 아닌 집단의 엔트로피">
+                  <span>−</span>
+                  <span class="fraction"><span>3</span><span>7</span></span>
+                  <span>log₂(</span>
+                  <span class="fraction"><span>3</span><span>7</span></span>
+                  <span>) −</span>
+                  <span class="fraction"><span>4</span><span>7</span></span>
+                  <span>log₂(</span>
+                  <span class="fraction"><span>4</span><span>7</span></span>
+                  <span>)</span>
+                </div>
+                <span class="group-entropy">H = 0.985</span>
+              </article>
+              <article class="group-card">
+                <h3>학생: 예 · 7명</h3>
+                <p>구매 6 · 미구매 1</p>
+                <div class="formula compact-formula" aria-label="학생인 집단의 엔트로피">
+                  <span>−</span>
+                  <span class="fraction"><span>6</span><span>7</span></span>
+                  <span>log₂(</span>
+                  <span class="fraction"><span>6</span><span>7</span></span>
+                  <span>) −</span>
+                  <span class="fraction"><span>1</span><span>7</span></span>
+                  <span>log₂(</span>
+                  <span class="fraction"><span>1</span><span>7</span></span>
+                  <span>)</span>
+                </div>
+                <span class="group-entropy">H = 0.592</span>
+              </article>
             </div>
-            <button id="revealGainsButton" class="secondary-button" type="button">
-              나머지 계산 결과 확인
-            </button>
-          </div>
-          <div id="gainSelectionArea" class="hidden">
             <div class="cadet-prompt">
               <span><b data-cadet="3">3</b>번 생도</span>
-              <strong>네 속성 가운데 정보이득이 가장 큰 속성을 선택해 볼까요?</strong>
+              <strong>가중치 분자 · 아니요 / 예</strong>
             </div>
+            <div class="formula-card">
+              <div class="formula" aria-label="학생 여부의 가중평균 엔트로피 계산식">
+                <span>H<sub>student</sub>(D) =</span>
+                <span class="fraction">
+                  <span><select id="studentNoWeight" aria-label="학생이 아닌 집단 크기"></select></span>
+                  <span>14</span>
+                </span>
+                <span>× 0.985 +</span>
+                <span class="fraction">
+                  <span><select id="studentYesWeight" aria-label="학생인 집단 크기"></select></span>
+                  <span>14</span>
+                </span>
+                <span>× 0.592</span>
+              </div>
+              <div id="studentWeightedResult" class="formula-result hidden">
+                <span>가중평균 엔트로피</span>
+                <strong>H<sub>student</sub>(D) ≈ 0.788</strong>
+              </div>
+              <div id="studentGainResult" class="gain-result hidden">
+                <span>학생 여부 · 정보이득</span>
+                <div><span>0.940 − 0.788 =</span><strong>0.152</strong></div>
+              </div>
+            </div>
+            <div class="action-row">
+              <p id="studentFormulaFeedback" class="feedback">가중치 분자 · 아니요 / 예</p>
+              <button id="checkStudentButton" class="primary-button" type="button">식 확인</button>
+              <button id="revealGainsButton" class="secondary-button hidden" type="button">
+                네 속성 비교 →
+              </button>
+            </div>
+          </div>
+          <div id="gainSelectionArea" class="hidden">
+            <div class="selection-kicker">네 후보 속성 · 정보이득 비교</div>
             <div class="gain-grid">
               <button class="gain-card" type="button" data-feature="나이" data-value="0.247">
                 <span>후보 속성 1</span><b>나이</b><strong>0.247</strong>
@@ -1802,16 +1915,16 @@
               </button>
             </div>
             <p id="step3Feedback" class="feedback" style="margin-top: 17px">
-              정보이득 값을 비교하여 하나를 선택하세요.
+              첫 질문 · 가장 큰 정보이득 선택
             </p>
             <div id="finalCard" class="final-card hidden">
               <div>
-                <h3>첫 번째 분할속성: 나이</h3>
-                <p>루트 노드는 완성됐지만, 섞여 있는 청소년·중년 집단은 다시 분할해야 합니다.</p>
+                <h3>첫 번째 분할 속성 · 나이</h3>
+                <p>혼합 노드 · 청소년 / 중년</p>
               </div>
               <strong>0.247</strong>
               <button id="toStep4Button" class="secondary-button" type="button">
-                하위 노드 계산 →
+                하위 노드 · 계산 →
               </button>
             </div>
           </div>
@@ -1821,8 +1934,8 @@
           <div class="question-title">
             <span class="step-number">4</span>
             <div>
-              <h2>하위 노드에서도 같은 과정 반복</h2>
-              <p>현재 노드의 데이터만 사용해 남은 후보 속성의 정보이득을 비교합니다.</p>
+              <h2>하위 노드 · 분할 반복</h2>
+              <p>현재 노드 데이터 → 후보 속성별 정보이득</p>
             </div>
           </div>
 
@@ -1830,47 +1943,56 @@
             <div class="node-banner">
               <div>
                 <h3>현재 노드: 청소년 집단</h3>
-                <p>구매 2명과 미구매 3명이 섞여 있어 추가 질문이 필요합니다.</p>
+                <p>구매 2 · 미구매 3 · 혼합 노드</p>
               </div>
               <strong>H = 0.971</strong>
             </div>
-            <div class="subset-row">
-              <span>현재 데이터</span>
-              <span class="person-tile no-purchase">01</span>
-              <span class="person-tile no-purchase">02</span>
-              <span class="person-tile no-purchase">08</span>
-              <span class="person-tile purchase">09</span>
-              <span class="person-tile purchase">11</span>
+            <div class="subset-data">
+              <strong>청소년 데이터 · 5명</strong>
+              <table class="subset-table">
+                <thead><tr><th>번호</th><th>수입</th><th>학생</th><th>신용</th><th>실제값</th></tr></thead>
+                <tbody>
+                  <tr><td>01</td><td>높음</td><td>아니요</td><td>양호</td><td><span class="label-pill no-purchase">미구매</span></td></tr>
+                  <tr><td>02</td><td>높음</td><td>아니요</td><td>우수</td><td><span class="label-pill no-purchase">미구매</span></td></tr>
+                  <tr><td>08</td><td>중간</td><td>아니요</td><td>양호</td><td><span class="label-pill no-purchase">미구매</span></td></tr>
+                  <tr><td>09</td><td>낮음</td><td>예</td><td>양호</td><td><span class="label-pill purchase">구매</span></td></tr>
+                  <tr><td>11</td><td>중간</td><td>예</td><td>우수</td><td><span class="label-pill purchase">구매</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="cadet-prompt">
+              <span><b data-cadet="4">4</b>번 생도</span>
+              <strong>청소년 노드 · 가장 큰 정보이득 선택</strong>
             </div>
             <div class="child-gain-grid">
               <button class="child-gain-card" type="button" data-node="youth" data-feature="수입" data-value="0.571">
-                <div class="child-card-head"><b>수입</b><strong>IG 0.571</strong></div>
+                <div class="child-card-head"><b>수입</b><strong>정보이득 0.571</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>높음</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 2</i></span></div>
                   <div class="preview-group"><span>중간</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 1</i></span></div>
                   <div class="preview-group"><span>낮음</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 0</i></span></div>
                 </div>
-                <div class="child-metric"><span>분할 후 가중평균 H</span><b>0.400</b></div>
+                <div class="child-metric"><span>0.971 − 0.400</span><b>= 0.571</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="youth" data-feature="학생 여부" data-value="0.971">
-                <div class="child-card-head"><b>학생 여부</b><strong>IG 0.971</strong></div>
+                <div class="child-card-head"><b>학생 여부</b><strong>정보이득 0.971</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>아니요</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 3</i></span></div>
                   <div class="preview-group"><span>예</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 0</i></span></div>
                 </div>
-                <div class="child-metric"><span>분할 후 가중평균 H</span><b>0</b></div>
+                <div class="child-metric"><span>0.971 − 0</span><b>= 0.971</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="youth" data-feature="신용등급" data-value="0.020">
-                <div class="child-card-head"><b>신용등급</b><strong>IG 0.020</strong></div>
+                <div class="child-card-head"><b>신용등급</b><strong>정보이득 0.020</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>양호</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 2</i></span></div>
                   <div class="preview-group"><span>우수</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 1</i></span></div>
                 </div>
-                <div class="child-metric"><span>분할 후 가중평균 H</span><b>0.951</b></div>
+                <div class="child-metric"><span>0.971 − 0.951</span><b>= 0.020</b></div>
               </button>
             </div>
             <div class="action-row">
-              <p id="youthFeedback" class="feedback">가중평균 엔트로피가 가장 작고 정보이득이 가장 큰 속성을 선택하세요.</p>
+              <p id="youthFeedback" class="feedback">청소년 노드 · 후보 속성 비교</p>
               <button id="toMiddleButton" class="secondary-button hidden" type="button">
                 중년 노드 계산 →
               </button>
@@ -1881,7 +2003,7 @@
             <div class="node-banner">
               <div>
                 <h3>현재 노드: 중년 집단</h3>
-                <p>구매 3명과 미구매 2명이 섞여 있어 마지막 질문이 필요합니다.</p>
+                <p>구매 3 · 미구매 2 · 혼합 노드</p>
               </div>
               <strong>H = 0.971</strong>
             </div>
@@ -1895,34 +2017,34 @@
             </div>
             <div class="child-gain-grid">
               <button class="child-gain-card" type="button" data-node="middle" data-feature="수입" data-value="0.020">
-                <div class="child-card-head"><b>수입</b><strong>IG 0.020</strong></div>
+                <div class="child-card-head"><b>수입</b><strong>정보이득 0.020</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>중간</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
                   <div class="preview-group"><span>낮음</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 1</i></span></div>
                 </div>
-                <div class="child-metric"><span>분할 후 가중평균 H</span><b>0.951</b></div>
+                <div class="child-metric"><span>0.971 − 0.951</span><b>= 0.020</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="middle" data-feature="학생 여부" data-value="0.020">
-                <div class="child-card-head"><b>학생 여부</b><strong>IG 0.020</strong></div>
+                <div class="child-card-head"><b>학생 여부</b><strong>정보이득 0.020</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>아니요</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 1</i></span></div>
                   <div class="preview-group"><span>예</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
                 </div>
-                <div class="child-metric"><span>분할 후 가중평균 H</span><b>0.951</b></div>
+                <div class="child-metric"><span>0.971 − 0.951</span><b>= 0.020</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="middle" data-feature="신용등급" data-value="0.971">
-                <div class="child-card-head"><b>신용등급</b><strong>IG 0.971</strong></div>
+                <div class="child-card-head"><b>신용등급</b><strong>정보이득 0.971</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>양호</span><span class="preview-counts"><i class="purchase">구매 3</i><i class="no-purchase">미구매 0</i></span></div>
                   <div class="preview-group"><span>우수</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 2</i></span></div>
                 </div>
-                <div class="child-metric"><span>분할 후 가중평균 H</span><b>0</b></div>
+                <div class="child-metric"><span>0.971 − 0</span><b>= 0.971</b></div>
               </button>
             </div>
             <div class="action-row">
-              <p id="middleFeedback" class="feedback">마지막으로 정보이득이 가장 큰 속성을 선택하세요.</p>
+              <p id="middleFeedback" class="feedback">중년 노드 · 후보 속성 비교</p>
               <button id="toStep5Button" class="secondary-button hidden" type="button">
-                완성된 트리 확인 →
+                완성 트리 →
               </button>
             </div>
           </div>
@@ -1933,31 +2055,31 @@
             <span class="step-number">5</span>
             <div>
               <h2>의사결정 트리 완성</h2>
-              <p>각 노드에서 정보이득을 비교하는 동일한 절차가 반복됐습니다.</p>
+              <p>노드별 후보 설정 → 정보이득 비교 → 분할</p>
             </div>
           </div>
           <div class="completion-grid">
             <article>
               <span>루트 노드</span>
-              <h3>나이 · IG 0.247</h3>
-              <p>전체 14명을 청소년, 청년, 중년으로 분할했습니다.</p>
+              <h3>나이 · 정보이득 0.247</h3>
+              <p>14명 → 청소년 5 · 청년 4 · 중년 5</p>
             </article>
             <article>
               <span>청소년 노드</span>
-              <h3>학생 여부 · IG 0.971</h3>
-              <p>예는 모두 구매, 아니요는 모두 미구매로 분리됐습니다.</p>
+              <h3>학생 여부 · 정보이득 0.971</h3>
+              <p>예 → 구매 2 · 아니요 → 미구매 3</p>
             </article>
             <article>
               <span>중년 노드</span>
-              <h3>신용등급 · IG 0.971</h3>
-              <p>양호는 모두 구매, 우수는 모두 미구매로 분리됐습니다.</p>
+              <h3>신용등급 · 정보이득 0.971</h3>
+              <p>양호 → 구매 3 · 우수 → 미구매 2</p>
             </article>
           </div>
           <div class="repeat-takeaway">
             후보 속성 설정 → 정보이득 비교 → 질문 선택 → 분할 → 하위 노드에서 반복
           </div>
           <div class="action-row">
-            <p class="feedback correct">모든 리프의 엔트로피가 0이 되어 트리가 완성됐습니다.</p>
+            <p class="feedback correct">최종 구조 · 질문 3개 · 리프 5개</p>
             <button id="restartButton" class="secondary-button" type="button">처음부터 다시</button>
           </div>
         </section>
@@ -2034,9 +2156,9 @@
           [pool[index], pool[swapIndex]] = [pool[swapIndex], pool[index]];
         }
         const result = [];
-        while (result.length < 3) {
+        while (result.length < 4) {
           for (const cadet of pool) {
-            if (result.length < 3) result.push(cadet);
+            if (result.length < 4) result.push(cadet);
           }
         }
         return result;
@@ -2061,10 +2183,18 @@
       const youthWeight = document.getElementById("youthWeight");
       const youngWeight = document.getElementById("youngWeight");
       const middleWeight = document.getElementById("middleWeight");
+      const studentNoWeight = document.getElementById("studentNoWeight");
+      const studentYesWeight = document.getElementById("studentYesWeight");
 
-      [purchaseCount, noPurchaseCount, youthWeight, youngWeight, middleWeight].forEach(
-        (select) => populateSelect(select, numberOptions),
-      );
+      [
+        purchaseCount,
+        noPurchaseCount,
+        youthWeight,
+        youngWeight,
+        middleWeight,
+        studentNoWeight,
+        studentYesWeight,
+      ].forEach((select) => populateSelect(select, numberOptions));
 
       purchaseCount.addEventListener("change", () => {
         document.getElementById("purchaseMirror").textContent =
@@ -2107,11 +2237,17 @@
       }
 
       function resetExercise() {
-        [purchaseCount, noPurchaseCount, youthWeight, youngWeight, middleWeight].forEach(
-          (select) => {
-            select.value = "";
-          },
-        );
+        [
+          purchaseCount,
+          noPurchaseCount,
+          youthWeight,
+          youngWeight,
+          middleWeight,
+          studentNoWeight,
+          studentYesWeight,
+        ].forEach((select) => {
+          select.value = "";
+        });
         document.getElementById("purchaseMirror").textContent = "?";
         document.getElementById("noPurchaseMirror").textContent = "?";
         [
@@ -2120,6 +2256,8 @@
           "weightedBlocks",
           "ageGainResult",
           "entropyCompare",
+          "studentWeightedResult",
+          "studentGainResult",
           "gainSelectionArea",
           "finalCard",
           "treePanel",
@@ -2133,25 +2271,30 @@
         document.getElementById("revealBox").classList.remove("hidden");
         document.getElementById("checkEntropyButton").classList.remove("hidden");
         document.getElementById("checkWeightedButton").classList.remove("hidden");
+        document.getElementById("checkStudentButton").classList.remove("hidden");
+        document.getElementById("revealGainsButton").classList.add("hidden");
         document.getElementById("toStep2Button").classList.add("hidden");
         document.getElementById("toStep3Button").classList.add("hidden");
         document.getElementById("toMiddleButton").classList.add("hidden");
         document.getElementById("toStep5Button").classList.add("hidden");
         document.getElementById("step1Feedback").className = "feedback";
         document.getElementById("step1Feedback").textContent =
-          "구매 9명, 미구매 5명을 식에 적용합니다.";
+          "식의 분자 · 구매 9 / 미구매 5";
         document.getElementById("step2Feedback").className = "feedback";
         document.getElementById("step2Feedback").textContent =
-          "각 집단의 크기는 5명, 4명, 5명입니다.";
+          "가중치 분자 · 5 / 4 / 5";
+        document.getElementById("studentFormulaFeedback").className = "feedback";
+        document.getElementById("studentFormulaFeedback").textContent =
+          "가중치 분자 · 아니요 / 예";
         document.getElementById("step3Feedback").className = "feedback";
         document.getElementById("step3Feedback").textContent =
-          "정보이득 값을 비교하여 하나를 선택하세요.";
+          "첫 질문 · 가장 큰 정보이득 선택";
         document.getElementById("youthFeedback").className = "feedback";
         document.getElementById("youthFeedback").textContent =
-          "가중평균 엔트로피가 가장 작고 정보이득이 가장 큰 속성을 선택하세요.";
+          "청소년 노드 · 후보 속성 비교";
         document.getElementById("middleFeedback").className = "feedback";
         document.getElementById("middleFeedback").textContent =
-          "마지막으로 정보이득이 가장 큰 속성을 선택하세요.";
+          "중년 노드 · 후보 속성 비교";
         document.querySelectorAll(".gain-card").forEach((card) => {
           card.classList.remove("selected", "wrong");
           card.disabled = false;
@@ -2160,8 +2303,8 @@
           card.classList.remove("selected", "wrong");
           card.disabled = false;
         });
-        setTreeNode("treeYouthNode", "현재 노드", "어떤 속성?", "current");
-        setTreeNode("treeMiddleNode", "대기 노드", "어떤 속성?");
+        setTreeNode("treeYouthNode", "현재 노드", "후보 속성", "current");
+        setTreeNode("treeMiddleNode", "대기 노드", "후보 속성");
         document.getElementById("treeStatus").className = "tree-status";
         document.getElementById("treeStatus").textContent = "청소년 노드 계산 중";
         showStep(1);
@@ -2192,13 +2335,13 @@
         const feedback = document.getElementById("step1Feedback");
         if (purchaseCount.value === "9" && noPurchaseCount.value === "5") {
           feedback.className = "feedback correct";
-          feedback.textContent = "맞았습니다. 전체 엔트로피는 0.940입니다.";
+          feedback.textContent = "정답 · H(D) = 0.940";
           document.getElementById("entropyResult").classList.remove("hidden");
           document.getElementById("checkEntropyButton").classList.add("hidden");
           document.getElementById("toStep2Button").classList.remove("hidden");
         } else {
           feedback.className = "feedback error";
-          feedback.textContent = "구매 9명과 미구매 5명을 다시 확인하세요.";
+          feedback.textContent = "데이터 재확인 · 구매 9 / 미구매 5";
         }
       });
 
@@ -2213,7 +2356,7 @@
         if (correct) {
           feedback.className = "feedback correct";
           feedback.textContent =
-            "맞았습니다. 나이 속성의 정보이득은 약 0.247입니다.";
+            "정답 · 나이 정보이득 0.247";
           document.getElementById("weightedResult").classList.remove("hidden");
           document.getElementById("weightedBlocks").classList.remove("hidden");
           document.getElementById("ageGainResult").classList.remove("hidden");
@@ -2222,11 +2365,28 @@
           document.getElementById("toStep3Button").classList.remove("hidden");
         } else {
           feedback.className = "feedback error";
-          feedback.textContent = "청소년 5명, 청년 4명, 중년 5명을 다시 적용하세요.";
+          feedback.textContent = "집단 크기 재확인 · 5 / 4 / 5";
         }
       });
 
       document.getElementById("toStep3Button").addEventListener("click", () => showStep(3));
+
+      document.getElementById("checkStudentButton").addEventListener("click", () => {
+        const feedback = document.getElementById("studentFormulaFeedback");
+        const correct =
+          studentNoWeight.value === "7" && studentYesWeight.value === "7";
+        if (correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "정답 · 가중치 7/14 + 7/14";
+          document.getElementById("studentWeightedResult").classList.remove("hidden");
+          document.getElementById("studentGainResult").classList.remove("hidden");
+          document.getElementById("checkStudentButton").classList.add("hidden");
+          document.getElementById("revealGainsButton").classList.remove("hidden");
+        } else {
+          feedback.className = "feedback error";
+          feedback.textContent = "집단 크기 재확인 · 7명 / 7명";
+        }
+      });
 
       document.getElementById("revealGainsButton").addEventListener("click", () => {
         document.getElementById("revealBox").classList.add("hidden");
@@ -2243,7 +2403,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "맞았습니다. 나이의 정보이득 0.247이 가장 큽니다.";
+              "정답 · 나이 정보이득 0.247";
             document.getElementById("finalCard").classList.remove("hidden");
             document.getElementById("treePanel").classList.remove("hidden");
             document.querySelectorAll(".gain-card").forEach((item) => {
@@ -2254,7 +2414,7 @@
             card.classList.add("wrong");
             feedback.className = "feedback error";
             feedback.textContent =
-              `${card.dataset.feature}의 정보이득은 ${card.dataset.value}입니다. 더 큰 값을 다시 선택하세요.`;
+              `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
           }
         });
       });
@@ -2274,7 +2434,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "맞았습니다. 학생 여부로 분할하면 두 집단의 엔트로피가 모두 0이 됩니다.";
+              "정답 · 학생 여부 정보이득 0.971";
             document
               .querySelectorAll('.child-gain-card[data-node="youth"]')
               .forEach((item) => {
@@ -2283,14 +2443,14 @@
             card.disabled = false;
             setTreeNode("treeYouthNode", "질문", "학생 여부", "question");
             document.getElementById("treeYouthLeaves").classList.remove("hidden");
-            setTreeNode("treeMiddleNode", "현재 노드", "어떤 속성?", "current");
+            setTreeNode("treeMiddleNode", "현재 노드", "후보 속성", "current");
             document.getElementById("treeStatus").textContent = "중년 노드 계산 대기";
             document.getElementById("toMiddleButton").classList.remove("hidden");
           } else {
             card.classList.add("wrong");
             feedback.className = "feedback error";
             feedback.textContent =
-              `${card.dataset.feature}의 정보이득은 ${card.dataset.value}입니다. 더 큰 값을 다시 선택하세요.`;
+              `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
           }
         });
       });
@@ -2316,7 +2476,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "맞았습니다. 신용등급으로 분할하면 양호와 우수 집단의 엔트로피가 모두 0이 됩니다.";
+              "정답 · 신용등급 정보이득 0.971";
             document
               .querySelectorAll('.child-gain-card[data-node="middle"]')
               .forEach((item) => {
@@ -2333,7 +2493,7 @@
             card.classList.add("wrong");
             feedback.className = "feedback error";
             feedback.textContent =
-              `${card.dataset.feature}의 정보이득은 ${card.dataset.value}입니다. 더 큰 값을 다시 선택하세요.`;
+              `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
           }
         });
       });
