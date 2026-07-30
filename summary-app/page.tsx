@@ -7,9 +7,9 @@ type Option = { label: ReactNode; correct?: boolean; formula?: boolean };
 type CadetAssignments = Partial<Record<number, number>>;
 type Item = {
   id: number;
-  kind: "choice" | "order";
+  kind: "choice";
   question: string;
-  options?: Option[];
+  options: Option[];
   explanation: string;
 };
 
@@ -45,7 +45,7 @@ const CONCEPTS: Array<{
   {
     title: "분할 후 엔트로피",
     symbol: (
-      <i className="math">ℎₐ(𝒟)</i>
+      <i className="math">ℎ<sub>𝒜</sub>(𝒟)</i>
     ),
     body: (
       <>
@@ -63,19 +63,14 @@ const CONCEPTS: Array<{
       </>
     ),
     detail: (
-      <i className="math">𝐺𝑎𝑖𝑛(𝒟, 𝒜) = ℎ(𝒟) − ℎₐ(𝒟)</i>
+      <i className="math">
+        𝐺𝑎𝑖𝑛(𝒟, 𝒜) = ℎ(𝒟) − ℎ<sub>𝒜</sub>(𝒟)
+      </i>
     ),
   },
 ];
 
-const INITIAL_ORDER = [
-  ID3_STEPS[1],
-  ID3_STEPS[3],
-  ID3_STEPS[0],
-  ID3_STEPS[2],
-];
-
-const ASSIGNED_ITEM_IDS = [1, 3, 6];
+const ASSIGNED_ITEM_IDS = [1, 3, 5];
 
 function shuffledCadets(count: number) {
   const cadets = Array.from({ length: count }, (_, index) => index + 1);
@@ -101,15 +96,13 @@ const ITEMS: Item[] = [
     id: 1,
     kind: "choice",
     question:
-      "다음 설명에서 옳은 것을 고르세요.\nㄱ. 의사결정 트리는 현재 노드에서 하나의 후보 속성을 질문으로 선택한다.\nㄴ. 선택한 속성의 값에 따라 데이터를 하위 노드로 나눈다.",
+      "다음 설명이 옳으면 O, 옳지 않으면 X를 선택하세요.\n의사결정 트리는 루트 노드에서 선택한 하나의 속성만 모든 하위 노드에서 반복해서 사용한다.",
     options: [
-      { label: "ㄱ만 옳다" },
-      { label: "ㄴ만 옳다" },
-      { label: "ㄱ과 ㄴ이 모두 옳다", correct: true },
-      { label: "ㄱ과 ㄴ이 모두 옳지 않다" },
+      { label: "O" },
+      { label: "X", correct: true },
     ],
     explanation:
-      "후보 속성 하나가 현재 노드의 질문이 되고, 그 속성값에 따라 데이터가 하위 노드로 나뉩니다.",
+      "혼합된 하위 노드에서는 남은 후보 속성의 정보이득을 다시 비교하여 새로운 질문을 선택합니다.",
   },
   {
     id: 2,
@@ -133,20 +126,32 @@ const ITEMS: Item[] = [
     question: "정보이득 𝐺𝑎𝑖𝑛(𝒟, 𝒜)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
-        label: <i className="math">ℎₐ(𝒟) − ℎ(𝒟)</i>,
+        label: (
+          <span className="math">
+            ℎ<sub>𝒜</sub>(𝒟) − ℎ(𝒟)
+          </span>
+        ),
         formula: true,
       },
       {
-        label: <i className="math">ℎ(𝒟) + ℎₐ(𝒟)</i>,
+        label: (
+          <span className="math">
+            ℎ(𝒟) + ℎ<sub>𝒜</sub>(𝒟)
+          </span>
+        ),
         formula: true,
       },
       {
-        label: <i className="math">ℎ(𝒟) − ℎₐ(𝒟)</i>,
+        label: (
+          <span className="math">
+            ℎ(𝒟) − ℎ<sub>𝒜</sub>(𝒟)
+          </span>
+        ),
         correct: true,
         formula: true,
       },
       {
-        label: <i className="math">∑ ℎ(𝒟ᵥ)</i>,
+        label: <span className="math">∑ ℎ(𝒟ᵥ)</span>,
         formula: true,
       },
     ],
@@ -181,13 +186,6 @@ const ITEMS: Item[] = [
     ],
     explanation:
       "ℎ(𝒟) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
-  },
-  {
-    id: 6,
-    kind: "order",
-    question: "ID3 알고리즘에서 분할 속성을 선택하고 데이터를 나누는 과정을 순서대로 배열하세요.",
-    explanation:
-      "실제값이 섞인 하위 노드에서는 이 네 단계를 반복하고, ℎ(𝒟) = 0이면 리프 노드로 확정합니다.",
   },
 ];
 
@@ -333,36 +331,20 @@ function Quiz({
 }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
-  const [order, setOrder] = useState([...INITIAL_ORDER]);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">(
     "idle",
   );
   const [score, setScore] = useState(0);
   const item = ITEMS[index];
   const assignedCadet = assignments[item.id];
-  const ready =
-    item.kind === "choice" ? selected !== null : true;
+  const ready = selected !== null;
 
   function check(event: FormEvent) {
     event.preventDefault();
-    const ok =
-      item.kind === "choice"
-        ? Boolean(item.options?.[selected ?? -1]?.correct)
-        : order.every((step, stepIndex) => step === ID3_STEPS[stepIndex]);
+    const ok = Boolean(item.options[selected ?? -1]?.correct);
 
     if (ok) setScore((value) => value + 1);
     setFeedback(ok ? "correct" : "wrong");
-  }
-
-  function moveStep(from: number, direction: -1 | 1) {
-    const to = from + direction;
-    if (to < 0 || to >= order.length || feedback === "correct") return;
-    setOrder((current) => {
-      const nextOrder = [...current];
-      [nextOrder[from], nextOrder[to]] = [nextOrder[to], nextOrder[from]];
-      return nextOrder;
-    });
-    if (feedback === "wrong") setFeedback("idle");
   }
 
   function next() {
@@ -413,61 +395,27 @@ function Quiz({
         )}
         <h1>{item.question}</h1>
 
-        {item.kind === "choice" ? (
-          <div className="options">
-            {item.options?.map((option, optionIndex) => (
-              <button
-                type="button"
-                className={`${selected === optionIndex ? "selected" : ""} ${
-                  feedback === "correct" && option.correct ? "correct" : ""
-                } ${
-                  feedback === "wrong" && selected === optionIndex ? "wrong" : ""
-                } ${option.formula ? "formula-option" : ""}`}
-                onClick={() => {
-                  setSelected(optionIndex);
-                  if (feedback === "wrong") setFeedback("idle");
-                }}
-                disabled={feedback === "correct"}
-                key={`${item.id}-${optionIndex}`}
-              >
-                <i>{String.fromCharCode(65 + optionIndex)}</i>
-                <span>{option.label}</span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="order-list">
-            {order.map((step, stepIndex) => (
-              <div className={`order-step tone-${step.key}`} key={step.key}>
-                <b>{step.icon}</b>
-                <div className="order-copy">
-                  <small>현재 {stepIndex + 1}번째</small>
-                  <span>{step.label}</span>
-                </div>
-                <div className="order-controls">
-                  <button
-                    type="button"
-                    onClick={() => moveStep(stepIndex, -1)}
-                    disabled={stepIndex === 0 || feedback === "correct"}
-                    aria-label={`${step.label} 위로 이동`}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveStep(stepIndex, 1)}
-                    disabled={
-                      stepIndex === order.length - 1 || feedback === "correct"
-                    }
-                    aria-label={`${step.label} 아래로 이동`}
-                  >
-                    ↓
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className={`options ${item.id === 1 ? "ox-options" : ""}`}>
+          {item.options.map((option, optionIndex) => (
+            <button
+              type="button"
+              className={`${selected === optionIndex ? "selected" : ""} ${
+                feedback === "correct" && option.correct ? "correct" : ""
+              } ${
+                feedback === "wrong" && selected === optionIndex ? "wrong" : ""
+              } ${option.formula ? "formula-option" : ""}`}
+              onClick={() => {
+                setSelected(optionIndex);
+                if (feedback === "wrong") setFeedback("idle");
+              }}
+              disabled={feedback === "correct"}
+              key={`${item.id}-${optionIndex}`}
+            >
+              <i>{String.fromCharCode(65 + optionIndex)}</i>
+              <span>{option.label}</span>
+            </button>
+          ))}
+        </div>
 
         {feedback === "correct" && (
           <div className="feedback good">
@@ -478,11 +426,7 @@ function Quiz({
         {feedback === "wrong" && (
           <div className="feedback bad">
             <b>다시 확인</b>
-            <span>
-              {item.kind === "order"
-                ? "화살표로 순서를 바꾼 뒤 다시 확인해 보세요."
-                : "답을 바꾼 뒤 다시 확인해 보세요."}
-            </span>
+            <span>답을 바꾼 뒤 다시 확인해 보세요.</span>
           </div>
         )}
 
