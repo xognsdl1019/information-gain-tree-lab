@@ -7,7 +7,7 @@ type Option = { label: ReactNode; correct?: boolean; formula?: boolean };
 type CadetAssignments = Partial<Record<number, number>>;
 type Item = {
   id: number;
-  kind: "fill" | "choice" | "order";
+  kind: "choice" | "order";
   question: string;
   options?: Option[];
   explanation: string;
@@ -340,8 +340,6 @@ function Quiz({
   assignments: CadetAssignments;
 }) {
   const [index, setIndex] = useState(0);
-  const [a, setA] = useState("");
-  const [b, setB] = useState("");
   const [selected, setSelected] = useState<number | null>(null);
   const [order, setOrder] = useState([...INITIAL_ORDER]);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">(
@@ -351,21 +349,14 @@ function Quiz({
   const item = ITEMS[index];
   const assignedCadet = assignments[item.id];
   const ready =
-    item.kind === "fill"
-      ? Boolean(a.trim() && b.trim())
-      : item.kind === "choice"
-        ? selected !== null
-        : true;
-  const norm = (value: string) => value.replace(/\s+/g, "").trim();
+    item.kind === "choice" ? selected !== null : true;
 
   function check(event: FormEvent) {
     event.preventDefault();
     const ok =
-      item.kind === "fill"
-        ? norm(a) === "질문" && norm(b) === "분할"
-        : item.kind === "choice"
-          ? Boolean(item.options?.[selected ?? -1]?.correct)
-          : order.every((step, stepIndex) => step === ID3_STEPS[stepIndex]);
+      item.kind === "choice"
+        ? Boolean(item.options?.[selected ?? -1]?.correct)
+        : order.every((step, stepIndex) => step === ID3_STEPS[stepIndex]);
 
     if (ok) setScore((value) => value + 1);
     setFeedback(ok ? "correct" : "wrong");
@@ -388,8 +379,6 @@ function Quiz({
       return;
     }
     setIndex((value) => value + 1);
-    setA("");
-    setB("");
     setSelected(null);
     setFeedback("idle");
   }
@@ -432,34 +421,7 @@ function Quiz({
         )}
         <h1>{item.question}</h1>
 
-        {item.kind === "fill" ? (
-          <div className="blanks">
-            <label>
-              <span>첫 번째 빈칸</span>
-              <input
-                value={a}
-                onChange={(event) => {
-                  setA(event.target.value);
-                  if (feedback === "wrong") setFeedback("idle");
-                }}
-                placeholder="핵심 단어 입력"
-                disabled={feedback === "correct"}
-              />
-            </label>
-            <label>
-              <span>두 번째 빈칸</span>
-              <input
-                value={b}
-                onChange={(event) => {
-                  setB(event.target.value);
-                  if (feedback === "wrong") setFeedback("idle");
-                }}
-                placeholder="핵심 단어 입력"
-                disabled={feedback === "correct"}
-              />
-            </label>
-          </div>
-        ) : item.kind === "choice" ? (
+        {item.kind === "choice" ? (
           <div className="options">
             {item.options?.map((option, optionIndex) => (
               <button
