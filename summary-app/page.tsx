@@ -21,39 +21,39 @@ const CONCEPTS: Array<{
 }> = [
   {
     title: "엔트로피",
-    symbol: <i>H(D)</i>,
+    symbol: <i>h(D)</i>,
     body: (
       <>
-        현재 노드의 <b>실제값 분포</b>에 대한 불확실성
+        현재 데이터의 실제값이 <b>섞여 있는 정도</b>
       </>
     ),
-    detail: "모든 데이터의 실제값이 같으면 H(D) = 0",
+    detail: "모든 실제값이 같으면 h(D) = 0",
   },
   {
     title: "가중평균 엔트로피",
     symbol: (
       <i>
-        H<sub>A</sub>(D)
+        h<sub>A</sub>(D)
       </i>
     ),
     body: (
       <>
-        하위 노드의 엔트로피를 <b>데이터 비율</b>에 따라 가중평균한 값
+        하위 노드의 엔트로피를 <b>데이터 비율</b>로 가중평균한 값
       </>
     ),
-    detail: "속성 A로 분할한 이후의 불확실성",
+    detail: "값이 작을수록 실제값이 더 명확하게 나뉨",
   },
   {
     title: "정보이득",
     symbol: <i>Gain(D, A)</i>,
     body: (
       <>
-        속성 A로 분할했을 때 <b>감소한 엔트로피의 양</b>
+        분할 전보다 <b>불확실성이 감소한 양</b>
       </>
     ),
     detail: (
       <>
-        Gain(D, A) = H(D) − H<sub>A</sub>(D)
+        Gain(D, A) = h(D) − h<sub>A</sub>(D)
       </>
     ),
   },
@@ -61,9 +61,9 @@ const CONCEPTS: Array<{
 
 const ID3_STEPS = [
   "후보 속성 설정",
-  "후보 속성별 정보이득 계산",
-  "정보이득이 가장 큰 속성을 분할 기준으로 선택",
-  "선택한 속성값에 따라 데이터 분할",
+  "속성별 정보이득 계산",
+  "정보이득이 가장 큰 속성 선택",
+  "선택한 속성으로 데이터 분할",
 ];
 
 const INITIAL_ORDER = [
@@ -99,32 +99,32 @@ const ITEMS: Item[] = [
     id: 1,
     kind: "fill",
     question:
-      "의사결정나무는 각 노드에서 하나의 (     )을 선택하고, 그 기준에 따라 데이터를 하위 노드로 (     )한다.",
+      "의사결정 트리는 현재 노드에서 하나의 (     )을 선택하고, 속성값에 따라 데이터를 하위 노드로 (     )한다.",
     explanation:
-      "질문은 현재 노드의 분할 기준이며, 속성값에 따라 데이터가 하위 노드로 분할됩니다.",
+      "선택한 속성이 질문이 되고, 각 속성값에 따라 데이터가 하위 노드로 분할됩니다.",
   },
   {
     id: 2,
     kind: "choice",
-    question: "엔트로피가 나타내는 것은 무엇인가요?",
+    question: "엔트로피 h(D)가 의미하는 것은 무엇인가요?",
     options: [
-      { label: "현재 노드의 데이터 개수" },
-      { label: "현재 노드의 실제값 분포에 대한 불확실성", correct: true },
-      { label: "의사결정나무의 깊이" },
-      { label: "후보 속성의 개수" },
+      { label: "현재 데이터에 포함된 행의 수" },
+      { label: "현재 데이터에서 실제값이 섞여 있는 정도", correct: true },
+      { label: "의사결정 트리의 전체 깊이" },
+      { label: "현재 사용할 수 있는 후보 속성의 수" },
     ],
     explanation:
-      "엔트로피는 현재 노드의 실제값 분포에 대한 불확실성을 나타냅니다.",
+      "엔트로피는 현재 데이터에서 실제값이 얼마나 섞여 있는지를 나타냅니다.",
   },
   {
     id: 3,
     kind: "choice",
-    question: "정보이득의 계산식으로 옳은 것은 무엇인가요?",
+    question: "정보이득 Gain(D, A)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
         label: (
           <>
-            H<sub>A</sub>(D) − H(D)
+            h<sub>A</sub>(D) − h(D)
           </>
         ),
         formula: true,
@@ -132,7 +132,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <>
-            H(D) + H<sub>A</sub>(D)
+            h(D) + h<sub>A</sub>(D)
           </>
         ),
         formula: true,
@@ -140,7 +140,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <>
-            H(D) − H<sub>A</sub>(D)
+            h(D) − h<sub>A</sub>(D)
           </>
         ),
         correct: true,
@@ -149,7 +149,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <>
-            ∑ H(D<sub>v</sub>)
+            ∑ h(D<sub>v</sub>)
           </>
         ),
         formula: true,
@@ -161,35 +161,35 @@ const ITEMS: Item[] = [
   {
     id: 4,
     kind: "choice",
-    question: "ID3는 현재 노드의 분할 속성을 어떻게 결정하나요?",
+    question: "ID3는 어떤 속성을 현재 노드의 질문으로 선택하나요?",
     options: [
-      { label: "후보 중 정보이득이 가장 큰 속성", correct: true },
-      { label: "후보 중 엔트로피가 가장 큰 속성" },
+      { label: "정보이득이 가장 큰 속성", correct: true },
+      { label: "분할 후 엔트로피가 가장 큰 속성" },
       { label: "속성값의 종류가 가장 많은 속성" },
-      { label: "데이터에 가장 먼저 기록된 속성" },
+      { label: "데이터 표에서 가장 왼쪽에 있는 속성" },
     ],
     explanation:
-      "ID3는 후보 속성별 정보이득을 비교하여 가장 큰 속성을 분할 기준으로 선택합니다.",
+      "ID3는 후보 속성의 정보이득을 비교하고, 가장 큰 속성을 현재 노드의 질문으로 선택합니다.",
   },
   {
     id: 5,
     kind: "choice",
-    question: "현재 노드의 엔트로피가 0이면 왜 분할을 종료할까요?",
+    question: "현재 노드의 h(D) = 0일 때 리프 노드로 확정하는 이유는 무엇인가요?",
     options: [
-      { label: "데이터가 너무 많기 때문에" },
-      { label: "더 사용할 속성이 없기 때문에" },
-      { label: "모든 데이터의 실제값이 같아 불확실성이 없기 때문에", correct: true },
-      { label: "정보이득을 계산할 수 없기 때문에" },
+      { label: "현재 노드의 데이터가 너무 많기 때문에" },
+      { label: "후보 속성을 모두 사용했기 때문에" },
+      { label: "모든 실제값이 같아 불확실성이 없기 때문에", correct: true },
+      { label: "정보이득이 항상 음수가 되기 때문에" },
     ],
     explanation:
-      "H(D) = 0인 노드는 모든 데이터의 실제값이 같으므로 리프 노드로 확정합니다.",
+      "h(D) = 0이면 모든 데이터의 실제값이 같으므로 더 분할하지 않고 리프 노드로 확정합니다.",
   },
   {
     id: 6,
     kind: "order",
-    question: "ID3 알고리즘의 4단계를 올바른 순서로 배열하세요.",
+    question: "ID3에서 분할 속성을 선택하고 데이터를 나누는 과정을 순서대로 배열하세요.",
     explanation:
-      "실제값이 섞인 하위 노드에서는 같은 4단계를 반복하고, H(D) = 0이면 리프 노드로 확정합니다.",
+      "실제값이 섞인 하위 노드에서는 같은 과정을 반복하고, h(D) = 0이면 리프 노드로 확정합니다.",
   },
 ];
 
@@ -197,7 +197,10 @@ function Summary({ start }: { start: () => void }) {
   return (
     <section className="summary-page">
       <div className="summary-title">
-        <span>의사결정나무 핵심 정리</span>
+        <span>의사결정 트리 핵심 정리</span>
+        <h1>
+          불확실성을 가장 많이 줄이는 <strong>질문</strong>을 선택한다
+        </h1>
       </div>
 
       <div className="summary-body">
@@ -238,7 +241,7 @@ function Summary({ start }: { start: () => void }) {
             </div>
             <div className="stop">
               <span>종료</span>
-              <strong>H(D) = 0</strong>
+              <strong>h(D) = 0</strong>
               <p>리프 노드로 확정</p>
             </div>
           </div>
@@ -387,11 +390,12 @@ function Quiz({
 
   return (
     <section className="quiz-page">
-      <aside className="status">
-        <span>확인 퀴즈</span>
-        <div>
-          <b>{index + 1}</b>
-          <em>/ {ITEMS.length}</em>
+      <div className="quiz-toolbar">
+        <div className="quiz-progress-label">
+          <span>확인 퀴즈</span>
+          <strong>
+            {index + 1}<small> / {ITEMS.length}</small>
+          </strong>
         </div>
         <nav>
           {ITEMS.map((question, questionIndex) => (
@@ -409,8 +413,8 @@ function Quiz({
             </i>
           ))}
         </nav>
-        <button onClick={back}>← 핵심 정리</button>
-      </aside>
+        <button type="button" onClick={back}>← 핵심 정리</button>
+      </div>
 
       <form className="quiz-card" onSubmit={check}>
         <span>문제 {item.id}</span>
