@@ -46,7 +46,7 @@ const CONCEPTS: Array<{
   {
     title: "분할 후 엔트로피",
     symbol: (
-      <i className="math">ℎ<sub>𝒜</sub>(𝒟)</i>
+      <i className="math">ℎ<sub>𝐴</sub>(𝒟)</i>
     ),
     body: (
       <>
@@ -57,7 +57,7 @@ const CONCEPTS: Array<{
   },
   {
     title: "정보이득",
-    symbol: <i className="math">𝐺𝑎𝑖𝑛(𝒟, 𝒜)</i>,
+    symbol: <i className="math">𝐺𝑎𝑖𝑛(𝒟, 𝐴)</i>,
     body: (
       <>
         분할 전보다 <b>불확실성이 감소한 양</b>
@@ -65,7 +65,7 @@ const CONCEPTS: Array<{
     ),
     detail: (
       <i className="math">
-        𝐺𝑎𝑖𝑛(𝒟, 𝒜) = ℎ(𝒟) − ℎ<sub>𝒜</sub>(𝒟)
+        𝐺𝑎𝑖𝑛(𝒟, 𝐴) = ℎ(𝒟) − ℎ<sub>𝐴</sub>(𝒟)
       </i>
     ),
   },
@@ -125,12 +125,12 @@ const ITEMS: Item[] = [
   {
     id: 3,
     kind: "choice",
-    question: "정보이득 𝐺𝑎𝑖𝑛(𝒟, 𝒜)의 계산식으로 옳은 것은 무엇인가요?",
+    question: "정보이득 𝐺𝑎𝑖𝑛(𝒟, 𝐴)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
         label: (
           <span className="formula">
-            ℎ<sub>𝒜</sub>(𝒟) − ℎ(𝒟)
+            ℎ<sub>𝐴</sub>(𝒟) − ℎ(𝒟)
           </span>
         ),
         formula: true,
@@ -138,7 +138,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            ℎ(𝒟) + ℎ<sub>𝒜</sub>(𝒟)
+            ℎ(𝒟) + ℎ<sub>𝐴</sub>(𝒟)
           </span>
         ),
         formula: true,
@@ -146,7 +146,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            ℎ(𝒟) − ℎ<sub>𝒜</sub>(𝒟)
+            ℎ(𝒟) − ℎ<sub>𝐴</sub>(𝒟)
           </span>
         ),
         correct: true,
@@ -167,7 +167,7 @@ const ITEMS: Item[] = [
       "ID3 알고리즘이 현재 노드에서 사용할 분할 속성을 선택하는 기준으로 옳은 것은 무엇인가요?",
     options: [
       {
-        label: "후보 속성별 정보이득을 계산한 뒤, 정보이득이 가장 큰 속성",
+        label: "후보 속성 중 정보이득이 가장 큰 속성",
         correct: true,
       },
       { label: "분할 후 엔트로피가 가장 큰 속성" },
@@ -225,8 +225,12 @@ function Summary({ start }: { start: () => void }) {
 
           <div className="id3-notes">
             <div className="repeat">
-              <span>반복</span>
-              <p>실제값이 섞인 하위 노드 · 1~4단계</p>
+              <b className="repeat-arrow" aria-hidden="true">↩</b>
+              <div>
+                <span>반복</span>
+                <p>실제값이 섞인 하위 노드</p>
+              </div>
+              <strong>4단계 → 1단계</strong>
             </div>
             <div className="stop">
               <span>종료</span>
@@ -408,6 +412,8 @@ function Quiz({
 
         <div
           className={`options ${item.id === 1 ? "ox-options" : ""} ${
+            item.id === 4 ? "item-four-options" : ""
+          } ${
             item.id === 5 ? "item-five-options" : ""
           }`}
         >
