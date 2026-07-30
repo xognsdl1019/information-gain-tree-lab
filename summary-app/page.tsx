@@ -13,6 +13,13 @@ type Item = {
   explanation: string;
 };
 
+const ID3_STEPS = [
+  { key: "attribute", icon: "속성", label: "현재 노드의 후보 속성 확인" },
+  { key: "gain", icon: "Gain", label: "후보 속성별 정보이득 계산" },
+  { key: "max", icon: "MAX", label: "정보이득이 가장 큰 속성 선택" },
+  { key: "split", icon: "분할", label: "선택한 속성값에 따라 데이터 분할" },
+];
+
 const CONCEPTS: Array<{
   title: string;
   symbol: ReactNode;
@@ -21,49 +28,44 @@ const CONCEPTS: Array<{
 }> = [
   {
     title: "엔트로피",
-    symbol: <i>h(D)</i>,
+    symbol: <i className="math">ℎ(𝒟)</i>,
     body: (
       <>
-        현재 데이터의 실제값이 <b>섞여 있는 정도</b>
+        데이터 집합 <i className="math">𝒟</i>에서 실제값이{" "}
+        <b>섞여 있는 정도</b>
       </>
     ),
-    detail: "모든 실제값이 같으면 h(D) = 0",
+    detail: (
+      <>
+        분류 결과의 불확실성 · 모든 실제값이 같으면{" "}
+        <i className="math">ℎ(𝒟) = 0</i>
+      </>
+    ),
   },
   {
-    title: "가중평균 엔트로피",
+    title: "분할 후 엔트로피",
     symbol: (
-      <i>
-        h<sub>A</sub>(D)
-      </i>
+      <i className="math">ℎₐ(𝒟)</i>
     ),
     body: (
       <>
-        하위 노드의 엔트로피를 <b>데이터 비율</b>로 가중평균한 값
+        분할된 하위 집합의 엔트로피를 <b>데이터 비율</b>로 가중평균
       </>
     ),
     detail: "값이 작을수록 실제값이 더 명확하게 나뉨",
   },
   {
     title: "정보이득",
-    symbol: <i>Gain(D, A)</i>,
+    symbol: <i className="math">𝐺𝑎𝑖𝑛(𝒟, 𝒜)</i>,
     body: (
       <>
         분할 전보다 <b>불확실성이 감소한 양</b>
       </>
     ),
     detail: (
-      <>
-        Gain(D, A) = h(D) − h<sub>A</sub>(D)
-      </>
+      <i className="math">𝐺𝑎𝑖𝑛(𝒟, 𝒜) = ℎ(𝒟) − ℎₐ(𝒟)</i>
     ),
   },
-];
-
-const ID3_STEPS = [
-  "후보 속성 설정",
-  "속성별 정보이득 계산",
-  "정보이득이 가장 큰 속성 선택",
-  "선택한 속성으로 데이터 분할",
 ];
 
 const INITIAL_ORDER = [
@@ -99,65 +101,52 @@ const ITEMS: Item[] = [
     id: 1,
     kind: "choice",
     question:
-      "빈칸에 들어갈 두 단어의 올바른 조합을 고르세요. 의사결정 트리는 현재 노드에서 하나의 ( ㉠ )을 선택하고, 속성값에 따라 데이터를 하위 노드로 ( ㉡ )한다.",
+      "다음 설명에서 옳은 것을 고르세요.\nㄱ. 의사결정 트리는 현재 노드에서 하나의 후보 속성을 질문으로 선택한다.\nㄴ. 선택한 속성의 값에 따라 데이터를 하위 노드로 나눈다.",
     options: [
-      { label: "㉠ 질문 / ㉡ 분할", correct: true },
-      { label: "㉠ 실제값 / ㉡ 학습" },
-      { label: "㉠ 엔트로피 / ㉡ 종료" },
-      { label: "㉠ 리프 / ㉡ 예측" },
+      { label: "ㄱ만 옳다" },
+      { label: "ㄴ만 옳다" },
+      { label: "ㄱ과 ㄴ이 모두 옳다", correct: true },
+      { label: "ㄱ과 ㄴ이 모두 옳지 않다" },
     ],
     explanation:
-      "선택한 속성이 질문이 되고, 각 속성값에 따라 데이터가 하위 노드로 분할됩니다.",
+      "후보 속성 하나가 현재 노드의 질문이 되고, 그 속성값에 따라 데이터가 하위 노드로 나뉩니다.",
   },
   {
     id: 2,
     kind: "choice",
-    question: "엔트로피 h(D)가 의미하는 것은 무엇인가요?",
+    question: "엔트로피 ℎ(𝒟)가 의미하는 것은 무엇인가요?",
     options: [
       { label: "현재 데이터에 포함된 행의 수" },
-      { label: "현재 데이터에서 실제값이 섞여 있는 정도", correct: true },
+      {
+        label: "데이터 집합 𝒟에서 실제값이 섞여 있는 정도",
+        correct: true,
+      },
       { label: "의사결정 트리의 전체 깊이" },
       { label: "현재 사용할 수 있는 후보 속성의 수" },
     ],
     explanation:
-      "엔트로피는 현재 데이터에서 실제값이 얼마나 섞여 있는지를 나타냅니다.",
+      "엔트로피 ℎ(𝒟)는 데이터 집합 𝒟에서 실제값이 섞여 있는 정도, 즉 분류 결과의 불확실성을 나타냅니다.",
   },
   {
     id: 3,
     kind: "choice",
-    question: "정보이득 Gain(D, A)의 계산식으로 옳은 것은 무엇인가요?",
+    question: "정보이득 𝐺𝑎𝑖𝑛(𝒟, 𝒜)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
-        label: (
-          <>
-            h<sub>A</sub>(D) − h(D)
-          </>
-        ),
+        label: <i className="math">ℎₐ(𝒟) − ℎ(𝒟)</i>,
         formula: true,
       },
       {
-        label: (
-          <>
-            h(D) + h<sub>A</sub>(D)
-          </>
-        ),
+        label: <i className="math">ℎ(𝒟) + ℎₐ(𝒟)</i>,
         formula: true,
       },
       {
-        label: (
-          <>
-            h(D) − h<sub>A</sub>(D)
-          </>
-        ),
+        label: <i className="math">ℎ(𝒟) − ℎₐ(𝒟)</i>,
         correct: true,
         formula: true,
       },
       {
-        label: (
-          <>
-            ∑ h(D<sub>v</sub>)
-          </>
-        ),
+        label: <i className="math">∑ ℎ(𝒟ᵥ)</i>,
         formula: true,
       },
     ],
@@ -180,22 +169,25 @@ const ITEMS: Item[] = [
   {
     id: 5,
     kind: "choice",
-    question: "현재 노드의 h(D) = 0일 때 리프 노드로 확정하는 이유는 무엇인가요?",
+    question: "현재 노드의 ℎ(𝒟) = 0일 때 리프 노드로 확정하는 이유는 무엇인가요?",
     options: [
       { label: "현재 노드의 데이터가 너무 많기 때문에" },
       { label: "후보 속성을 모두 사용했기 때문에" },
-      { label: "모든 실제값이 같아 불확실성이 없기 때문에", correct: true },
+      {
+        label: "모든 실제값이 같아 분류 결과가 하나로 결정되기 때문에",
+        correct: true,
+      },
       { label: "정보이득이 항상 음수가 되기 때문에" },
     ],
     explanation:
-      "h(D) = 0이면 모든 데이터의 실제값이 같으므로 더 분할하지 않고 리프 노드로 확정합니다.",
+      "ℎ(𝒟) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
   },
   {
     id: 6,
     kind: "order",
-    question: "ID3에서 분할 속성을 선택하고 데이터를 나누는 과정을 순서대로 배열하세요.",
+    question: "ID3 알고리즘에서 분할 속성을 선택하고 데이터를 나누는 과정을 순서대로 배열하세요.",
     explanation:
-      "실제값이 섞인 하위 노드에서는 같은 과정을 반복하고, h(D) = 0이면 리프 노드로 확정합니다.",
+      "실제값이 섞인 하위 노드에서는 이 네 단계를 반복하고, ℎ(𝒟) = 0이면 리프 노드로 확정합니다.",
   },
 ];
 
@@ -207,6 +199,39 @@ function Summary({ start }: { start: () => void }) {
       </div>
 
       <div className="summary-body">
+        <aside className="id3-card">
+          <div className="id3-heading">
+            <div>
+              <span>ID3 알고리즘</span>
+              <h2>분할 속성 선택과 데이터 분할</h2>
+            </div>
+          </div>
+
+          <ol>
+            {ID3_STEPS.map((step, index) => (
+              <li className={`tone-${step.key}`} key={step.key}>
+                <b>{step.icon}</b>
+                <div>
+                  <small>{index + 1}단계</small>
+                  <strong>{step.label}</strong>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <div className="id3-notes">
+            <div className="repeat">
+              <span>반복</span>
+              <p>실제값이 섞인 하위 노드 · 1~4단계</p>
+            </div>
+            <div className="stop">
+              <span>종료</span>
+              <strong className="math">ℎ(𝒟) = 0</strong>
+              <p>리프 노드 확정</p>
+            </div>
+          </div>
+        </aside>
+
         <div className="concepts">
           {CONCEPTS.map((concept) => (
             <article key={concept.title}>
@@ -219,36 +244,6 @@ function Summary({ start }: { start: () => void }) {
             </article>
           ))}
         </div>
-
-        <aside className="id3-card">
-          <div className="id3-heading">
-            <div>
-              <span>ID3 알고리즘</span>
-              <h2>분할 속성 결정과 반복</h2>
-            </div>
-          </div>
-
-          <ol>
-            {ID3_STEPS.map((step, index) => (
-              <li key={step}>
-                <b>{index + 1}</b>
-                <strong>{step}</strong>
-              </li>
-            ))}
-          </ol>
-
-          <div className="id3-notes">
-            <div className="repeat">
-              <span>반복</span>
-              <p>실제값이 섞인 하위 노드에서 1~4단계 반복</p>
-            </div>
-            <div className="stop">
-              <span>종료</span>
-              <strong>h(D) = 0</strong>
-              <p>리프 노드로 확정</p>
-            </div>
-          </div>
-        </aside>
       </div>
 
       <div className="summary-action">
@@ -279,11 +274,11 @@ function CadetSetup({
     <section className="cadet-setup-page">
       <div className="cadet-setup-card">
         <div className="setup-heading">
-          <h1>생도 배정</h1>
+          <h1>참여 인원 설정</h1>
         </div>
 
         <form className="cadet-count-form" onSubmit={submit}>
-          <label htmlFor="summary-cadet-count">참여 생도 수</label>
+          <label htmlFor="summary-cadet-count">참여 인원</label>
           <div>
             <input
               id="summary-cadet-count"
@@ -443,15 +438,18 @@ function Quiz({
         ) : (
           <div className="order-list">
             {order.map((step, stepIndex) => (
-              <div className="order-step" key={step}>
-                <b>{stepIndex + 1}</b>
-                <span>{step}</span>
+              <div className={`order-step tone-${step.key}`} key={step.key}>
+                <b>{step.icon}</b>
+                <div className="order-copy">
+                  <small>현재 {stepIndex + 1}번째</small>
+                  <span>{step.label}</span>
+                </div>
                 <div className="order-controls">
                   <button
                     type="button"
                     onClick={() => moveStep(stepIndex, -1)}
                     disabled={stepIndex === 0 || feedback === "correct"}
-                    aria-label={`${step} 위로 이동`}
+                    aria-label={`${step.label} 위로 이동`}
                   >
                     ↑
                   </button>
@@ -461,7 +459,7 @@ function Quiz({
                     disabled={
                       stepIndex === order.length - 1 || feedback === "correct"
                     }
-                    aria-label={`${step} 아래로 이동`}
+                    aria-label={`${step.label} 아래로 이동`}
                   >
                     ↓
                   </button>
@@ -569,16 +567,16 @@ export default function SummaryQuiz() {
     <main>
       <header className="app-header">
         <div className="brand">
-          <span>ID3</span>
+          <span>DT</span>
           <div>
-            <small>인공지능 개론</small>
-            <strong>8. 핵심 정리 및 확인 퀴즈</strong>
+            <small>인공지능 입문</small>
+            <strong>8. 의사결정 트리</strong>
           </div>
         </div>
         <nav>
           <span className={phase === "summary" ? "active" : ""}>핵심 정리</span>
           <i>→</i>
-          <span className={phase === "setup" ? "active" : ""}>생도 배정</span>
+          <span className={phase === "setup" ? "active" : ""}>인원 설정</span>
           <i>→</i>
           <span className={phase === "quiz" ? "active" : ""}>확인 퀴즈</span>
           <i>→</i>
