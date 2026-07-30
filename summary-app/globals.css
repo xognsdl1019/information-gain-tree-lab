@@ -640,37 +640,6 @@ main {
   letter-spacing: -0.035em;
 }
 
-.blanks {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.blanks label {
-  display: grid;
-  gap: 7px;
-}
-
-.blanks label span {
-  color: #52667e;
-  font-size: 16px;
-  font-weight: 850;
-}
-
-.blanks input {
-  height: 68px;
-  padding: 0 18px;
-  border: 2px solid #ccd8e4;
-  border-radius: 10px;
-  outline: 0;
-  font-size: 23px;
-}
-
-.blanks input:focus {
-  border-color: var(--blue);
-  box-shadow: 0 0 0 4px var(--blue-soft);
-}
-
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
