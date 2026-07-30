@@ -8,7 +8,7 @@
       content="컴퓨터 구매·미구매 데이터로 엔트로피와 정보이득 계산식을 완성하고, 가장 큰 정보이득을 선택하는 수업용 실습입니다."
     />
     <meta name="theme-color" content="#17365f" />
-    <title>인공지능 개론 | 정보이득 계산 실습</title>
+    <title>인공지능 입문 | 정보이득 계산 실습</title>
     <style>
       :root {
         color-scheme: light;
@@ -482,12 +482,11 @@
       }
 
       .formula {
-        min-width: max-content;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 9px;
+        gap: 12px;
         font-family: Cambria, "Times New Roman", serif;
         font-size: clamp(21px, 2.2vw, 31px);
         font-weight: 700;
@@ -505,6 +504,111 @@
         font-size: 23px;
         font-weight: 850;
         text-align: center;
+      }
+
+      .math-symbol {
+        font-family: Cambria, "Times New Roman", serif;
+        font-style: italic;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .math-symbol sub {
+        font-size: 0.64em;
+        font-style: normal;
+      }
+
+      .entropy-equation {
+        gap: 14px;
+      }
+
+      .entropy-term {
+        min-height: 102px;
+        padding: 13px 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border: 3px solid;
+        background: #fff;
+        border-radius: 14px;
+        transition:
+          box-shadow 160ms ease,
+          transform 160ms ease;
+      }
+
+      .entropy-term.has-value {
+        transform: translateY(-2px);
+      }
+
+      .term-label {
+        align-self: stretch;
+        min-width: 70px;
+        padding: 7px 9px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border-radius: 9px;
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          sans-serif;
+        font-size: 15px;
+        font-style: normal;
+        line-height: 1.2;
+      }
+
+      .term-label b {
+        font-size: 20px;
+      }
+
+      .purchase-term {
+        border-color: #2877b5;
+        color: #1d5e91;
+        background: #edf7ff;
+      }
+
+      .purchase-term .term-label {
+        color: #fff;
+        background: #2877b5;
+      }
+
+      .purchase-term.has-value {
+        box-shadow: 0 8px 18px rgba(40, 119, 181, 0.2);
+      }
+
+      .no-purchase-term {
+        border-color: #d46a3a;
+        color: #a64629;
+        background: #fff3ec;
+      }
+
+      .no-purchase-term .term-label {
+        color: #fff;
+        background: #d46a3a;
+      }
+
+      .no-purchase-term.has-value {
+        box-shadow: 0 8px 18px rgba(212, 106, 58, 0.2);
+      }
+
+      .entropy-term select {
+        border-color: currentColor;
+        color: inherit;
+      }
+
+      .mirror-value {
+        min-width: 42px;
+        color: inherit;
+        font-weight: 950;
+      }
+
+      .math-operator {
+        color: #52677e;
+        font-size: 35px;
+        font-weight: 900;
       }
 
       .fraction {
@@ -594,6 +698,33 @@
         border: 2px solid #dbe3eb;
         background: #fafbfd;
         border-radius: 13px;
+      }
+
+      .group-card.youth-group {
+        border-color: #4e92c7;
+        background: #eff8ff;
+      }
+
+      .group-card.young-group {
+        border-color: #43a77b;
+        background: #effaf5;
+      }
+
+      .group-card.middle-group {
+        border-color: #d88a47;
+        background: #fff6ec;
+      }
+
+      .group-card.youth-group h3 {
+        color: #1f669d;
+      }
+
+      .group-card.young-group h3 {
+        color: #237b58;
+      }
+
+      .group-card.middle-group h3 {
+        color: #a85b22;
       }
 
       .group-card h3 {
@@ -692,23 +823,33 @@
       }
 
       .repeat-calc-area {
-        padding: 18px;
-        border: 2px solid #a9c4d9;
+        padding: clamp(20px, 2.5vw, 34px);
+        border: 3px solid #91b6d1;
         background: #f7fbfe;
-        border-radius: 13px;
+        border-radius: 16px;
       }
 
       .repeat-split-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+        gap: 18px;
       }
 
       .repeat-split-grid article {
-        padding: 15px;
-        border: 2px solid #d5e0ea;
+        padding: 22px;
+        border: 3px solid #d5e0ea;
         background: #fff;
-        border-radius: 11px;
+        border-radius: 14px;
+      }
+
+      .repeat-split-grid article.student-no-group {
+        border-color: #5b7fc2;
+        background: #f0f4ff;
+      }
+
+      .repeat-split-grid article.student-yes-group {
+        border-color: #36a174;
+        background: #effaf5;
       }
 
       .repeat-split-grid article > div {
@@ -720,27 +861,30 @@
 
       .repeat-split-grid span {
         color: var(--navy-2);
-        font-size: 17px;
+        font-size: 21px;
         font-weight: 900;
       }
 
       .repeat-split-grid article b {
         color: var(--muted);
-        font-size: 15px;
+        font-size: 18px;
       }
 
       .repeat-split-grid article p {
-        margin: 13px 0 9px;
+        min-height: 82px;
+        margin: 18px 0 13px;
         color: #3d5772;
         font-family: Cambria, "Times New Roman", serif;
-        font-size: 18px;
+        font-size: clamp(21px, 1.8vw, 27px);
         text-align: center;
       }
 
       .repeat-split-grid article > strong {
         display: block;
         color: var(--orange);
-        font-size: 22px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 28px;
+        font-style: italic;
         text-align: center;
       }
 
@@ -752,7 +896,7 @@
 
       .repeat-formulas > div {
         min-height: 66px;
-        padding: 12px 15px;
+        padding: 16px 19px;
         display: grid;
         grid-template-columns: 170px 1fr auto;
         align-items: center;
@@ -784,15 +928,96 @@
       }
 
       .repeat-gain-formula {
+        padding: 22px !important;
+        display: block !important;
         border: 2px solid #dfa08f;
         background: var(--orange-soft) !important;
       }
 
-      .repeat-gain-formula select {
+      .student-weighted-equation {
+        display: grid;
+        grid-template-columns: auto auto minmax(240px, 1fr) auto minmax(240px, 1fr);
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: clamp(22px, 2vw, 30px);
+        font-weight: 800;
+      }
+
+      .weighted-label {
+        display: grid;
+        gap: 4px;
+      }
+
+      .weighted-label small {
+        color: #7f523f;
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          sans-serif;
+        font-size: 14px;
+        font-style: normal;
+      }
+
+      .weight-term {
+        min-height: 100px;
+        padding: 13px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border: 3px solid;
+        border-radius: 13px;
+        font-style: normal;
+      }
+
+      .weight-term small {
+        width: 100%;
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          sans-serif;
+        font-size: 15px;
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .weight-term.youth-weight {
+        border-color: #4e92c7;
+        color: #1f669d;
+        background: #eff8ff;
+      }
+
+      .weight-term.young-weight {
+        border-color: #43a77b;
+        color: #237b58;
+        background: #effaf5;
+      }
+
+      .weight-term.middle-weight {
+        border-color: #d88a47;
+        color: #a85b22;
+        background: #fff6ec;
+      }
+
+      .weight-term.student-no-weight {
+        border-color: #5b7fc2;
+        color: #3d5f9d;
+        background: #f0f4ff;
+      }
+
+      .weight-term.student-yes-weight {
+        border-color: #36a174;
+        color: #247a58;
+        background: #effaf5;
+      }
+
+      .repeat-gain-formula select,
+      .weight-term select {
         width: 104px;
         height: 46px;
-        border: 2px solid var(--orange);
-        color: var(--danger);
+        border: 3px solid currentColor;
+        color: inherit;
         background: #fff;
         border-radius: 8px;
         font-size: 21px;
@@ -813,11 +1038,12 @@
       }
 
       .repeat-gain-formula .math-fraction select {
-        width: 60px;
-        height: 40px;
-        border: 0;
-        color: var(--danger);
-        background: transparent;
+        width: 76px;
+        height: 52px;
+        border: 3px solid currentColor;
+        color: inherit;
+        background: #fff;
+        border-radius: 9px;
         font: inherit;
         font-weight: 900;
         text-align: center;
@@ -1665,6 +1891,20 @@
         .child-gain-grid {
           grid-template-columns: 1fr;
         }
+
+        .student-weighted-equation {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .student-weighted-equation .weighted-label {
+          width: 100%;
+          text-align: center;
+        }
+
+        .student-weighted-equation .weight-term {
+          flex: 1 1 240px;
+        }
       }
 
       @media (max-width: 760px) {
@@ -1735,6 +1975,30 @@
           grid-template-columns: 1fr;
         }
 
+        .entropy-term,
+        .weight-term {
+          width: 100%;
+        }
+
+        .entropy-equation > .math-symbol {
+          width: 100%;
+          text-align: center;
+        }
+
+        .student-weighted-equation {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .weighted-label {
+          text-align: center;
+        }
+
+        .student-weighted-equation > .math-operator {
+          text-align: center;
+        }
+
         .child-weighted-formula {
           justify-content: center;
         }
@@ -1764,9 +2028,9 @@
   <body>
     <header class="app-header">
       <div class="brand">
-        <div class="brand-mark">정보</div>
+        <div class="brand-mark">DT</div>
         <div>
-          <small>인공지능 개론</small>
+          <small>인공지능 입문</small>
           <strong>8. 정보이득 계산 실습</strong>
         </div>
       </div>
@@ -1869,7 +2133,7 @@
               <div class="tree-branch">
                 <span class="tree-edge">청년</span>
                 <div class="tree-node-card leaf-purchase">
-                  <small>h = 0</small><b>구매</b>
+                  <small>ℎ = 0</small><b>구매</b>
                 </div>
               </div>
               <div class="tree-branch">
@@ -1905,31 +2169,40 @@
             <strong>구매 / 미구매 인원</strong>
           </div>
           <div class="formula-card">
-            <div class="formula" aria-label="전체 엔트로피 계산식">
-              <span>h(D) = −</span>
-              <span class="fraction">
-                <span><select id="purchaseCount" aria-label="구매 인원"></select></span>
-                <span>20</span>
+            <div class="formula entropy-equation" aria-label="전체 엔트로피 계산식">
+              <span class="math-symbol">ℎ(𝒟) =</span>
+              <span id="purchaseTerm" class="entropy-term purchase-term">
+                <span class="term-label"><b>①</b>구매</span>
+                <span>−</span>
+                <span class="fraction">
+                  <span><select id="purchaseCount" aria-label="구매 인원"></select></span>
+                  <span>20</span>
+                </span>
+                <span>log₂(</span>
+                <span class="fraction">
+                  <span id="purchaseMirror" class="mirror-value">?</span>
+                  <span>20</span>
+                </span>
+                <span>)</span>
               </span>
-              <span>log₂(</span>
-              <span class="fraction">
-                <span id="purchaseMirror">?</span>
-                <span>20</span>
+              <span class="math-operator">+</span>
+              <span id="noPurchaseTerm" class="entropy-term no-purchase-term">
+                <span class="term-label"><b>②</b>미구매</span>
+                <span>−</span>
+                <span class="fraction">
+                  <span><select id="noPurchaseCount" aria-label="미구매 인원"></select></span>
+                  <span>20</span>
+                </span>
+                <span>log₂(</span>
+                <span class="fraction">
+                  <span id="noPurchaseMirror" class="mirror-value">?</span>
+                  <span>20</span>
+                </span>
+                <span>)</span>
               </span>
-              <span>) −</span>
-              <span class="fraction">
-                <span><select id="noPurchaseCount" aria-label="미구매 인원"></select></span>
-                <span>20</span>
-              </span>
-              <span>log₂(</span>
-              <span class="fraction">
-                <span id="noPurchaseMirror">?</span>
-                <span>20</span>
-              </span>
-              <span>)</span>
             </div>
             <div id="entropyResult" class="formula-result hidden">
-              <span>전체 엔트로피</span><strong>h(D) = 0.934</strong>
+              <span>전체 엔트로피</span><strong class="math-symbol">ℎ(𝒟) = 0.934</strong>
             </div>
             <div id="entropyBreakdown" class="calc-breakdown hidden">
               <div>
@@ -1971,7 +2244,7 @@
             </div>
           </div>
           <div class="group-grid">
-            <article class="group-card">
+            <article class="group-card youth-group">
               <h3>청소년 · 7명</h3>
               <p>구매 3명 · 미구매 4명</p>
               <div class="tile-row" aria-label="청소년 데이터">
@@ -1984,9 +2257,9 @@
                 <span class="person-tile purchase">16</span>
               </div>
               <small class="group-formula">− <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>) − <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>)</small>
-              <span class="group-entropy">h = 0.985</span>
+              <span class="group-entropy"><i class="math-symbol">ℎ</i> = 0.985</span>
             </article>
-            <article class="group-card">
+            <article class="group-card young-group">
               <h3>청년 · 6명</h3>
               <p>구매 6명 · 미구매 0명</p>
               <div class="tile-row" aria-label="청년 데이터">
@@ -1998,9 +2271,9 @@
                 <span class="person-tile purchase">18</span>
               </div>
               <small class="group-formula">− <span class="math-fraction"><span>6</span><span>6</span></span> log₂(<span class="math-fraction"><span>6</span><span>6</span></span>) − <span class="math-fraction"><span>0</span><span>6</span></span> log₂(<span class="math-fraction"><span>0</span><span>6</span></span>)</small>
-              <span class="group-entropy zero-note">h = 0</span>
+              <span class="group-entropy zero-note"><i class="math-symbol">ℎ</i> = 0</span>
             </article>
-            <article class="group-card">
+            <article class="group-card middle-group">
               <h3>중년 · 7명</h3>
               <p>구매 4명 · 미구매 3명</p>
               <div class="tile-row" aria-label="중년 데이터">
@@ -2013,7 +2286,7 @@
                 <span class="person-tile no-purchase">20</span>
               </div>
               <small class="group-formula">− <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>) − <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>)</small>
-              <span class="group-entropy">h = 0.985</span>
+              <span class="group-entropy"><i class="math-symbol">ℎ</i> = 0.985</span>
             </article>
           </div>
           <div class="cadet-prompt">
@@ -2022,26 +2295,37 @@
           </div>
           <div class="formula-card">
             <div class="formula" aria-label="나이 속성의 가중평균 엔트로피 계산식">
-              <span>h<sub>age</sub>(D) =</span>
-              <span class="fraction">
-                <span><select id="youthWeight" aria-label="청소년 집단 크기"></select></span>
-                <span>20</span>
+              <span class="math-symbol">ℎ<sub>나이</sub>(𝒟) =</span>
+              <span class="weight-term youth-weight">
+                <small>청소년</small>
+                <span class="fraction">
+                  <span><select id="youthWeight" aria-label="청소년 집단 크기"></select></span>
+                  <span>20</span>
+                </span>
+                <span>× 0.985</span>
               </span>
-              <span>× 0.985 +</span>
-              <span class="fraction">
-                <span><select id="youngWeight" aria-label="청년 집단 크기"></select></span>
-                <span>20</span>
+              <span class="math-operator">+</span>
+              <span class="weight-term young-weight">
+                <small>청년</small>
+                <span class="fraction">
+                  <span><select id="youngWeight" aria-label="청년 집단 크기"></select></span>
+                  <span>20</span>
+                </span>
+                <span>× 0</span>
               </span>
-              <span>× 0 +</span>
-              <span class="fraction">
-                <span><select id="middleWeight" aria-label="중년 집단 크기"></select></span>
-                <span>20</span>
+              <span class="math-operator">+</span>
+              <span class="weight-term middle-weight">
+                <small>중년</small>
+                <span class="fraction">
+                  <span><select id="middleWeight" aria-label="중년 집단 크기"></select></span>
+                  <span>20</span>
+                </span>
+                <span>× 0.985</span>
               </span>
-              <span>× 0.985</span>
             </div>
             <div id="weightedResult" class="formula-result hidden">
               <span>가중평균 엔트로피</span>
-              <strong>h<sub>age</sub>(D) ≈ 0.690</strong>
+              <strong class="math-symbol">ℎ<sub>나이</sub>(𝒟) ≈ 0.690</strong>
             </div>
             <div id="weightedBlocks" class="weighted-blocks hidden" aria-label="가중평균 구성">
               <div class="weight-block" style="flex: 7">
@@ -2057,19 +2341,19 @@
             <div id="ageGainResult" class="gain-result hidden">
               <span>나이 속성 · 정보이득</span>
               <div>
-                <span>Gain(D,age) = 0.934 − 0.690 =</span>
+                <span class="math-symbol">𝐺𝑎𝑖𝑛(𝒟, 나이) = 0.934 − 0.690 =</span>
                 <strong>0.244</strong>
               </div>
               <small>계산 기준 · 반올림 전 값</small>
             </div>
             <div id="entropyCompare" class="entropy-compare hidden">
               <div class="entropy-row">
-                <span>분할 전 h(D)</span>
+                <span>분할 전 <i class="math-symbol">ℎ(𝒟)</i></span>
                 <div class="entropy-track"><i class="before" style="width: 93.4%"></i></div>
                 <strong>0.934</strong>
               </div>
               <div class="entropy-row">
-                <span>분할 후 h<sub>age</sub>(D)</span>
+                <span>분할 후 <i class="math-symbol">ℎ<sub>나이</sub>(𝒟)</i></span>
                 <div class="entropy-track"><i class="after" style="width: 69%"></i></div>
                 <strong>0.690</strong>
               </div>
@@ -2110,21 +2394,21 @@
 
           <div id="repeatCalcArea" class="repeat-calc-area hidden">
             <div class="repeat-split-grid">
-              <article>
+              <article class="student-no-group">
                 <div>
                   <span>학생: 아니요 · 10명</span>
                   <b>구매 5 · 미구매 5</b>
                 </div>
                 <p class="math-line">− <span class="math-fraction"><span>5</span><span>10</span></span> log₂(<span class="math-fraction"><span>5</span><span>10</span></span>) − <span class="math-fraction"><span>5</span><span>10</span></span> log₂(<span class="math-fraction"><span>5</span><span>10</span></span>)</p>
-                <strong>h = 1.000</strong>
+                <strong>ℎ = 1.000</strong>
               </article>
-              <article>
+              <article class="student-yes-group">
                 <div>
                   <span>학생: 예 · 10명</span>
                   <b>구매 8 · 미구매 2</b>
                 </div>
                 <p class="math-line">− <span class="math-fraction"><span>8</span><span>10</span></span> log₂(<span class="math-fraction"><span>8</span><span>10</span></span>) − <span class="math-fraction"><span>2</span><span>10</span></span> log₂(<span class="math-fraction"><span>2</span><span>10</span></span>)</p>
-                <strong>h = 0.722</strong>
+                <strong>ℎ = 0.722</strong>
               </article>
             </div>
             <div class="cadet-prompt">
@@ -2133,20 +2417,39 @@
             </div>
             <div class="repeat-formulas">
               <div class="repeat-gain-formula">
-                <span>가중치</span>
-                <b class="weighted-math">h<sub>student</sub>(D) =
-                  <span class="math-fraction"><span><select id="studentNoWeight" aria-label="학생이 아닌 집단 크기"></select></span><span>20</span></span> × 1.000 +
-                  <span class="math-fraction"><span><select id="studentYesWeight" aria-label="학생인 집단 크기"></select></span><span>20</span></span> × 0.722
-                </b>
+                <div class="student-weighted-equation">
+                  <span class="weighted-label">
+                    <small>가중평균 엔트로피</small>
+                    <b class="math-symbol">ℎ<sub>학생 여부</sub>(𝒟)</b>
+                  </span>
+                  <span class="math-operator">=</span>
+                  <span class="weight-term student-no-weight">
+                    <small>학생: 아니요</small>
+                    <span class="math-fraction">
+                      <span><select id="studentNoWeight" aria-label="학생이 아닌 집단 크기"></select></span>
+                      <span>20</span>
+                    </span>
+                    <span>× 1.000</span>
+                  </span>
+                  <span class="math-operator">+</span>
+                  <span class="weight-term student-yes-weight">
+                    <small>학생: 예</small>
+                    <span class="math-fraction">
+                      <span><select id="studentYesWeight" aria-label="학생인 집단 크기"></select></span>
+                      <span>20</span>
+                    </span>
+                    <span>× 0.722</span>
+                  </span>
+                </div>
               </div>
               <div id="studentWeightedResult" class="hidden">
                 <span>가중평균 엔트로피</span>
-                <b>h<sub>student</sub>(D)</b>
+                <b class="math-symbol">ℎ<sub>학생 여부</sub>(𝒟)</b>
                 <strong>≈ 0.861</strong>
               </div>
               <div id="studentGainResult" class="hidden">
                 <span>학생 여부 · 정보이득</span>
-                <b>Gain(D,student) = 0.934 − 0.861</b>
+                <b class="math-symbol">𝐺𝑎𝑖𝑛(𝒟, 학생 여부) = 0.934 − 0.861</b>
                 <strong>= 0.073</strong>
               </div>
             </div>
@@ -2227,7 +2530,7 @@
                 <h3>현재 노드: 청소년 집단</h3>
                 <p>구매 3 · 미구매 4 · 혼합 노드</p>
               </div>
-              <strong id="youthEntropyBadge">h = ?</strong>
+              <strong id="youthEntropyBadge" class="math-symbol">ℎ = ?</strong>
             </div>
             <div class="subset-data">
               <strong>청소년 데이터 · 7명</strong>
@@ -2249,32 +2552,41 @@
               <strong>청소년 노드 · 분할 전 엔트로피 식</strong>
             </div>
             <div id="youthEntropyExercise" class="formula-card">
-              <div class="formula" aria-label="청소년 노드 분할 전 엔트로피 계산식">
-                <span>h(D<sub>youth</sub>) = −</span>
-                <span class="fraction">
-                  <span><select id="youthPurchaseCount" aria-label="청소년 구매 인원"></select></span>
-                  <span>7</span>
+              <div class="formula entropy-equation" aria-label="청소년 노드 분할 전 엔트로피 계산식">
+                <span class="math-symbol">ℎ<sub>청소년</sub>(𝒟) =</span>
+                <span id="youthPurchaseTerm" class="entropy-term purchase-term">
+                  <span class="term-label"><b>①</b>구매</span>
+                  <span>−</span>
+                  <span class="fraction">
+                    <span><select id="youthPurchaseCount" aria-label="청소년 구매 인원"></select></span>
+                    <span>7</span>
+                  </span>
+                  <span>log₂(</span>
+                  <span class="fraction">
+                    <span id="youthPurchaseMirror" class="mirror-value">?</span>
+                    <span>7</span>
+                  </span>
+                  <span>)</span>
                 </span>
-                <span>log₂(</span>
-                <span class="fraction">
-                  <span id="youthPurchaseMirror">?</span>
-                  <span>7</span>
+                <span class="math-operator">+</span>
+                <span id="youthNoPurchaseTerm" class="entropy-term no-purchase-term">
+                  <span class="term-label"><b>②</b>미구매</span>
+                  <span>−</span>
+                  <span class="fraction">
+                    <span><select id="youthNoPurchaseCount" aria-label="청소년 미구매 인원"></select></span>
+                    <span>7</span>
+                  </span>
+                  <span>log₂(</span>
+                  <span class="fraction">
+                    <span id="youthNoPurchaseMirror" class="mirror-value">?</span>
+                    <span>7</span>
+                  </span>
+                  <span>)</span>
                 </span>
-                <span>) −</span>
-                <span class="fraction">
-                  <span><select id="youthNoPurchaseCount" aria-label="청소년 미구매 인원"></select></span>
-                  <span>7</span>
-                </span>
-                <span>log₂(</span>
-                <span class="fraction">
-                  <span id="youthNoPurchaseMirror">?</span>
-                  <span>7</span>
-                </span>
-                <span>)</span>
               </div>
               <div id="youthEntropyResult" class="formula-result hidden">
                 <span>분할 전 엔트로피</span>
-                <strong>h(D<sub>youth</sub>) = 0.985</strong>
+                <strong class="math-symbol">ℎ<sub>청소년</sub>(𝒟) = 0.985</strong>
               </div>
               <div id="youthEntropyBreakdown" class="calc-breakdown hidden">
                 <div>
@@ -2335,8 +2647,8 @@
             <div id="youthCalcResult" class="child-calc-result hidden">
               <span>학생 여부 분할 계산</span>
               <div class="child-formula-stack">
-                <div class="child-weighted-formula">h<sub>student</sub>(D) = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
-                <strong id="youthGainLine" class="gain-line hidden">Gain(D,student) = 0.985 − 0 = 0.985</strong>
+                <div class="child-weighted-formula"><i class="math-symbol">ℎ<sub>학생 여부</sub>(𝒟)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
+                <strong id="youthGainLine" class="gain-line math-symbol hidden">𝐺𝑎𝑖𝑛(𝒟, 학생 여부) = 0.985 − 0 = 0.985</strong>
               </div>
             </div>
             <div class="action-row">
@@ -2357,7 +2669,7 @@
                 <h3>현재 노드: 중년 집단</h3>
                 <p>구매 4 · 미구매 3 · 혼합 노드</p>
               </div>
-              <strong>h = 0.985</strong>
+              <strong class="math-symbol">ℎ = 0.985</strong>
             </div>
             <div class="subset-row">
               <span>현재 데이터</span>
@@ -2399,8 +2711,8 @@
             <div id="middleCalcResult" class="child-calc-result hidden">
               <span>신용등급 분할 계산</span>
               <div class="child-formula-stack">
-                <div class="child-weighted-formula">h<sub>credit</sub>(D) = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
-                <strong id="middleGainLine" class="gain-line hidden">Gain(D,credit) = 0.985 − 0 = 0.985</strong>
+                <div class="child-weighted-formula"><i class="math-symbol">ℎ<sub>신용 등급</sub>(𝒟)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
+                <strong id="middleGainLine" class="gain-line math-symbol hidden">𝐺𝑎𝑖𝑛(𝒟, 신용 등급) = 0.985 − 0 = 0.985</strong>
               </div>
             </div>
             <div class="action-row">
@@ -2571,25 +2883,30 @@
         youthNoPurchaseCount,
       ].forEach((select) => populateSelect(select, numberOptions));
 
-      purchaseCount.addEventListener("change", () => {
-        document.getElementById("purchaseMirror").textContent =
-          purchaseCount.value || "?";
-      });
+      function bindMirroredFraction(select, mirrorId, termId) {
+        const mirror = document.getElementById(mirrorId);
+        const term = document.getElementById(termId);
+        const sync = () => {
+          const value = select.value || "?";
+          mirror.textContent = value;
+          term.classList.toggle("has-value", Boolean(select.value));
+        };
+        select.addEventListener("change", sync);
+        sync();
+      }
 
-      noPurchaseCount.addEventListener("change", () => {
-        document.getElementById("noPurchaseMirror").textContent =
-          noPurchaseCount.value || "?";
-      });
-
-      youthPurchaseCount.addEventListener("change", () => {
-        document.getElementById("youthPurchaseMirror").textContent =
-          youthPurchaseCount.value || "?";
-      });
-
-      youthNoPurchaseCount.addEventListener("change", () => {
-        document.getElementById("youthNoPurchaseMirror").textContent =
-          youthNoPurchaseCount.value || "?";
-      });
+      bindMirroredFraction(purchaseCount, "purchaseMirror", "purchaseTerm");
+      bindMirroredFraction(noPurchaseCount, "noPurchaseMirror", "noPurchaseTerm");
+      bindMirroredFraction(
+        youthPurchaseCount,
+        "youthPurchaseMirror",
+        "youthPurchaseTerm",
+      );
+      bindMirroredFraction(
+        youthNoPurchaseCount,
+        "youthNoPurchaseMirror",
+        "youthNoPurchaseTerm",
+      );
 
       function updateProgress(activeStep) {
         document.querySelectorAll("[data-progress]").forEach((item) => {
@@ -2640,7 +2957,13 @@
         document.getElementById("noPurchaseMirror").textContent = "?";
         document.getElementById("youthPurchaseMirror").textContent = "?";
         document.getElementById("youthNoPurchaseMirror").textContent = "?";
-        document.getElementById("youthEntropyBadge").textContent = "h = ?";
+        [
+          "purchaseTerm",
+          "noPurchaseTerm",
+          "youthPurchaseTerm",
+          "youthNoPurchaseTerm",
+        ].forEach((id) => document.getElementById(id).classList.remove("has-value"));
+        document.getElementById("youthEntropyBadge").textContent = "ℎ = ?";
         [
           "entropyResult",
           "entropyBreakdown",
@@ -2742,7 +3065,7 @@
         const feedback = document.getElementById("step1Feedback");
         if (purchaseCount.value === "13" && noPurchaseCount.value === "7") {
           feedback.className = "feedback correct";
-          feedback.textContent = "정답 · h(D) = 0.934";
+          feedback.textContent = "정답 · ℎ(𝒟) = 0.934";
           document.getElementById("entropyResult").classList.remove("hidden");
           document.getElementById("entropyBreakdown").classList.remove("hidden");
           document.getElementById("checkEntropyButton").classList.add("hidden");
@@ -2854,7 +3177,7 @@
         if (correct) {
           feedback.className = "feedback correct";
           feedback.textContent = "정답 · 분할 전 엔트로피 0.985";
-          document.getElementById("youthEntropyBadge").textContent = "h = 0.985";
+          document.getElementById("youthEntropyBadge").textContent = "ℎ = 0.985";
           document.getElementById("youthEntropyResult").classList.remove("hidden");
           document.getElementById("youthEntropyBreakdown").classList.remove("hidden");
           document.getElementById("youthCandidateArea").classList.remove("hidden");
@@ -2878,7 +3201,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "분할 후 h = 0 · 정보이득 계산";
+              "분할 후 ℎ = 0 · 정보이득 계산";
             document
               .querySelectorAll('.child-gain-card[data-node="youth"]')
               .forEach((item) => {
@@ -2931,7 +3254,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "분할 후 h = 0 · 정보이득 계산";
+              "분할 후 ℎ = 0 · 정보이득 계산";
             document
               .querySelectorAll('.child-gain-card[data-node="middle"]')
               .forEach((item) => {
