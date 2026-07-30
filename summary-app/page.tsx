@@ -8,6 +8,7 @@ type CadetAssignments = Partial<Record<number, number>>;
 type Item = {
   id: number;
   kind: "choice";
+  instruction?: string;
   question: string;
   options: Option[];
   explanation: string;
@@ -95,8 +96,9 @@ const ITEMS: Item[] = [
   {
     id: 1,
     kind: "choice",
+    instruction: "다음 설명이 옳으면 O, 옳지 않으면 X를 선택하세요.",
     question:
-      "다음 설명이 옳으면 O, 옳지 않으면 X를 선택하세요.\n의사결정 트리는 루트 노드에서 선택한 하나의 속성만 모든 하위 노드에서 반복해서 사용한다.",
+      "의사결정 트리는 루트 노드에서 선택한 하나의 속성만 모든 하위 노드에서 반복해서 사용한다.",
     options: [
       { label: "O" },
       { label: "X", correct: true },
@@ -127,7 +129,7 @@ const ITEMS: Item[] = [
     options: [
       {
         label: (
-          <span className="math">
+          <span className="formula">
             ℎ<sub>𝒜</sub>(𝒟) − ℎ(𝒟)
           </span>
         ),
@@ -135,7 +137,7 @@ const ITEMS: Item[] = [
       },
       {
         label: (
-          <span className="math">
+          <span className="formula">
             ℎ(𝒟) + ℎ<sub>𝒜</sub>(𝒟)
           </span>
         ),
@@ -143,7 +145,7 @@ const ITEMS: Item[] = [
       },
       {
         label: (
-          <span className="math">
+          <span className="formula">
             ℎ(𝒟) − ℎ<sub>𝒜</sub>(𝒟)
           </span>
         ),
@@ -151,7 +153,7 @@ const ITEMS: Item[] = [
         formula: true,
       },
       {
-        label: <span className="math">∑ ℎ(𝒟ᵥ)</span>,
+        label: <span className="formula">∑ ℎ(𝒟ᵥ)</span>,
         formula: true,
       },
     ],
@@ -161,9 +163,13 @@ const ITEMS: Item[] = [
   {
     id: 4,
     kind: "choice",
-    question: "ID3는 어떤 속성을 현재 노드의 질문으로 선택하나요?",
+    question:
+      "ID3 알고리즘이 현재 노드에서 사용할 분할 속성을 선택하는 기준으로 옳은 것은 무엇인가요?",
     options: [
-      { label: "정보이득이 가장 큰 속성", correct: true },
+      {
+        label: "후보 속성별 정보이득을 계산한 뒤, 정보이득이 가장 큰 속성",
+        correct: true,
+      },
       { label: "분할 후 엔트로피가 가장 큰 속성" },
       { label: "속성값의 종류가 가장 많은 속성" },
       { label: "데이터 표에서 가장 왼쪽에 있는 속성" },
@@ -393,9 +399,18 @@ function Quiz({
             <strong>{assignedCadet}번</strong>
           </div>
         )}
-        <h1>{item.question}</h1>
+        {item.instruction && (
+          <p className="quiz-instruction">{item.instruction}</p>
+        )}
+        <h1 className={item.instruction ? "question-statement" : ""}>
+          {item.question}
+        </h1>
 
-        <div className={`options ${item.id === 1 ? "ox-options" : ""}`}>
+        <div
+          className={`options ${item.id === 1 ? "ox-options" : ""} ${
+            item.id === 5 ? "item-five-options" : ""
+          }`}
+        >
           {item.options.map((option, optionIndex) => (
             <button
               type="button"
