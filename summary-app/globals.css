@@ -74,12 +74,12 @@ main {
 
 .brand small {
   color: #bbd0e9;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
 }
 
 .brand strong {
-  font-size: 20px;
+  font-size: 23px;
 }
 
 .app-header nav {
@@ -87,7 +87,7 @@ main {
   align-items: center;
   gap: 9px;
   color: #9fb7d2;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 850;
 }
 
@@ -112,7 +112,7 @@ main {
 }
 
 .summary-title {
-  padding: 22px 28px;
+  padding: 24px 28px;
   color: #fff;
   background: linear-gradient(120deg, #173c68, #285f97);
   border-radius: 18px;
@@ -121,20 +121,9 @@ main {
 
 .summary-title > span {
   color: #fff;
-  font-size: 16px;
+  font-size: 27px;
   font-weight: 950;
-  letter-spacing: 0.08em;
-}
-
-.summary-title h1 {
-  margin: 7px 0 0;
-  font-size: 36px;
-  line-height: 1.24;
-  letter-spacing: -0.045em;
-}
-
-.summary-title h1 strong {
-  color: #aedeff;
+  letter-spacing: -0.025em;
 }
 
 .summary-body {
@@ -158,8 +147,8 @@ main {
 }
 
 .concepts article {
-  min-height: 205px;
-  padding: 23px 24px;
+  min-height: 232px;
+  padding: 26px 27px;
   border-top: 5px solid var(--blue);
 }
 
@@ -180,19 +169,19 @@ main {
 
 .concepts h2 {
   margin: 0;
-  font-size: 27px;
+  font-size: 32px;
   letter-spacing: -0.035em;
 }
 
 .concept-heading > strong {
   flex: none;
-  min-width: 104px;
-  padding: 9px 13px;
+  min-width: 122px;
+  padding: 11px 15px;
   color: var(--navy);
   background: var(--blue-soft);
   border-radius: 8px;
   font-family: Georgia, serif;
-  font-size: 22px;
+  font-size: 27px;
   text-align: center;
 }
 
@@ -205,9 +194,9 @@ main {
 }
 
 .concepts p {
-  margin: 21px 0 0;
+  margin: 23px 0 0;
   color: #41546b;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 1.5;
 }
 
@@ -221,7 +210,7 @@ main {
   display: block;
   border-top: 1px solid #e5ebf1;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 750;
   line-height: 1.4;
 }
@@ -236,14 +225,14 @@ main {
 
 .id3-heading span {
   color: var(--blue);
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 950;
   letter-spacing: 0.08em;
 }
 
 .id3-heading h2 {
   margin: 5px 0 0;
-  font-size: 27px;
+  font-size: 32px;
 }
 
 .id3-card ol {
@@ -256,8 +245,8 @@ main {
 }
 
 .id3-card li {
-  min-height: 83px;
-  padding: 13px 14px;
+  min-height: 94px;
+  padding: 15px 16px;
   display: grid;
   grid-template-columns: 34px 1fr;
   gap: 10px;
@@ -267,18 +256,18 @@ main {
 }
 
 .id3-card li > b {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   color: #fff;
   background: var(--navy);
   border-radius: 50%;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .id3-card li strong {
-  font-size: 17px;
+  font-size: 21px;
   line-height: 1.35;
 }
 
@@ -307,14 +296,14 @@ main {
 
 .repeat span,
 .stop span {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 900;
 }
 
 .repeat p,
 .stop p {
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 750;
 }
 
@@ -328,7 +317,7 @@ main {
 
 .stop strong {
   font-family: Georgia, serif;
-  font-size: 17px;
+  font-size: 21px;
 }
 
 .stop p {
@@ -344,13 +333,13 @@ main {
 .summary-action button,
 .quiz-action button,
 .primary {
-  min-height: 50px;
-  padding: 0 22px;
+  min-height: 56px;
+  padding: 0 25px;
   border: 1px solid var(--blue);
   color: #fff;
   background: var(--blue);
   border-radius: 9px;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 900;
   cursor: pointer;
 }
@@ -373,7 +362,7 @@ main {
 
 .setup-heading h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 38px;
   letter-spacing: -0.04em;
 }
 
@@ -389,7 +378,7 @@ main {
 
 .cadet-count-form label {
   color: #4f657e;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 900;
 }
 
@@ -429,7 +418,7 @@ main {
   color: #fff;
   background: var(--orange);
   border-radius: 9px;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 900;
   cursor: pointer;
 }
@@ -450,13 +439,13 @@ main {
 
 .cadet-preview > div:first-child span {
   color: #66798f;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 850;
 }
 
 .cadet-preview > div:first-child strong {
   color: var(--navy);
-  font-size: 22px;
+  font-size: 26px;
 }
 
 .cadet-number-list {
@@ -475,7 +464,7 @@ main {
   color: #fff;
   background: var(--navy);
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .cadet-number-list i {
@@ -490,6 +479,7 @@ main {
   border: 0;
   color: var(--blue);
   background: transparent;
+  font-size: 17px;
   font-weight: 850;
   cursor: pointer;
 }
@@ -529,20 +519,20 @@ main {
 
 .quiz-progress-label > span {
   color: var(--blue);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 950;
   letter-spacing: 0.07em;
 }
 
 .quiz-progress-label > strong {
   color: var(--navy);
-  font-size: 34px;
+  font-size: 41px;
   line-height: 1;
 }
 
 .quiz-progress-label small {
   color: #8b98a8;
-  font-size: 17px;
+  font-size: 20px;
 }
 
 .quiz-toolbar nav {
@@ -552,14 +542,14 @@ main {
 }
 
 .quiz-toolbar nav i {
-  width: 38px;
-  height: 38px;
+  width: 43px;
+  height: 43px;
   display: grid;
   place-items: center;
   color: #8b98a8;
   background: #f0f3f6;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 17px;
   font-style: normal;
   font-weight: 900;
 }
@@ -576,13 +566,13 @@ main {
 }
 
 .quiz-toolbar > button {
-  min-height: 42px;
-  padding: 0 14px;
+  min-height: 47px;
+  padding: 0 17px;
   border: 1px solid #c8d6e3;
   color: var(--blue);
   background: #f7fafc;
   border-radius: 9px;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 850;
   cursor: pointer;
 }
@@ -594,7 +584,7 @@ main {
 
 .quiz-card > span {
   color: var(--orange);
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 950;
 }
 
@@ -613,7 +603,7 @@ main {
 
 .quiz-cadet > span {
   color: #526c87;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 900;
 }
 
@@ -622,7 +612,7 @@ main {
   color: #fff;
   background: var(--navy);
   border-radius: 8px;
-  font-size: 23px;
+  font-size: 27px;
 }
 
 .quiz-cadet > p {
@@ -635,7 +625,7 @@ main {
 
 .quiz-card h1 {
   margin: 18px 0 31px;
-  font-size: 34px;
+  font-size: 39px;
   line-height: 1.4;
   letter-spacing: -0.035em;
 }
@@ -647,8 +637,8 @@ main {
 }
 
 .options button {
-  min-height: 88px;
-  padding: 15px 17px;
+  min-height: 98px;
+  padding: 17px 19px;
   display: grid;
   grid-template-columns: 42px 1fr;
   align-items: center;
@@ -662,8 +652,8 @@ main {
 }
 
 .options button i {
-  width: 39px;
-  height: 39px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   color: #5d7188;
@@ -674,14 +664,14 @@ main {
 }
 
 .options button span {
-  font-size: 19px;
+  font-size: 23px;
   line-height: 1.4;
   font-weight: 800;
 }
 
 .options button.formula-option span {
   font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
-  font-size: 27px;
+  font-size: 31px;
   font-style: italic;
   font-weight: 600;
   letter-spacing: 0;
@@ -721,8 +711,8 @@ main {
 }
 
 .order-step {
-  min-height: 75px;
-  padding: 12px 15px;
+  min-height: 84px;
+  padding: 14px 17px;
   display: grid;
   grid-template-columns: 38px 1fr auto;
   gap: 12px;
@@ -733,18 +723,18 @@ main {
 }
 
 .order-step > b {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   display: grid;
   place-items: center;
   color: #fff;
   background: var(--navy);
   border-radius: 50%;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .order-step > span {
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 850;
 }
 
@@ -777,7 +767,7 @@ main {
   grid-template-columns: auto 1fr;
   gap: 9px;
   border-radius: 10px;
-  font-size: 17px;
+  font-size: 20px;
   line-height: 1.5;
 }
 
@@ -828,18 +818,19 @@ main {
 
 .complete-card > span {
   color: var(--blue);
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 950;
 }
 
 .complete-card h1 {
   margin: 10px 0 8px;
-  font-size: 29px;
+  font-size: 35px;
 }
 
 .complete-card > p {
   margin: 0;
   color: var(--muted);
+  font-size: 19px;
 }
 
 .score {
@@ -853,19 +844,19 @@ main {
 
 .score > span {
   color: #53677f;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 850;
 }
 
 .score > b {
   float: right;
   color: var(--navy);
-  font-size: 23px;
+  font-size: 28px;
 }
 
 .score > b small {
   color: #8b99aa;
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .score > div {
@@ -898,7 +889,7 @@ main {
 
 .keywords span {
   color: #5b718a;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 850;
 }
 
@@ -931,6 +922,7 @@ main {
   color: #49617b;
   background: #fff;
   border-radius: 9px;
+  font-size: 18px;
   font-weight: 900;
   cursor: pointer;
 }
@@ -938,10 +930,6 @@ main {
 @media (max-width: 1100px) {
   .summary-page {
     width: calc(100% - 34px);
-  }
-
-  .summary-title h1 {
-    font-size: 30px;
   }
 
   .core-flow {
@@ -956,10 +944,10 @@ main {
   }
 
   .concepts article {
-    padding: 17px;
+    padding: 21px;
   }
 
   .concepts p {
-    font-size: 15px;
+    font-size: 21px;
   }
 }
