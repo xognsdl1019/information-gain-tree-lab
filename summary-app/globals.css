@@ -690,6 +690,24 @@ main {
   white-space: pre-line;
 }
 
+.quiz-instruction {
+  margin: 19px 0 11px;
+  color: #53677f;
+  font-size: 21px;
+  font-weight: 850;
+}
+
+.quiz-card h1.question-statement {
+  margin: 0 0 28px;
+  padding: 21px 24px;
+  border: 2px solid #bdd3e5;
+  border-left: 7px solid var(--blue);
+  border-radius: 11px;
+  color: var(--navy);
+  background: #f4f9fd;
+  font-size: 34px;
+}
+
 .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -732,9 +750,13 @@ main {
 .options button.formula-option > span {
   font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
   font-size: 31px;
-  font-style: italic;
+  font-style: normal;
   font-weight: 600;
   letter-spacing: 0;
+}
+
+.options button.formula-option .formula {
+  font-style: normal;
 }
 
 .options button.formula-option sub {
@@ -762,6 +784,14 @@ main {
 .options.ox-options button > span {
   font-size: 38px;
   text-align: center;
+}
+
+.options.item-five-options button:nth-child(n + 3) {
+  grid-column: 1 / -1;
+}
+
+.options.item-five-options button:nth-child(3) > span {
+  white-space: nowrap;
 }
 
 .options button.correct {
