@@ -339,7 +339,7 @@ main {
 
 .repeat,
 .stop {
-  min-height: 47px;
+  min-height: 64px;
   padding: 11px 13px;
   align-items: center;
   border-radius: 10px;
@@ -347,10 +347,37 @@ main {
 
 .repeat {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 10px;
+  grid-template-columns: 48px auto 1fr;
+  gap: 12px;
   color: #235a86;
   background: var(--blue-soft);
+}
+
+.repeat-arrow {
+  width: 44px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--blue);
+  font-size: 31px;
+  line-height: 1;
+}
+
+.repeat > div {
+  display: grid;
+  gap: 1px;
+}
+
+.repeat > strong {
+  justify-self: end;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #174f78;
+  background: #d5eaf9;
+  font-size: 17px;
+  white-space: nowrap;
 }
 
 .repeat span,
@@ -786,6 +813,11 @@ main {
   text-align: center;
 }
 
+.options.item-four-options button:first-child > span {
+  font-size: 22px;
+  white-space: nowrap;
+}
+
 .options.item-five-options button:nth-child(n + 3) {
   grid-column: 1 / -1;
 }
@@ -1098,5 +1130,9 @@ main {
 
   .concepts p {
     font-size: 21px;
+  }
+
+  .options.item-four-options button:first-child {
+    grid-column: 1 / -1;
   }
 }
