@@ -97,9 +97,15 @@ function assignCadets(count: number): CadetAssignments {
 const ITEMS: Item[] = [
   {
     id: 1,
-    kind: "fill",
+    kind: "choice",
     question:
-      "의사결정 트리는 현재 노드에서 하나의 (     )을 선택하고, 속성값에 따라 데이터를 하위 노드로 (     )한다.",
+      "빈칸에 들어갈 두 단어의 올바른 조합을 고르세요. 의사결정 트리는 현재 노드에서 하나의 ( ㉠ )을 선택하고, 속성값에 따라 데이터를 하위 노드로 ( ㉡ )한다.",
+    options: [
+      { label: "㉠ 질문 / ㉡ 분할", correct: true },
+      { label: "㉠ 실제값 / ㉡ 학습" },
+      { label: "㉠ 엔트로피 / ㉡ 종료" },
+      { label: "㉠ 리프 / ㉡ 예측" },
+    ],
     explanation:
       "선택한 속성이 질문이 되고, 각 속성값에 따라 데이터가 하위 노드로 분할됩니다.",
   },
