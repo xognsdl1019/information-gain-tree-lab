@@ -204,9 +204,6 @@ function Summary({ start }: { start: () => void }) {
     <section className="summary-page">
       <div className="summary-title">
         <span>의사결정 트리 핵심 정리</span>
-        <h1>
-          불확실성을 가장 많이 줄이는 <strong>질문</strong>을 선택한다
-        </h1>
       </div>
 
       <div className="summary-body">
