@@ -711,7 +711,7 @@ main {
   cursor: pointer;
 }
 
-.options button i {
+.options button > i {
   width: 44px;
   height: 44px;
   display: grid;
@@ -723,13 +723,13 @@ main {
   font-weight: 900;
 }
 
-.options button span {
+.options button > span {
   font-size: 23px;
   line-height: 1.4;
   font-weight: 800;
 }
 
-.options button.formula-option span {
+.options button.formula-option > span {
   font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
   font-size: 31px;
   font-style: italic;
@@ -750,9 +750,18 @@ main {
   background: #f7fbff;
 }
 
-.options button.selected i {
+.options button.selected > i {
   color: #fff;
   background: var(--blue);
+}
+
+.options.ox-options button {
+  min-height: 124px;
+}
+
+.options.ox-options button > span {
+  font-size: 38px;
+  text-align: center;
 }
 
 .options button.correct {
