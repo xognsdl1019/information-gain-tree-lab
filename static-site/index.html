@@ -34,11 +34,16 @@
       }
 
       html {
+        min-width: 320px;
+        overflow-x: hidden;
         scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
       }
 
       body {
+        min-width: 320px;
         margin: 0;
+        overflow-x: hidden;
         color: var(--ink);
         background: var(--bg);
         font-family:
@@ -363,10 +368,13 @@
       }
 
       .data-tables {
+        min-width: 0;
         padding: 16px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 14px;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
       }
 
       table {
@@ -1148,6 +1156,10 @@
 
       .feedback.correct {
         color: var(--success);
+      }
+
+      .feedback .math-symbol {
+        font-size: 1.04em;
       }
 
       .gain-result {
@@ -1939,6 +1951,10 @@
           grid-template-columns: 1fr;
         }
 
+        .data-tables {
+          grid-template-columns: minmax(520px, 1fr);
+        }
+
         .setup-form,
         .panel-heading,
         .action-row,
@@ -2104,7 +2120,7 @@
           <div class="panel-heading">
             <div>
               <h2>컴퓨터 구매 데이터</h2>
-              <p>입력 속성 4개 · 실제값 2개 · 총 20명</p>
+              <p>입력 속성 4개 · 실제값 구매/미구매 · 총 20명</p>
             </div>
             <div class="class-counts">
               <div class="count-chip purchase"><span>구매</span><strong>13명</strong></div>
@@ -2242,7 +2258,7 @@
             </div>
           </div>
           <div class="action-row">
-            <p id="step1Feedback" class="feedback">구매 13 / 미구매 7</p>
+            <p id="step1Feedback" class="feedback" aria-live="polite">구매 13 / 미구매 7</p>
             <button id="checkEntropyButton" class="primary-button" type="button">
               식 확인
             </button>
@@ -2378,7 +2394,7 @@
             </div>
           </div>
           <div class="action-row">
-            <p id="step2Feedback" class="feedback">청소년 7명 · 청년 6명 · 중년 7명</p>
+            <p id="step2Feedback" class="feedback" aria-live="polite">청소년 7명 · 청년 6명 · 중년 7명</p>
             <button id="checkWeightedButton" class="primary-button" type="button">
               가중치 확인
             </button>
@@ -2471,7 +2487,7 @@
               </div>
             </div>
             <div class="action-row">
-              <p id="studentCalcFeedback" class="feedback">
+              <p id="studentCalcFeedback" class="feedback" aria-live="polite">
                 가중치 · 아니요 / 예
               </p>
               <button id="checkStudentWeightedButton" class="primary-button" type="button">
@@ -2515,7 +2531,7 @@
                 </div>
               </button>
             </div>
-            <p id="step3Feedback" class="feedback" style="margin-top: 17px">
+            <p id="step3Feedback" class="feedback" aria-live="polite" style="margin-top: 17px">
               첫 질문 · 가장 큰 정보이득 선택
             </p>
             <div id="finalCard" class="final-card hidden">
@@ -2552,7 +2568,7 @@
             <div class="subset-data">
               <strong>청소년 데이터 · 7명</strong>
               <table class="subset-table">
-                <thead><tr><th>번호</th><th>수입</th><th>학생</th><th>신용</th><th>실제값</th></tr></thead>
+                <thead><tr><th>번호</th><th>수입</th><th>학생 여부</th><th>신용 등급</th><th>실제값</th></tr></thead>
                 <tbody>
                   <tr><td>01</td><td>높음</td><td>아니요</td><td>양호</td><td><span class="label-pill no-purchase">미구매</span></td></tr>
                   <tr><td>02</td><td>높음</td><td>아니요</td><td>우수</td><td><span class="label-pill no-purchase">미구매</span></td></tr>
@@ -2626,7 +2642,7 @@
               </div>
             </div>
             <div class="action-row">
-              <p id="youthEntropyFeedback" class="feedback">구매 3 · 미구매 4</p>
+              <p id="youthEntropyFeedback" class="feedback" aria-live="polite">구매 3 · 미구매 4</p>
               <button id="checkYouthEntropyButton" class="primary-button" type="button">
                 식 확인
               </button>
@@ -2669,7 +2685,7 @@
               </div>
             </div>
             <div class="action-row">
-              <p id="youthFeedback" class="feedback">청소년 노드 · 후보 속성 비교</p>
+              <p id="youthFeedback" class="feedback" aria-live="polite">청소년 노드 · 후보 속성 비교</p>
               <button id="calculateYouthGainButton" class="primary-button hidden" type="button">
                 정보이득 계산 →
               </button>
@@ -2733,7 +2749,7 @@
               </div>
             </div>
             <div class="action-row">
-              <p id="middleFeedback" class="feedback">중년 노드 · 후보 속성 비교</p>
+              <p id="middleFeedback" class="feedback" aria-live="polite">중년 노드 · 후보 속성 비교</p>
               <button id="calculateMiddleGainButton" class="primary-button hidden" type="button">
                 정보이득 계산 →
               </button>
@@ -2819,8 +2835,8 @@
                 <th>번호</th>
                 <th>나이</th>
                 <th>수입</th>
-                <th>학생</th>
-                <th>신용</th>
+                <th>학생 여부</th>
+                <th>신용 등급</th>
                 <th>실제값</th>
               </tr>
             </thead>
@@ -3123,8 +3139,8 @@
         document.getElementById("calculateAgeGainButton").classList.add("hidden");
         document.getElementById("toStep3Button").classList.remove("hidden");
         feedback.className = "feedback correct";
-        feedback.textContent =
-          "나이 정보이득 · 0.934 − 0.690 = 0.244";
+        feedback.innerHTML =
+          '<span class="math-symbol">Gain(D, 나이) = 0.934 − 0.690 = 0.244</span>';
       });
 
       document.getElementById("toStep3Button").addEventListener("click", () => showStep(3));
@@ -3167,8 +3183,8 @@
           if (card.dataset.feature === "나이") {
             card.classList.add("selected");
             feedback.className = "feedback correct";
-            feedback.textContent =
-              "정답 · 나이 정보이득 0.244";
+            feedback.innerHTML =
+              '정답 · <span class="math-symbol">Gain(D, 나이) = 0.244</span>';
             document.getElementById("finalCard").classList.remove("hidden");
             document.getElementById("treePanel").classList.remove("hidden");
             document.querySelectorAll(".gain-card").forEach((item) => {
@@ -3178,8 +3194,8 @@
           } else {
             card.classList.add("wrong");
             feedback.className = "feedback error";
-            feedback.textContent =
-              `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
+            feedback.innerHTML =
+              `<span class="math-symbol">Gain(D, ${card.dataset.feature}) = ${card.dataset.value}</span> · 더 큰 값 선택`;
           }
         });
       });
@@ -3219,8 +3235,8 @@
           if (card.dataset.feature === "학생 여부") {
             card.classList.add("selected");
             feedback.className = "feedback correct";
-            feedback.textContent =
-              "분할 후 h_학생 여부(D_청소년) = 0 · 정보이득 계산";
+            feedback.innerHTML =
+              '분할 후 <span class="math-symbol">h<sub>학생 여부</sub>(D<sub>청소년</sub>) = 0</span> · 정보이득 계산';
             document
               .querySelectorAll('.child-gain-card[data-node="youth"]')
               .forEach((item) => {
@@ -3236,8 +3252,8 @@
           } else {
             card.classList.add("wrong");
             feedback.className = "feedback error";
-            feedback.textContent =
-              `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
+            feedback.innerHTML =
+              `<span class="math-symbol">Gain(D<sub>청소년</sub>, ${card.dataset.feature}) = ${card.dataset.value}</span> · 더 큰 값 선택`;
           }
         });
       });
@@ -3248,8 +3264,8 @@
         document.getElementById("calculateYouthGainButton").classList.add("hidden");
         document.getElementById("toMiddleButton").classList.remove("hidden");
         feedback.className = "feedback correct";
-        feedback.textContent =
-          "정보이득 · 0.985 − 0 = 0.985";
+        feedback.innerHTML =
+          '<span class="math-symbol">Gain(D<sub>청소년</sub>, 학생 여부) = 0.985 − 0 = 0.985</span>';
       });
 
       document.getElementById("toMiddleButton").addEventListener("click", () => {
@@ -3272,8 +3288,8 @@
           if (card.dataset.feature === "신용 등급") {
             card.classList.add("selected");
             feedback.className = "feedback correct";
-            feedback.textContent =
-              "분할 후 h_신용 등급(D_중년) = 0 · 정보이득 계산";
+            feedback.innerHTML =
+              '분할 후 <span class="math-symbol">h<sub>신용 등급</sub>(D<sub>중년</sub>) = 0</span> · 정보이득 계산';
             document
               .querySelectorAll('.child-gain-card[data-node="middle"]')
               .forEach((item) => {
@@ -3287,8 +3303,8 @@
           } else {
             card.classList.add("wrong");
             feedback.className = "feedback error";
-            feedback.textContent =
-              `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
+            feedback.innerHTML =
+              `<span class="math-symbol">Gain(D<sub>중년</sub>, ${card.dataset.feature}) = ${card.dataset.value}</span> · 더 큰 값 선택`;
           }
         });
       });
@@ -3302,8 +3318,8 @@
         status.textContent = "트리 완성";
         document.getElementById("toStep5Button").classList.remove("hidden");
         feedback.className = "feedback correct";
-        feedback.textContent =
-          "정보이득 · 0.985 − 0 = 0.985";
+        feedback.innerHTML =
+          '<span class="math-symbol">Gain(D<sub>중년</sub>, 신용 등급) = 0.985 − 0 = 0.985</span>';
       });
 
       document.getElementById("toStep5Button").addEventListener("click", () => {

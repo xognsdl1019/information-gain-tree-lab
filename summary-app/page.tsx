@@ -7,10 +7,10 @@ type Option = { label: ReactNode; correct?: boolean; formula?: boolean };
 type CadetAssignments = Partial<Record<number, number>>;
 type Item = {
   id: number;
-  kind: "choice";
+  kind: "choice" | "order";
   instruction?: string;
   question: string;
-  options: Option[];
+  options?: Option[];
   explanation: string;
 };
 
@@ -46,7 +46,7 @@ const CONCEPTS: Array<{
   {
     title: "분할 후 엔트로피",
     symbol: (
-      <i className="math">h<sub>분할 속성</sub>(D)</i>
+      <i className="math">h<sub className="math-variable">A</sub>(D)</i>
     ),
     body: (
       <>
@@ -57,21 +57,34 @@ const CONCEPTS: Array<{
   },
   {
     title: "정보이득",
-    symbol: <i className="math">Gain(D, 분할 속성)</i>,
+    symbol: <i className="math">Gain(D, A)</i>,
     body: (
       <>
         분할 전보다 <b>불확실성이 감소한 양</b>
       </>
     ),
     detail: (
-      <i className="math">
-        Gain(D, 분할 속성) = h(D) − h<sub>분할 속성</sub>(D)
-      </i>
+      <span className="formula-detail">
+        <i className="math">
+          Gain(D, A) = h(D) − h<sub className="math-variable">A</sub>(D)
+        </i>
+        <span>D: 현재 데이터 집합 · A: 분할 속성</span>
+        <span className="formula-example">
+          예: Gain(D<sub>청소년</sub>, 수입)
+        </span>
+      </span>
     ),
   },
 ];
 
-const ASSIGNED_ITEM_IDS = [1, 3, 5];
+const INITIAL_ORDER = [
+  ID3_STEPS[1],
+  ID3_STEPS[3],
+  ID3_STEPS[0],
+  ID3_STEPS[2],
+];
+
+const ASSIGNED_ITEM_IDS = [1, 3, 6];
 
 function shuffledCadets(count: number) {
   const cadets = Array.from({ length: count }, (_, index) => index + 1);
@@ -125,12 +138,12 @@ const ITEMS: Item[] = [
   {
     id: 3,
     kind: "choice",
-    question: "정보이득 Gain(D, 분할 속성)의 계산식으로 옳은 것은 무엇인가요?",
+    question: "정보이득 Gain(D, A)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
         label: (
           <span className="formula">
-            h<sub>분할 속성</sub>(D) − h(D)
+            h<sub className="math-variable">A</sub>(D) − h(D)
           </span>
         ),
         formula: true,
@@ -138,7 +151,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            h(D) + h<sub>분할 속성</sub>(D)
+            h(D) + h<sub className="math-variable">A</sub>(D)
           </span>
         ),
         formula: true,
@@ -146,7 +159,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            h(D) − h<sub>분할 속성</sub>(D)
+            h(D) − h<sub className="math-variable">A</sub>(D)
           </span>
         ),
         correct: true,
@@ -192,6 +205,14 @@ const ITEMS: Item[] = [
     ],
     explanation:
       "h(D) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
+  },
+  {
+    id: 6,
+    kind: "order",
+    question:
+      "ID3 알고리즘에서 분할 속성을 선택하고 데이터를 나누는 네 단계를 올바른 순서로 배열하세요.",
+    explanation:
+      "실제값이 섞인 하위 노드에서는 후보 속성 확인부터 데이터 분할까지의 네 단계를 반복하고, h(D) = 0이면 리프 노드로 확정합니다.",
   },
 ];
 
@@ -341,20 +362,35 @@ function Quiz({
 }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [order, setOrder] = useState([...INITIAL_ORDER]);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">(
     "idle",
   );
   const [score, setScore] = useState(0);
   const item = ITEMS[index];
   const assignedCadet = assignments[item.id];
-  const ready = selected !== null;
+  const ready = item.kind === "choice" ? selected !== null : true;
 
   function check(event: FormEvent) {
     event.preventDefault();
-    const ok = Boolean(item.options[selected ?? -1]?.correct);
+    const ok =
+      item.kind === "choice"
+        ? Boolean(item.options?.[selected ?? -1]?.correct)
+        : order.every((step, stepIndex) => step === ID3_STEPS[stepIndex]);
 
     if (ok) setScore((value) => value + 1);
     setFeedback(ok ? "correct" : "wrong");
+  }
+
+  function moveStep(from: number, direction: -1 | 1) {
+    const to = from + direction;
+    if (to < 0 || to >= order.length || feedback === "correct") return;
+    setOrder((current) => {
+      const nextOrder = [...current];
+      [nextOrder[from], nextOrder[to]] = [nextOrder[to], nextOrder[from]];
+      return nextOrder;
+    });
+    if (feedback === "wrong") setFeedback("idle");
   }
 
   function next() {
@@ -410,44 +446,82 @@ function Quiz({
           {item.question}
         </h1>
 
-        <div
-          className={`options ${item.id === 1 ? "ox-options" : ""} ${
-            item.id === 4 ? "item-four-options" : ""
-          } ${
-            item.id === 5 ? "item-five-options" : ""
-          }`}
-        >
-          {item.options.map((option, optionIndex) => (
-            <button
-              type="button"
-              className={`${selected === optionIndex ? "selected" : ""} ${
-                feedback === "correct" && option.correct ? "correct" : ""
-              } ${
-                feedback === "wrong" && selected === optionIndex ? "wrong" : ""
-              } ${option.formula ? "formula-option" : ""}`}
-              onClick={() => {
-                setSelected(optionIndex);
-                if (feedback === "wrong") setFeedback("idle");
-              }}
-              disabled={feedback === "correct"}
-              key={`${item.id}-${optionIndex}`}
-            >
-              <i>{String.fromCharCode(65 + optionIndex)}</i>
-              <span>{option.label}</span>
-            </button>
-          ))}
-        </div>
+        {item.kind === "choice" ? (
+          <div
+            className={`options ${item.id === 1 ? "ox-options" : ""} ${
+              item.id === 4 ? "item-four-options" : ""
+            } ${
+              item.id === 5 ? "item-five-options" : ""
+            }`}
+          >
+            {item.options?.map((option, optionIndex) => (
+              <button
+                type="button"
+                className={`${selected === optionIndex ? "selected" : ""} ${
+                  feedback === "correct" && option.correct ? "correct" : ""
+                } ${
+                  feedback === "wrong" && selected === optionIndex ? "wrong" : ""
+                } ${option.formula ? "formula-option" : ""}`}
+                onClick={() => {
+                  setSelected(optionIndex);
+                  if (feedback === "wrong") setFeedback("idle");
+                }}
+                disabled={feedback === "correct"}
+                key={`${item.id}-${optionIndex}`}
+              >
+                <i>{String.fromCharCode(65 + optionIndex)}</i>
+                <span>{option.label}</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="order-list">
+            {order.map((step, stepIndex) => (
+              <div className={`order-step tone-${step.key}`} key={step.key}>
+                <b>{step.icon}</b>
+                <div className="order-copy">
+                  <small>현재 {stepIndex + 1}번째</small>
+                  <span>{step.label}</span>
+                </div>
+                <div className="order-controls">
+                  <button
+                    type="button"
+                    onClick={() => moveStep(stepIndex, -1)}
+                    disabled={stepIndex === 0 || feedback === "correct"}
+                    aria-label={`${step.label} 위로 이동`}
+                  >
+                    ↑
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveStep(stepIndex, 1)}
+                    disabled={
+                      stepIndex === order.length - 1 || feedback === "correct"
+                    }
+                    aria-label={`${step.label} 아래로 이동`}
+                  >
+                    ↓
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {feedback === "correct" && (
-          <div className="feedback good">
+          <div className="feedback good" role="status" aria-live="polite">
             <b>✓ 정답입니다.</b>
             <span>{item.explanation}</span>
           </div>
         )}
         {feedback === "wrong" && (
-          <div className="feedback bad">
+          <div className="feedback bad" role="status" aria-live="polite">
             <b>다시 확인</b>
-            <span>답을 바꾼 뒤 다시 확인해 보세요.</span>
+            <span>
+              {item.kind === "order"
+                ? "화살표로 순서를 바꾼 뒤 다시 확인해 보세요."
+                : "답을 바꾼 뒤 다시 확인해 보세요."}
+            </span>
           </div>
         )}
 
