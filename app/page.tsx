@@ -150,13 +150,17 @@ function CadetPrompt({ cadet, children }: { cadet: number; children: ReactNode }
   );
 }
 
-function EntropyFormula({ items, label }: { items: Mail[]; label: string }) {
+function DatasetSymbol({ label }: { label?: string }) {
+  return <>D{label && <sub>{label}</sub>}</>;
+}
+
+function EntropyFormula({ items, datasetLabel }: { items: Mail[]; datasetLabel?: string }) {
   const result = counts(items);
   const total = items.length;
-  if (!total) return <div className="entropy-formula"><span>H({label})</span><strong>= 0</strong><small>데이터 없음</small></div>;
+  if (!total) return <div className="entropy-formula"><span>h(<DatasetSymbol label={datasetLabel} />)</span><strong>= 0</strong><small>데이터 없음</small></div>;
   return (
     <div className="entropy-formula">
-      <span>H({label})</span>
+      <span>h(<DatasetSymbol label={datasetLabel} />)</span>
       <div>
         <b>− <Fraction numerator={result.normal} denominator={total} /> log₂(<Fraction numerator={result.normal} denominator={total} />)</b>
         <b>− <Fraction numerator={result.hack} denominator={total} /> log₂(<Fraction numerator={result.hack} denominator={total} />)</b>
@@ -180,15 +184,18 @@ function PurityBar({ items }: { items: Mail[] }) {
   return <div className="purity-bar" aria-label={`정상 ${result.normal}, 해킹 ${result.hack}`}><i className="normal" style={{ width: `${result.normal / total * 100}%` }} /><i className="hack" style={{ width: `${result.hack / total * 100}%` }} /></div>;
 }
 
-function TreeView({ node, selectedId, justSplitId }: { node: TreeNode; selectedId: string; justSplitId: string | null }) {
+function TreeView({ node, selectedId, justSplitId, datasetLabel }: { node: TreeNode; selectedId: string; justSplitId: string | null; datasetLabel?: string }) {
   const items = mails.filter((mail) => node.mailIds.includes(mail.id));
   const result = counts(items);
   return (
     <div className="tree-branch">
       <div className={`tree-node ${node.id === selectedId ? "current" : ""} ${node.id === justSplitId ? "just-split" : ""} ${node.label === "정상 메일" ? "normal-leaf" : node.label === "해킹메일" ? "hack-leaf" : ""}`}>
-        {node.label ? <><span className="leaf-icon">{node.label === "정상 메일" ? "✓" : "!"}</span><strong>{node.label}</strong><p>{items.length}개 · H=0</p></> : node.split ? <><span className="tree-kicker">질문</span><strong>{featureOf(node.split).question}</strong><p>{items.length}개</p></> : <><span className="tree-kicker">현재 노드</span><strong>어떤 속성?</strong><p>정상 {result.normal} · 해킹 {result.hack}</p></>}
+        {node.label ? <><span className="leaf-icon">{node.label === "정상 메일" ? "✓" : "!"}</span><strong>{node.label}</strong><p>{items.length}개 · h(<DatasetSymbol label={datasetLabel} />)=0</p></> : node.split ? <><span className="tree-kicker">질문</span><strong>{featureOf(node.split).question}</strong><p>{items.length}개</p></> : <><span className="tree-kicker">현재 노드</span><strong>어떤 속성?</strong><p>정상 {result.normal} · 해킹 {result.hack}</p></>}
       </div>
-      {!!node.children?.length && <div className="tree-children">{node.children.map((child) => <div className="tree-branch" key={child.id}><span className="edge-label">{child.edge}</span><TreeView node={child} selectedId={selectedId} justSplitId={justSplitId} /></div>)}</div>}
+      {!!node.children?.length && <div className="tree-children">{node.children.map((child) => {
+        const childDatasetLabel = [datasetLabel, child.edge].filter(Boolean).join("·");
+        return <div className="tree-branch" key={child.id}><span className="edge-label">{child.edge}</span><TreeView node={child} selectedId={selectedId} justSplitId={justSplitId} datasetLabel={childDatasetLabel} /></div>;
+      })}</div>}
     </div>
   );
 }
@@ -269,6 +276,9 @@ export default function Home() {
   const best = available.length ? available.reduce((winner, feature) => informationGain(currentItems, feature.key) > informationGain(currentItems, winner.key) ? feature : winner) : null;
   const isComplete = complete(tree);
   const currentPath = pathTo(tree, selectedId) ?? ["전체 메일"];
+  const currentDatasetLabel = selectedId === "root"
+    ? undefined
+    : currentPath.slice(1).map((item) => item.split(": ").at(-1)).filter(Boolean).join("·");
   const quizAnswered = Object.keys(quizAnswers).length;
   const quizScore = isComplete ? testMails.filter((mail) => quizAnswers[mail.id] === predict(tree, mail).label).length : 0;
   const assignedCadet = cadetOrder[cadetCursor] ?? 1;
@@ -310,8 +320,8 @@ export default function Home() {
     const next = (quickCalculation && calcStep === 0 ? 3 : Math.min(calcStep + 1, 3)) as 0 | 1 | 2 | 3;
     if (calcStep === 0) advanceCadet();
     setCalcStep(next);
-    if (next === 1) setMessage("● 개수 → 비율 → H");
-    if (next === 2) setMessage("● 데이터 비율 × 그룹 H");
+    if (next === 1) setMessage("● 개수 → 비율 → h");
+    if (next === 2) setMessage("● 데이터 비율 × 그룹 h");
     if (next === 3) {
       const nodeEvaluations = { ...currentEvaluations, [previewKey]: previewGain };
       const allCalculated = available.every((feature) => nodeEvaluations[feature.key] !== undefined);
@@ -319,9 +329,9 @@ export default function Home() {
       if (allCalculated) {
         setChosenKey(null);
         setSelectionError(false);
-        setMessage("● 정보이득 값을 비교하고 분할속성 선택");
+        setMessage("● 정보이득 값을 비교하고 분할 속성 선택");
       } else {
-        setMessage(quickCalculation ? "● 핵심 계산을 한 번에 확인" : "● H(D) − 가중평균 H = IG");
+        setMessage(quickCalculation ? "● 핵심 계산을 한 번에 확인" : "● h(D) − 분할 후 엔트로피 = Gain");
       }
     }
   }
@@ -453,7 +463,7 @@ export default function Home() {
               <button className="primary large" type="button" onClick={() => { setStartingFormulaRevealed(true); advanceCadet(); }}>식 확인 →</button>
             </div>
           ) : (
-            <div className="starting-formula"><div><span>분할 전 엔트로피</span><strong>정상 17 · 해킹 13</strong></div><EntropyFormula items={mails} label="D" /><p><b><Fraction numerator={17} denominator={30} /></b> 정상 · <b><Fraction numerator={13} denominator={30} /></b> 해킹</p></div>
+            <div className="starting-formula"><div><span>분할 전 엔트로피</span><strong>정상 17 · 해킹 13</strong></div><EntropyFormula items={mails} /><p><b><Fraction numerator={17} denominator={30} /></b> 정상 · <b><Fraction numerator={13} denominator={30} /></b> 해킹</p></div>
           )}
           <p className="disclaimer">※ 교육용 가상 데이터 · 실제 보안 판정 기준 아님</p>
         </section>
@@ -473,39 +483,40 @@ export default function Home() {
               <div className="feature-row">{FEATURES.map((feature) => {
                 const disabled = selectedNode.used.includes(feature.key);
                 const value = currentEvaluations[feature.key];
-                return <button key={feature.key} type="button" disabled={disabled} className={`feature-card ${previewKey === feature.key ? "active" : ""}`} onClick={() => tryFeature(feature.key)}><span>{feature.icon}</span><div><strong>{feature.name}</strong><small>{feature.values.join(" · ")}</small></div>{value !== undefined && <em>IG {value.toFixed(3)}</em>}</button>;
+                return <button key={feature.key} type="button" disabled={disabled} className={`feature-card ${previewKey === feature.key ? "active" : ""}`} onClick={() => tryFeature(feature.key)}><span>{feature.icon}</span><div><strong>{feature.name}</strong><small>{feature.values.join(" · ")}</small></div>{value !== undefined && <em>Gain(<DatasetSymbol label={currentDatasetLabel} />, {feature.name}) = {value.toFixed(3)}</em>}</button>;
               })}</div>
             </section>
 
             <section className="visual-split">
               <div className="section-heading"><span>2</span><div><h2>점 분할 보드</h2><p>{message}</p></div></div>
-              {!previewKey ? <div className="unsplit-pool"><div className="pool-title"><h3>분할 전</h3><strong>정상 {counts(currentItems).normal} · 해킹 {counts(currentItems).hack}</strong></div><div className="tile-grid">{currentItems.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 18} />)}</div><PurityBar items={currentItems} /><div className="pool-entropy"><span>엔트로피</span><strong>{parentEntropy.toFixed(3)}</strong></div></div> : <div className={`split-groups columns-${previewGroups.length}`}>{previewGroups.map((group, groupIndex) => {
+              {!previewKey ? <div className="unsplit-pool"><div className="pool-title"><h3>분할 전</h3><strong>정상 {counts(currentItems).normal} · 해킹 {counts(currentItems).hack}</strong></div><div className="tile-grid">{currentItems.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 18} />)}</div><PurityBar items={currentItems} /><div className="pool-entropy"><span>h(<DatasetSymbol label={currentDatasetLabel} />)</span><strong>{parentEntropy.toFixed(3)}</strong></div></div> : <div className={`split-groups columns-${previewGroups.length}`}>{previewGroups.map((group, groupIndex) => {
                 const result = counts(group.items);
-                return <article className="split-group" key={group.value}><div className="group-header"><span>영역 {groupIndex + 1}</span><h3>{group.value}</h3><b>{group.items.length}개</b></div><div className="tile-grid">{group.items.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 28} />)}</div><div className="count-row"><span className="normal">✓ 정상 <b>{result.normal}</b></span><span className="hack">! 해킹 <b>{result.hack}</b></span></div><PurityBar items={group.items} />{calcStep >= 1 ? <EntropyFormula items={group.items} label={group.value} /> : <div className="look-first">● 색상 혼합 비교</div>}</article>;
+                const groupDatasetLabel = [currentDatasetLabel, group.value].filter(Boolean).join("·");
+                return <article className="split-group" key={group.value}><div className="group-header"><span>영역 {groupIndex + 1}</span><h3>{group.value}</h3><b>{group.items.length}개</b></div><div className="tile-grid">{group.items.map((mail, index) => <MailTile key={mail.id} mail={mail} delay={index * 28} />)}</div><div className="count-row"><span className="normal">✓ 정상 <b>{result.normal}</b></span><span className="hack">! 해킹 <b>{result.hack}</b></span></div><PurityBar items={group.items} />{calcStep >= 1 ? <EntropyFormula items={group.items} datasetLabel={groupDatasetLabel} /> : <div className="look-first">● 색상 혼합 비교</div>}</article>;
               })}</div>}
               {previewKey && calcStep === 0 && <div className="reveal-row cadet-reveal"><CadetPrompt cadet={assignedCadet}>{quickCalculation ? "분할 결과를 보고 정보이득의 크기를 예상해 볼까요?" : "각 그룹의 엔트로피 식을 이야기해 볼까요?"}</CadetPrompt><button className="primary large" type="button" onClick={advanceCalculation}>{quickCalculation ? "정보이득 결과 한 번에 확인 →" : "① 그룹별 엔트로피 →"}</button></div>}
             </section>
 
             {previewKey && calcStep >= 1 && <section className="calculation-section">
               <div className="section-heading"><span>3</span><div><h2>정보이득 계산</h2><p>첫 후보는 단계별 계산 · 이후 후보는 결과를 한 번에 확인</p></div></div>
-              <div className="calc-roadmap" aria-label="계산 진행 단계">{["그룹별 H", "가중평균 H", "정보이득"].map((label, index) => <div key={label} className={calcStep > index + 1 ? "done" : calcStep === index + 1 ? "current" : ""}><b>{index + 1}</b><span>{label}</span></div>)}</div>
-              <div className="parent-formula"><span>분할 전</span><EntropyFormula items={currentItems} label="D" /></div>
+              <div className="calc-roadmap" aria-label="계산 진행 단계">{["그룹별 h", "분할 후 h", "정보이득"].map((label, index) => <div key={label} className={calcStep > index + 1 ? "done" : calcStep === index + 1 ? "current" : ""}><b>{index + 1}</b><span>{label}</span></div>)}</div>
+              <div className="parent-formula"><span>분할 전</span><EntropyFormula items={currentItems} datasetLabel={currentDatasetLabel} /></div>
               {calcStep === 1 && <div className="calculation-action"><p>● 정상/전체 · 해킹/전체</p><button className="primary large" type="button" onClick={advanceCalculation}>② 가중평균 →</button></div>}
-              {calcStep >= 2 && <div className="weighted-formula"><span>분할 후 가중평균 H</span><div className="formula-expression">{previewGroups.map((group, index) => <span key={group.value}>{index > 0 && <i>＋</i>}<b>(<Fraction numerator={group.items.length} denominator={currentItems.length} />)</b> × {entropy(group.items).toFixed(3)}</span>)}</div><strong>= {weightedEntropy.toFixed(3)}</strong><small>데이터 비율 × 그룹 H</small></div>}
-              {calcStep === 2 && <div className="calculation-action"><p>● H(D) − 가중평균 H</p><button className="primary large" type="button" onClick={advanceCalculation}>③ 정보이득 →</button></div>}
-              {calcStep >= 3 && <div className={`gain-formula ${selectedId === "root" ? "first-split" : ""}`}><span>{selectedId === "root" ? "첫 분할 정보이득" : "정보이득"} IG(D, {featureOf(previewKey).name})</span><div><b>{parentEntropy.toFixed(3)}</b><i>−</i><b>{weightedEntropy.toFixed(3)}</b><i>=</i><strong>{previewGain.toFixed(3)}</strong></div><p>불확실성 감소량</p></div>}
+              {calcStep >= 2 && <div className="weighted-formula"><span>분할 후 엔트로피 · h<sub>{featureOf(previewKey).name}</sub>(<DatasetSymbol label={currentDatasetLabel} />)</span><div className="formula-expression">{previewGroups.map((group, index) => <span key={group.value}>{index > 0 && <i>＋</i>}<b>(<Fraction numerator={group.items.length} denominator={currentItems.length} />)</b> × {entropy(group.items).toFixed(3)}</span>)}</div><strong>= {weightedEntropy.toFixed(3)}</strong><small>데이터 비율 × 그룹 h</small></div>}
+              {calcStep === 2 && <div className="calculation-action"><p>● h(<DatasetSymbol label={currentDatasetLabel} />) − h<sub>{featureOf(previewKey).name}</sub>(<DatasetSymbol label={currentDatasetLabel} />)</p><button className="primary large" type="button" onClick={advanceCalculation}>③ 정보이득 →</button></div>}
+              {calcStep >= 3 && <div className={`gain-formula ${selectedId === "root" ? "first-split" : ""}`}><span>{selectedId === "root" ? "첫 분할 정보이득" : "정보이득"} · Gain(<DatasetSymbol label={currentDatasetLabel} />, {featureOf(previewKey).name})</span><div><b>{parentEntropy.toFixed(3)}</b><i>−</i><b>{weightedEntropy.toFixed(3)}</b><i>=</i><strong>{previewGain.toFixed(3)}</strong></div><p>불확실성 감소량</p></div>}
             </section>}
 
             <section className="comparison-section">
-              <div className="section-heading"><span>4</span><div><h2>정보이득 비교 및 분할속성 선택</h2><p>{tried < available.length ? "먼저 모든 후보의 정보이득을 계산하세요." : "정보이득 값을 직접 비교한 뒤 가장 큰 속성을 클릭하세요."}</p></div><b>{tried}/{available.length}</b></div>
-              {tried === available.length && (!chosenKey || selectionError) && <div className="selection-cadet"><CadetPrompt cadet={assignedCadet}>{selectionError ? "값을 다시 비교해 분할속성을 골라볼까요?" : "어떤 속성을 분할속성으로 선택해야 할까요?"}</CadetPrompt></div>}
+              <div className="section-heading"><span>4</span><div><h2>정보이득 비교 및 분할 속성 선택</h2><p>{tried < available.length ? "먼저 모든 후보의 정보이득을 계산하세요." : "정보이득 값을 직접 비교한 뒤 가장 큰 속성을 클릭하세요."}</p></div><b>{tried}/{available.length}</b></div>
+              {tried === available.length && (!chosenKey || selectionError) && <div className="selection-cadet"><CadetPrompt cadet={assignedCadet}>{selectionError ? "값을 다시 비교해 분할 속성을 골라볼까요?" : "어떤 속성을 분할 속성으로 선택해야 할까요?"}</CadetPrompt></div>}
               <div className="comparison-grid">{available.map((feature) => {
                 const value = currentEvaluations[feature.key];
                 const groups = groupsFor(currentItems, feature.key);
                 const isChosen = chosenKey === feature.key;
-                return <button key={feature.key} aria-pressed={isChosen} className={`${tried < available.length && previewKey === feature.key ? "active" : ""} ${isChosen ? "chosen" : ""} ${selectionError && isChosen ? "selection-error" : ""} ${selectedId === "root" && value !== undefined ? "root-gain" : ""}`} type="button" onClick={() => chooseCandidate(feature.key)}><div className="comparison-name"><strong>{feature.name}</strong>{isChosen && <span>나의 선택</span>}</div>{value === undefined ? <div className="not-tried">미확인</div> : <div className="mini-groups">{groups.map((group) => <div key={group.value}><small>{group.value}</small><PurityBar items={group.items} /></div>)}</div>}<div className="comparison-value"><span>IG</span><strong>{value === undefined ? "—" : value.toFixed(3)}</strong></div></button>;
+                return <button key={feature.key} aria-pressed={isChosen} className={`${tried < available.length && previewKey === feature.key ? "active" : ""} ${isChosen ? "chosen" : ""} ${selectionError && isChosen ? "selection-error" : ""} ${selectedId === "root" && value !== undefined ? "root-gain" : ""}`} type="button" onClick={() => chooseCandidate(feature.key)}><div className="comparison-name"><strong>{feature.name}</strong>{isChosen && <span>나의 선택</span>}</div>{value === undefined ? <div className="not-tried">미확인</div> : <div className="mini-groups">{groups.map((group) => <div key={group.value}><small>{group.value}</small><PurityBar items={group.items} /></div>)}</div>}<div className="comparison-value"><span>Gain(<DatasetSymbol label={currentDatasetLabel} />, {feature.name})</span><strong>{value === undefined ? "—" : value.toFixed(3)}</strong></div></button>;
               })}</div>
-              <div className={`confirm-row ${selectionError ? "error" : chosenKey ? "ready" : ""}`}><p>{tried < available.length ? `● 계산하지 않은 후보 ${available.length - tried}개` : selectionError ? "● 선택한 값이 최댓값인지 다시 비교하세요." : chosenKey ? `● 선택한 속성: ${featureOf(chosenKey).name}` : "● 위 카드의 IG 값을 비교하고 하나를 선택하세요."}</p><button className="primary large" type="button" disabled={tried < available.length || !chosenKey} onClick={confirmSplit}>선택한 속성으로 분할 →</button></div>
+              <div className={`confirm-row ${selectionError ? "error" : chosenKey ? "ready" : ""}`}><p>{tried < available.length ? `● 계산하지 않은 후보 ${available.length - tried}개` : selectionError ? "● 선택한 값이 최댓값인지 다시 비교하세요." : chosenKey ? `● 선택한 속성: ${featureOf(chosenKey).name}` : "● 위 카드의 Gain 값을 비교하고 하나를 선택하세요."}</p><button className="primary large" type="button" disabled={tried < available.length || !chosenKey} onClick={confirmSplit}>선택한 속성으로 분할 →</button></div>
             </section>
           </>}
 

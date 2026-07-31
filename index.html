@@ -482,12 +482,11 @@
       }
 
       .formula {
-        min-width: max-content;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-wrap: wrap;
-        gap: 9px;
+        gap: 12px;
         font-family: Cambria, "Times New Roman", serif;
         font-size: clamp(21px, 2.2vw, 31px);
         font-weight: 700;
@@ -507,6 +506,114 @@
         text-align: center;
       }
 
+      .math-symbol {
+        font-family: Cambria, "Times New Roman", serif;
+        font-style: italic;
+        font-weight: 800;
+        letter-spacing: 0;
+      }
+
+      .math-symbol sub {
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          system-ui, sans-serif;
+        font-size: 0.64em;
+        font-style: normal;
+      }
+
+      .entropy-equation {
+        gap: 14px;
+      }
+
+      .entropy-term {
+        min-height: 102px;
+        padding: 13px 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border: 3px solid;
+        background: #fff;
+        border-radius: 14px;
+        transition:
+          box-shadow 160ms ease,
+          transform 160ms ease;
+      }
+
+      .entropy-term.has-value {
+        transform: translateY(-2px);
+      }
+
+      .term-label {
+        align-self: stretch;
+        min-width: 70px;
+        padding: 7px 9px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        border-radius: 9px;
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          sans-serif;
+        font-size: 15px;
+        font-style: normal;
+        line-height: 1.2;
+      }
+
+      .term-label b {
+        font-size: 20px;
+      }
+
+      .purchase-term {
+        border-color: #2877b5;
+        color: #1d5e91;
+        background: #edf7ff;
+      }
+
+      .purchase-term .term-label {
+        color: #fff;
+        background: #2877b5;
+      }
+
+      .purchase-term.has-value {
+        box-shadow: 0 8px 18px rgba(40, 119, 181, 0.2);
+      }
+
+      .no-purchase-term {
+        border-color: #d46a3a;
+        color: #a64629;
+        background: #fff3ec;
+      }
+
+      .no-purchase-term .term-label {
+        color: #fff;
+        background: #d46a3a;
+      }
+
+      .no-purchase-term.has-value {
+        box-shadow: 0 8px 18px rgba(212, 106, 58, 0.2);
+      }
+
+      .entropy-term select {
+        border-color: currentColor;
+        color: inherit;
+      }
+
+      .mirror-value {
+        min-width: 42px;
+        color: inherit;
+        font-weight: 950;
+      }
+
+      .math-operator {
+        color: #52677e;
+        font-size: 35px;
+        font-weight: 900;
+      }
+
       .fraction {
         min-width: 64px;
         display: inline-grid;
@@ -523,6 +630,44 @@
 
       .fraction > span:last-child {
         padding-top: 4px;
+      }
+
+      .math-fraction {
+        min-width: 30px;
+        margin: 0 3px;
+        display: inline-grid;
+        grid-template-rows: 1fr 1fr;
+        align-items: center;
+        color: inherit;
+        vertical-align: middle;
+        text-align: center;
+        line-height: 1;
+      }
+
+      .math-fraction > span {
+        padding: 0 5px;
+        color: inherit !important;
+        font-size: inherit !important;
+        font-weight: inherit;
+      }
+
+      .math-fraction > span:first-child {
+        padding-bottom: 3px;
+        border-bottom: 1.7px solid currentColor;
+      }
+
+      .math-fraction > span:last-child {
+        padding-top: 3px;
+      }
+
+      .math-line,
+      .weighted-math,
+      .child-weighted-formula {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 3px;
       }
 
       .formula-result {
@@ -558,6 +703,33 @@
         border-radius: 13px;
       }
 
+      .group-card.youth-group {
+        border-color: #4e92c7;
+        background: #eff8ff;
+      }
+
+      .group-card.young-group {
+        border-color: #43a77b;
+        background: #effaf5;
+      }
+
+      .group-card.middle-group {
+        border-color: #d88a47;
+        background: #fff6ec;
+      }
+
+      .group-card.youth-group h3 {
+        color: #1f669d;
+      }
+
+      .group-card.young-group h3 {
+        color: #237b58;
+      }
+
+      .group-card.middle-group h3 {
+        color: #a85b22;
+      }
+
       .group-card h3 {
         margin: 0 0 11px;
         color: var(--navy-2);
@@ -583,23 +755,277 @@
         font-weight: 900;
       }
 
-      .student-group-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .group-formula {
+        min-height: 38px;
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #425b76;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: center;
       }
 
-      .student-group-grid .group-card {
-        overflow-x: auto;
+      .calc-breakdown {
+        margin-top: 14px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto 1fr;
+        align-items: stretch;
+        gap: 9px;
       }
 
-      .compact-formula {
-        justify-content: flex-start;
-        flex-wrap: nowrap;
-        gap: 5px;
-        font-size: clamp(17px, 1.55vw, 23px);
+      .calc-breakdown > div {
+        min-height: 92px;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border: 2px solid #cfdae5;
+        color: #34536f;
+        background: #fff;
+        border-radius: 10px;
       }
 
-      .compact-formula .fraction {
-        min-width: 43px;
+      .calc-breakdown > i {
+        align-self: center;
+        color: #8593a4;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 26px;
+        font-style: normal;
+        font-weight: 900;
+      }
+
+      .calc-breakdown span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 850;
+      }
+
+      .calc-breakdown b,
+      .calc-breakdown strong {
+        font-family: Cambria, "Times New Roman", serif;
+      }
+
+      .calc-breakdown b {
+        font-size: 18px;
+      }
+
+      .calc-breakdown strong {
+        color: var(--blue);
+        font-size: 21px;
+      }
+
+      .calc-breakdown .total {
+        border-color: #e4a08e;
+        color: #9f402d;
+        background: var(--orange-soft);
+      }
+
+      .repeat-calc-area {
+        padding: clamp(20px, 2.5vw, 34px);
+        border: 3px solid #91b6d1;
+        background: #f7fbfe;
+        border-radius: 16px;
+      }
+
+      .repeat-split-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .repeat-split-grid article {
+        padding: 22px;
+        border: 3px solid #d5e0ea;
+        background: #fff;
+        border-radius: 14px;
+      }
+
+      .repeat-split-grid article.student-no-group {
+        border-color: #5b7fc2;
+        background: #f0f4ff;
+      }
+
+      .repeat-split-grid article.student-yes-group {
+        border-color: #36a174;
+        background: #effaf5;
+      }
+
+      .repeat-split-grid article > div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .repeat-split-grid span {
+        color: var(--navy-2);
+        font-size: 21px;
+        font-weight: 900;
+      }
+
+      .repeat-split-grid article b {
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .repeat-split-grid article p {
+        min-height: 82px;
+        margin: 18px 0 13px;
+        color: #3d5772;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: clamp(21px, 1.8vw, 27px);
+        text-align: center;
+      }
+
+      .repeat-split-grid article > strong {
+        display: block;
+        color: var(--orange);
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 28px;
+        font-style: italic;
+        text-align: center;
+      }
+
+      .repeat-formulas {
+        margin-top: 12px;
+        display: grid;
+        gap: 9px;
+      }
+
+      .repeat-formulas > div {
+        min-height: 66px;
+        padding: 16px 19px;
+        display: grid;
+        grid-template-columns: 170px 1fr auto;
+        align-items: center;
+        gap: 12px;
+        color: #31526f;
+        background: var(--blue-soft);
+        border-radius: 10px;
+      }
+
+      .repeat-formulas span {
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .repeat-formulas b,
+      .repeat-formulas strong,
+      .repeat-gain-formula select {
+        font-family: Cambria, "Times New Roman", serif;
+      }
+
+      .repeat-formulas b {
+        font-size: 20px;
+        text-align: center;
+      }
+
+      .repeat-formulas strong {
+        color: var(--orange);
+        font-size: 25px;
+      }
+
+      .repeat-gain-formula {
+        padding: 22px !important;
+        display: block !important;
+        border: 2px solid #dfa08f;
+        background: var(--orange-soft) !important;
+      }
+
+      .student-weighted-equation {
+        display: grid;
+        grid-template-columns: auto auto minmax(240px, 1fr) auto minmax(240px, 1fr);
+        align-items: center;
+        justify-content: center;
+        gap: 13px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: clamp(22px, 2vw, 30px);
+        font-weight: 800;
+      }
+
+      .weighted-label {
+        display: grid;
+        gap: 4px;
+      }
+
+      .weighted-label small {
+        color: #7f523f;
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          sans-serif;
+        font-size: 14px;
+        font-style: normal;
+      }
+
+      .weight-term {
+        min-height: 100px;
+        padding: 13px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border: 3px solid;
+        border-radius: 13px;
+        font-style: normal;
+      }
+
+      .weight-term small {
+        width: 100%;
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          sans-serif;
+        font-size: 15px;
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .weight-term.youth-weight {
+        border-color: #4e92c7;
+        color: #1f669d;
+        background: #eff8ff;
+      }
+
+      .weight-term.young-weight {
+        border-color: #43a77b;
+        color: #237b58;
+        background: #effaf5;
+      }
+
+      .weight-term.middle-weight {
+        border-color: #d88a47;
+        color: #a85b22;
+        background: #fff6ec;
+      }
+
+      .weight-term.student-no-weight {
+        border-color: #5b7fc2;
+        color: #3d5f9d;
+        background: #f0f4ff;
+      }
+
+      .weight-term.student-yes-weight {
+        border-color: #36a174;
+        color: #247a58;
+        background: #effaf5;
+      }
+
+      .repeat-gain-formula select,
+      .weight-term select {
+        width: 104px;
+        height: 46px;
+        border: 3px solid currentColor;
+        color: inherit;
+        background: #fff;
+        border-radius: 8px;
+        font-size: 21px;
+        font-weight: 850;
+        text-align: center;
       }
 
       .selection-kicker {
@@ -612,6 +1038,56 @@
         font-size: 18px;
         font-weight: 900;
         text-align: center;
+      }
+
+      .repeat-gain-formula .math-fraction select {
+        width: 76px;
+        height: 52px;
+        border: 3px solid currentColor;
+        color: inherit;
+        background: #fff;
+        border-radius: 9px;
+        font: inherit;
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .child-calc-result {
+        margin-top: 15px;
+        padding: 16px;
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        align-items: center;
+        gap: 15px;
+        color: #285a7f;
+        background: var(--blue-soft);
+        border: 2px solid #9fc0d8;
+        border-radius: 11px;
+      }
+
+      .child-calc-result > span {
+        font-weight: 900;
+      }
+
+      .child-formula-stack {
+        display: grid;
+        gap: 9px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 20px;
+      }
+
+      .child-weighted-formula {
+        justify-content: flex-start;
+      }
+
+      .gain-line {
+        padding: 9px 12px;
+        display: block;
+        color: var(--orange);
+        background: #fff;
+        border-radius: 8px;
+        font-family: Cambria, "Times New Roman", serif;
+        font-size: 22px;
       }
 
       .tile-row {
@@ -1295,6 +1771,9 @@
       .child-card-head strong {
         color: var(--orange);
         font-size: 25px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+        text-align: right;
       }
 
       .split-preview {
@@ -1418,6 +1897,20 @@
         .child-gain-grid {
           grid-template-columns: 1fr;
         }
+
+        .student-weighted-equation {
+          display: flex;
+          flex-wrap: wrap;
+        }
+
+        .student-weighted-equation .weighted-label {
+          width: 100%;
+          text-align: center;
+        }
+
+        .student-weighted-equation .weight-term {
+          flex: 1 1 240px;
+        }
       }
 
       @media (max-width: 760px) {
@@ -1441,9 +1934,7 @@
         .setup-summary,
         .progress,
         .group-grid,
-        .student-group-grid,
         .gain-grid,
-        .child-gain-grid,
         .completion-grid {
           grid-template-columns: 1fr;
         }
@@ -1482,6 +1973,51 @@
 
         .weighted-blocks {
           flex-direction: column;
+        }
+
+        .repeat-split-grid,
+        .repeat-formulas > div,
+        .child-calc-result {
+          grid-template-columns: 1fr;
+        }
+
+        .entropy-term,
+        .weight-term {
+          width: 100%;
+        }
+
+        .entropy-equation > .math-symbol {
+          width: 100%;
+          text-align: center;
+        }
+
+        .student-weighted-equation {
+          display: flex;
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .weighted-label {
+          text-align: center;
+        }
+
+        .student-weighted-equation > .math-operator {
+          text-align: center;
+        }
+
+        .child-weighted-formula {
+          justify-content: center;
+        }
+
+        .child-card-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .child-card-head strong {
+          width: 100%;
+          font-size: 21px;
+          text-align: left;
         }
 
         .entropy-row {
@@ -1614,7 +2150,7 @@
               <div class="tree-branch">
                 <span class="tree-edge">청년</span>
                 <div class="tree-node-card leaf-purchase">
-                  <small>h = 0</small><b>구매</b>
+                  <small>h(D<sub>청년</sub>) = 0</small><b>구매</b>
                 </div>
               </div>
               <div class="tree-branch">
@@ -1647,38 +2183,66 @@
           </div>
           <div class="cadet-prompt">
             <span><b data-cadet="1">1</b>번 생도</span>
-            <strong>식의 분자 · 구매 / 미구매</strong>
+            <strong>구매 / 미구매 인원</strong>
           </div>
           <div class="formula-card">
-            <div class="formula" aria-label="전체 엔트로피 계산식">
-              <span>h(D) = −</span>
-              <span class="fraction">
-                <span><select id="purchaseCount" aria-label="구매 인원"></select></span>
-                <span>20</span>
+            <div class="formula entropy-equation" aria-label="전체 엔트로피 계산식">
+              <span class="math-symbol">h(D) =</span>
+              <span id="purchaseTerm" class="entropy-term purchase-term">
+                <span class="term-label"><b>①</b>구매</span>
+                <span>−</span>
+                <span class="fraction">
+                  <span><select id="purchaseCount" aria-label="구매 인원"></select></span>
+                  <span>20</span>
+                </span>
+                <span>log₂(</span>
+                <span class="fraction">
+                  <span id="purchaseMirror" class="mirror-value">?</span>
+                  <span>20</span>
+                </span>
+                <span>)</span>
               </span>
-              <span>log₂(</span>
-              <span class="fraction">
-                <span id="purchaseMirror">?</span>
-                <span>20</span>
+              <span class="math-operator">+</span>
+              <span id="noPurchaseTerm" class="entropy-term no-purchase-term">
+                <span class="term-label"><b>②</b>미구매</span>
+                <span>−</span>
+                <span class="fraction">
+                  <span><select id="noPurchaseCount" aria-label="미구매 인원"></select></span>
+                  <span>20</span>
+                </span>
+                <span>log₂(</span>
+                <span class="fraction">
+                  <span id="noPurchaseMirror" class="mirror-value">?</span>
+                  <span>20</span>
+                </span>
+                <span>)</span>
               </span>
-              <span>) −</span>
-              <span class="fraction">
-                <span><select id="noPurchaseCount" aria-label="미구매 인원"></select></span>
-                <span>20</span>
-              </span>
-              <span>log₂(</span>
-              <span class="fraction">
-                <span id="noPurchaseMirror">?</span>
-                <span>20</span>
-              </span>
-              <span>)</span>
             </div>
             <div id="entropyResult" class="formula-result hidden">
-              <span>전체 엔트로피</span><strong>h(D) = 0.934</strong>
+              <span>전체 엔트로피</span><strong class="math-symbol">h(D) = 0.934</strong>
+            </div>
+            <div id="entropyBreakdown" class="calc-breakdown hidden">
+              <div>
+                <span>구매 항</span>
+                <b class="math-line">− <span class="math-fraction"><span>13</span><span>20</span></span> log₂(<span class="math-fraction"><span>13</span><span>20</span></span>)</b>
+                <strong>≈ 0.404</strong>
+              </div>
+              <i>+</i>
+              <div>
+                <span>미구매 항</span>
+                <b class="math-line">− <span class="math-fraction"><span>7</span><span>20</span></span> log₂(<span class="math-fraction"><span>7</span><span>20</span></span>)</b>
+                <strong>≈ 0.530</strong>
+              </div>
+              <i>=</i>
+              <div class="total">
+                <span>전체 엔트로피</span>
+                <b>0.404 + 0.530</b>
+                <strong>0.934</strong>
+              </div>
             </div>
           </div>
           <div class="action-row">
-            <p id="step1Feedback" class="feedback">식의 분자 · 구매 13 / 미구매 7</p>
+            <p id="step1Feedback" class="feedback">구매 13 / 미구매 7</p>
             <button id="checkEntropyButton" class="primary-button" type="button">
               식 확인
             </button>
@@ -1693,11 +2257,11 @@
             <span class="step-number">2</span>
             <div>
               <h2>나이 속성 · 가중평균 엔트로피</h2>
-              <p>집단 크기 → 가중치 분자</p>
+              <p>집단 크기 → 가중치</p>
             </div>
           </div>
           <div class="group-grid">
-            <article class="group-card">
+            <article class="group-card youth-group">
               <h3>청소년 · 7명</h3>
               <p>구매 3명 · 미구매 4명</p>
               <div class="tile-row" aria-label="청소년 데이터">
@@ -1709,9 +2273,10 @@
                 <span class="person-tile no-purchase">15</span>
                 <span class="person-tile purchase">16</span>
               </div>
-              <span class="group-entropy">h = 0.985</span>
+              <small class="group-formula">− <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>) − <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>)</small>
+              <span class="group-entropy"><i class="math-symbol">h(D<sub>청소년</sub>)</i> = 0.985</span>
             </article>
-            <article class="group-card">
+            <article class="group-card young-group">
               <h3>청년 · 6명</h3>
               <p>구매 6명 · 미구매 0명</p>
               <div class="tile-row" aria-label="청년 데이터">
@@ -1722,9 +2287,10 @@
                 <span class="person-tile purchase">17</span>
                 <span class="person-tile purchase">18</span>
               </div>
-              <span class="group-entropy zero-note">h = 0</span>
+              <small class="group-formula">− <span class="math-fraction"><span>6</span><span>6</span></span> log₂(<span class="math-fraction"><span>6</span><span>6</span></span>) − <span class="math-fraction"><span>0</span><span>6</span></span> log₂(<span class="math-fraction"><span>0</span><span>6</span></span>)</small>
+              <span class="group-entropy zero-note"><i class="math-symbol">h(D<sub>청년</sub>)</i> = 0</span>
             </article>
-            <article class="group-card">
+            <article class="group-card middle-group">
               <h3>중년 · 7명</h3>
               <p>구매 4명 · 미구매 3명</p>
               <div class="tile-row" aria-label="중년 데이터">
@@ -1736,63 +2302,75 @@
                 <span class="person-tile purchase">19</span>
                 <span class="person-tile no-purchase">20</span>
               </div>
-              <span class="group-entropy">h = 0.985</span>
+              <small class="group-formula">− <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>) − <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>)</small>
+              <span class="group-entropy"><i class="math-symbol">h(D<sub>중년</sub>)</i> = 0.985</span>
             </article>
           </div>
           <div class="cadet-prompt">
             <span><b data-cadet="2">2</b>번 생도</span>
-            <strong>가중치 분자 · 청소년 / 청년 / 중년</strong>
+            <strong>가중치 · 청소년 / 청년 / 중년</strong>
           </div>
           <div class="formula-card">
             <div class="formula" aria-label="나이 속성의 가중평균 엔트로피 계산식">
-              <span>h<sub>age</sub>(D) =</span>
-              <span class="fraction">
-                <span><select id="youthWeight" aria-label="청소년 집단 크기"></select></span>
-                <span>20</span>
+              <span class="math-symbol">h<sub>나이</sub>(D) =</span>
+              <span class="weight-term youth-weight">
+                <small>청소년</small>
+                <span class="fraction">
+                  <span><select id="youthWeight" aria-label="청소년 집단 크기"></select></span>
+                  <span>20</span>
+                </span>
+                <span>× 0.985</span>
               </span>
-              <span>× 0.985 +</span>
-              <span class="fraction">
-                <span><select id="youngWeight" aria-label="청년 집단 크기"></select></span>
-                <span>20</span>
+              <span class="math-operator">+</span>
+              <span class="weight-term young-weight">
+                <small>청년</small>
+                <span class="fraction">
+                  <span><select id="youngWeight" aria-label="청년 집단 크기"></select></span>
+                  <span>20</span>
+                </span>
+                <span>× 0</span>
               </span>
-              <span>× 0 +</span>
-              <span class="fraction">
-                <span><select id="middleWeight" aria-label="중년 집단 크기"></select></span>
-                <span>20</span>
+              <span class="math-operator">+</span>
+              <span class="weight-term middle-weight">
+                <small>중년</small>
+                <span class="fraction">
+                  <span><select id="middleWeight" aria-label="중년 집단 크기"></select></span>
+                  <span>20</span>
+                </span>
+                <span>× 0.985</span>
               </span>
-              <span>× 0.985</span>
             </div>
             <div id="weightedResult" class="formula-result hidden">
               <span>가중평균 엔트로피</span>
-              <strong>h<sub>age</sub>(D) ≈ 0.690</strong>
+              <strong class="math-symbol">h<sub>나이</sub>(D) ≈ 0.690</strong>
             </div>
             <div id="weightedBlocks" class="weighted-blocks hidden" aria-label="가중평균 구성">
               <div class="weight-block" style="flex: 7">
-                <b>7/20 × 0.985</b><span>청소년 7 / 전체 20</span>
+                <b class="math-line"><span class="math-fraction"><span>7</span><span>20</span></span> × 0.985</b><span>청소년 7 / 전체 20</span>
               </div>
               <div class="weight-block zero" style="flex: 6">
-                <b>6/20 × 0</b><span>청년 6 / 전체 20</span>
+                <b class="math-line"><span class="math-fraction"><span>6</span><span>20</span></span> × 0</b><span>청년 6 / 전체 20</span>
               </div>
               <div class="weight-block" style="flex: 7">
-                <b>7/20 × 0.985</b><span>중년 7 / 전체 20</span>
+                <b class="math-line"><span class="math-fraction"><span>7</span><span>20</span></span> × 0.985</b><span>중년 7 / 전체 20</span>
               </div>
             </div>
             <div id="ageGainResult" class="gain-result hidden">
               <span>나이 속성 · 정보이득</span>
               <div>
-                <span>0.934 − 0.690 =</span>
+                <span class="math-symbol">Gain(D, 나이) = 0.934 − 0.690 =</span>
                 <strong>0.244</strong>
               </div>
               <small>계산 기준 · 반올림 전 값</small>
             </div>
             <div id="entropyCompare" class="entropy-compare hidden">
               <div class="entropy-row">
-                <span>분할 전 h(D)</span>
+                <span>분할 전 <i class="math-symbol">h(D)</i></span>
                 <div class="entropy-track"><i class="before" style="width: 93.4%"></i></div>
                 <strong>0.934</strong>
               </div>
               <div class="entropy-row">
-                <span>분할 후 h<sub>age</sub>(D)</span>
+                <span>분할 후 <i class="math-symbol">h<sub>나이</sub>(D)</i></span>
                 <div class="entropy-track"><i class="after" style="width: 69%"></i></div>
                 <strong>0.690</strong>
               </div>
@@ -1800,12 +2378,15 @@
             </div>
           </div>
           <div class="action-row">
-            <p id="step2Feedback" class="feedback">가중치 분자 · 7 / 6 / 7</p>
+            <p id="step2Feedback" class="feedback">청소년 7명 · 청년 6명 · 중년 7명</p>
             <button id="checkWeightedButton" class="primary-button" type="button">
-              식 확인
+              가중치 확인
+            </button>
+            <button id="calculateAgeGainButton" class="secondary-button hidden" type="button">
+              정보이득 · 계산 →
             </button>
             <button id="toStep3Button" class="secondary-button hidden" type="button">
-              후보 속성 · 계산 →
+              학생 여부 · 계산 →
             </button>
           </div>
         </section>
@@ -1818,76 +2399,90 @@
               <p>학생 여부 계산 → 네 속성 비교</p>
             </div>
           </div>
-          <div id="revealBox" class="student-calculation">
-            <div class="group-grid student-group-grid">
-              <article class="group-card">
-                <h3>학생: 아니요 · 10명</h3>
-                <p>구매 5 · 미구매 5</p>
-                <div class="formula compact-formula" aria-label="학생이 아닌 집단의 엔트로피">
-                  <span>−</span>
-                  <span class="fraction"><span>5</span><span>10</span></span>
-                  <span>log₂(</span>
-                  <span class="fraction"><span>5</span><span>10</span></span>
-                  <span>) −</span>
-                  <span class="fraction"><span>5</span><span>10</span></span>
-                  <span>log₂(</span>
-                  <span class="fraction"><span>5</span><span>10</span></span>
-                  <span>)</span>
+          <div id="revealBox" class="reveal-box">
+            <div>
+              <strong>학생 여부 · 정보이득 계산</strong>
+              <p>집단 엔트로피 → 가중평균 → 정보이득</p>
+            </div>
+            <button id="revealGainsButton" class="secondary-button" type="button">
+              계산 시작 →
+            </button>
+          </div>
+
+          <div id="repeatCalcArea" class="repeat-calc-area hidden">
+            <div class="repeat-split-grid">
+              <article class="student-no-group">
+                <div>
+                  <span>학생: 아니요 · 10명</span>
+                  <b>구매 5 · 미구매 5</b>
                 </div>
-                <span class="group-entropy">h = 1.000</span>
+                <p class="math-line">− <span class="math-fraction"><span>5</span><span>10</span></span> log₂(<span class="math-fraction"><span>5</span><span>10</span></span>) − <span class="math-fraction"><span>5</span><span>10</span></span> log₂(<span class="math-fraction"><span>5</span><span>10</span></span>)</p>
+                <strong class="math-symbol">h(D<sub>학생 아님</sub>) = 1.000</strong>
               </article>
-              <article class="group-card">
-                <h3>학생: 예 · 10명</h3>
-                <p>구매 8 · 미구매 2</p>
-                <div class="formula compact-formula" aria-label="학생인 집단의 엔트로피">
-                  <span>−</span>
-                  <span class="fraction"><span>8</span><span>10</span></span>
-                  <span>log₂(</span>
-                  <span class="fraction"><span>8</span><span>10</span></span>
-                  <span>) −</span>
-                  <span class="fraction"><span>2</span><span>10</span></span>
-                  <span>log₂(</span>
-                  <span class="fraction"><span>2</span><span>10</span></span>
-                  <span>)</span>
+              <article class="student-yes-group">
+                <div>
+                  <span>학생: 예 · 10명</span>
+                  <b>구매 8 · 미구매 2</b>
                 </div>
-                <span class="group-entropy">h = 0.722</span>
+                <p class="math-line">− <span class="math-fraction"><span>8</span><span>10</span></span> log₂(<span class="math-fraction"><span>8</span><span>10</span></span>) − <span class="math-fraction"><span>2</span><span>10</span></span> log₂(<span class="math-fraction"><span>2</span><span>10</span></span>)</p>
+                <strong class="math-symbol">h(D<sub>학생</sub>) = 0.722</strong>
               </article>
             </div>
             <div class="cadet-prompt">
               <span><b data-cadet="3">3</b>번 생도</span>
-              <strong>가중치 분자 · 아니요 / 예</strong>
+              <strong>가중치 · 아니요 / 예</strong>
             </div>
-            <div class="formula-card">
-              <div class="formula" aria-label="학생 여부의 가중평균 엔트로피 계산식">
-                <span>h<sub>student</sub>(D) =</span>
-                <span class="fraction">
-                  <span><select id="studentNoWeight" aria-label="학생이 아닌 집단 크기"></select></span>
-                  <span>20</span>
-                </span>
-                <span>× 1.000 +</span>
-                <span class="fraction">
-                  <span><select id="studentYesWeight" aria-label="학생인 집단 크기"></select></span>
-                  <span>20</span>
-                </span>
-                <span>× 0.722</span>
+            <div class="repeat-formulas">
+              <div class="repeat-gain-formula">
+                <div class="student-weighted-equation">
+                  <span class="weighted-label">
+                    <small>가중평균 엔트로피</small>
+                    <b class="math-symbol">h<sub>학생 여부</sub>(D)</b>
+                  </span>
+                  <span class="math-operator">=</span>
+                  <span class="weight-term student-no-weight">
+                    <small>학생: 아니요</small>
+                    <span class="math-fraction">
+                      <span><select id="studentNoWeight" aria-label="학생이 아닌 집단 크기"></select></span>
+                      <span>20</span>
+                    </span>
+                    <span>× 1.000</span>
+                  </span>
+                  <span class="math-operator">+</span>
+                  <span class="weight-term student-yes-weight">
+                    <small>학생: 예</small>
+                    <span class="math-fraction">
+                      <span><select id="studentYesWeight" aria-label="학생인 집단 크기"></select></span>
+                      <span>20</span>
+                    </span>
+                    <span>× 0.722</span>
+                  </span>
+                </div>
               </div>
-              <div id="studentWeightedResult" class="formula-result hidden">
+              <div id="studentWeightedResult" class="hidden">
                 <span>가중평균 엔트로피</span>
-                <strong>h<sub>student</sub>(D) ≈ 0.861</strong>
+                <b class="math-symbol">h<sub>학생 여부</sub>(D)</b>
+                <strong>≈ 0.861</strong>
               </div>
-              <div id="studentGainResult" class="gain-result hidden">
+              <div id="studentGainResult" class="hidden">
                 <span>학생 여부 · 정보이득</span>
-                <div><span>0.934 − 0.861 =</span><strong>0.073</strong></div>
+                <b class="math-symbol">Gain(D, 학생 여부) = 0.934 − 0.861</b>
+                <strong>= 0.073</strong>
               </div>
             </div>
             <div class="action-row">
-              <p id="studentFormulaFeedback" class="feedback">가중치 분자 · 아니요 / 예</p>
-              <button id="checkStudentButton" class="primary-button" type="button">식 확인</button>
-              <button id="revealGainsButton" class="secondary-button hidden" type="button">
+              <p id="studentCalcFeedback" class="feedback">
+                가중치 · 아니요 / 예
+              </p>
+              <button id="checkStudentWeightedButton" class="primary-button" type="button">
+                식 확인
+              </button>
+              <button id="showGainComparisonButton" class="secondary-button hidden" type="button">
                 네 속성 비교 →
               </button>
             </div>
           </div>
+
           <div id="gainSelectionArea" class="hidden">
             <div class="selection-kicker">네 후보 속성 · 정보이득 비교</div>
             <div class="gain-grid">
@@ -1912,8 +2507,8 @@
                   <div><span>분할 후</span><i class="mini-track"><i style="width: 86.1%"></i></i><b>.861</b></div>
                 </div>
               </button>
-              <button class="gain-card" type="button" data-feature="신용등급" data-value="0.023">
-                <span>후보 속성 4</span><b>신용등급</b><strong>0.023</strong>
+              <button class="gain-card" type="button" data-feature="신용 등급" data-value="0.023">
+                <span>후보 속성 4</span><b>신용 등급</b><strong>0.023</strong>
                 <div class="mini-metric">
                   <div><span>분할 전</span><i class="mini-track"><i style="width: 93.4%"></i></i><b>.934</b></div>
                   <div><span>분할 후</span><i class="mini-track"><i style="width: 91.1%"></i></i><b>.911</b></div>
@@ -1934,6 +2529,7 @@
               </button>
             </div>
           </div>
+
         </section>
 
         <section id="step4" class="question-panel hidden">
@@ -1951,7 +2547,7 @@
                 <h3>현재 노드: 청소년 집단</h3>
                 <p>구매 3 · 미구매 4 · 혼합 노드</p>
               </div>
-              <strong>h = 0.985</strong>
+              <strong id="youthEntropyBadge" class="math-symbol">h(D<sub>청소년</sub>) = ?</strong>
             </div>
             <div class="subset-data">
               <strong>청소년 데이터 · 7명</strong>
@@ -1970,11 +2566,77 @@
             </div>
             <div class="cadet-prompt">
               <span><b data-cadet="4">4</b>번 생도</span>
-              <strong>청소년 노드 · 가장 큰 정보이득 선택</strong>
+              <strong>청소년 노드 · 분할 전 엔트로피 식</strong>
             </div>
-            <div class="child-gain-grid">
+            <div id="youthEntropyExercise" class="formula-card">
+              <div class="formula entropy-equation" aria-label="청소년 노드 분할 전 엔트로피 계산식">
+                <span class="math-symbol">h(D<sub>청소년</sub>) =</span>
+                <span id="youthPurchaseTerm" class="entropy-term purchase-term">
+                  <span class="term-label"><b>①</b>구매</span>
+                  <span>−</span>
+                  <span class="fraction">
+                    <span><select id="youthPurchaseCount" aria-label="청소년 구매 인원"></select></span>
+                    <span>7</span>
+                  </span>
+                  <span>log₂(</span>
+                  <span class="fraction">
+                    <span id="youthPurchaseMirror" class="mirror-value">?</span>
+                    <span>7</span>
+                  </span>
+                  <span>)</span>
+                </span>
+                <span class="math-operator">+</span>
+                <span id="youthNoPurchaseTerm" class="entropy-term no-purchase-term">
+                  <span class="term-label"><b>②</b>미구매</span>
+                  <span>−</span>
+                  <span class="fraction">
+                    <span><select id="youthNoPurchaseCount" aria-label="청소년 미구매 인원"></select></span>
+                    <span>7</span>
+                  </span>
+                  <span>log₂(</span>
+                  <span class="fraction">
+                    <span id="youthNoPurchaseMirror" class="mirror-value">?</span>
+                    <span>7</span>
+                  </span>
+                  <span>)</span>
+                </span>
+              </div>
+              <div id="youthEntropyResult" class="formula-result hidden">
+                <span>분할 전 엔트로피</span>
+                <strong class="math-symbol">h(D<sub>청소년</sub>) = 0.985</strong>
+              </div>
+              <div id="youthEntropyBreakdown" class="calc-breakdown hidden">
+                <div>
+                  <span>구매 항</span>
+                  <b class="math-line">− <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>)</b>
+                  <strong>≈ 0.524</strong>
+                </div>
+                <i>+</i>
+                <div>
+                  <span>미구매 항</span>
+                  <b class="math-line">− <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>)</b>
+                  <strong>≈ 0.461</strong>
+                </div>
+                <i>=</i>
+                <div class="total">
+                  <span>분할 전 엔트로피</span>
+                  <b>0.524 + 0.461</b>
+                  <strong>0.985</strong>
+                </div>
+              </div>
+            </div>
+            <div class="action-row">
+              <p id="youthEntropyFeedback" class="feedback">구매 3 · 미구매 4</p>
+              <button id="checkYouthEntropyButton" class="primary-button" type="button">
+                식 확인
+              </button>
+            </div>
+
+            <div id="youthCandidateArea" class="hidden">
+              <div class="selection-kicker">청소년 노드 · 후보 속성별 정보이득</div>
+              <div class="child-gain-grid">
               <button class="child-gain-card" type="button" data-node="youth" data-feature="수입" data-value="0.700">
-                <div class="child-card-head"><b>수입</b><strong>정보이득 0.700</strong></div>
+                <div class="child-card-head"><b>수입</b><strong class="math-symbol">Gain(D<sub>청소년</sub>, 수입) = 0.700</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>높음</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 3</i></span></div>
                   <div class="preview-group"><span>중간</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 1</i></span></div>
@@ -1983,15 +2645,15 @@
                 <div class="child-metric"><span>0.985 − 0.286</span><b>= 0.700</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="youth" data-feature="학생 여부" data-value="0.985">
-                <div class="child-card-head"><b>학생 여부</b><strong>정보이득 0.985</strong></div>
+                <div class="child-card-head"><b>학생 여부</b><strong class="math-symbol">Gain(D<sub>청소년</sub>, 학생 여부) = 0.985</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>아니요</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 4</i></span></div>
                   <div class="preview-group"><span>예</span><span class="preview-counts"><i class="purchase">구매 3</i><i class="no-purchase">미구매 0</i></span></div>
                 </div>
                 <div class="child-metric"><span>0.985 − 0</span><b>= 0.985</b></div>
               </button>
-              <button class="child-gain-card" type="button" data-node="youth" data-feature="신용등급" data-value="0.128">
-                <div class="child-card-head"><b>신용등급</b><strong>정보이득 0.128</strong></div>
+              <button class="child-gain-card" type="button" data-node="youth" data-feature="신용 등급" data-value="0.128">
+                <div class="child-card-head"><b>신용 등급</b><strong class="math-symbol">Gain(D<sub>청소년</sub>, 신용 등급) = 0.128</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>양호</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 3</i></span></div>
                   <div class="preview-group"><span>우수</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
@@ -1999,11 +2661,22 @@
                 <div class="child-metric"><span>0.985 − 0.857</span><b>= 0.128</b></div>
               </button>
             </div>
+            <div id="youthCalcResult" class="child-calc-result hidden">
+              <span>학생 여부 분할 계산</span>
+              <div class="child-formula-stack">
+                <div class="child-weighted-formula"><i class="math-symbol">h<sub>학생 여부</sub>(D<sub>청소년</sub>)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
+                <strong id="youthGainLine" class="gain-line math-symbol hidden">Gain(D<sub>청소년</sub>, 학생 여부) = 0.985 − 0 = 0.985</strong>
+              </div>
+            </div>
             <div class="action-row">
               <p id="youthFeedback" class="feedback">청소년 노드 · 후보 속성 비교</p>
-              <button id="toMiddleButton" class="secondary-button hidden" type="button">
-                중년 노드 계산 →
+              <button id="calculateYouthGainButton" class="primary-button hidden" type="button">
+                정보이득 계산 →
               </button>
+              <button id="toMiddleButton" class="secondary-button hidden" type="button">
+                중년 노드 · 계산 →
+              </button>
+            </div>
             </div>
           </div>
 
@@ -2013,7 +2686,7 @@
                 <h3>현재 노드: 중년 집단</h3>
                 <p>구매 4 · 미구매 3 · 혼합 노드</p>
               </div>
-              <strong>h = 0.985</strong>
+              <strong class="math-symbol">h(D<sub>중년</sub>) = 0.985</strong>
             </div>
             <div class="subset-row">
               <span>현재 데이터</span>
@@ -2027,7 +2700,7 @@
             </div>
             <div class="child-gain-grid">
               <button class="child-gain-card" type="button" data-node="middle" data-feature="수입" data-value="0.198">
-                <div class="child-card-head"><b>수입</b><strong>정보이득 0.198</strong></div>
+                <div class="child-card-head"><b>수입</b><strong class="math-symbol">Gain(D<sub>중년</sub>, 수입) = 0.198</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>높음</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 0</i></span></div>
                   <div class="preview-group"><span>중간</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
@@ -2036,15 +2709,15 @@
                 <div class="child-metric"><span>0.985 − 0.787</span><b>= 0.198</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="middle" data-feature="학생 여부" data-value="0.020">
-                <div class="child-card-head"><b>학생 여부</b><strong>정보이득 0.020</strong></div>
+                <div class="child-card-head"><b>학생 여부</b><strong class="math-symbol">Gain(D<sub>중년</sub>, 학생 여부) = 0.020</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>아니요</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
                   <div class="preview-group"><span>예</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 2</i></span></div>
                 </div>
                 <div class="child-metric"><span>0.985 − 0.965</span><b>= 0.020</b></div>
               </button>
-              <button class="child-gain-card" type="button" data-node="middle" data-feature="신용등급" data-value="0.985">
-                <div class="child-card-head"><b>신용등급</b><strong>정보이득 0.985</strong></div>
+              <button class="child-gain-card" type="button" data-node="middle" data-feature="신용 등급" data-value="0.985">
+                <div class="child-card-head"><b>신용 등급</b><strong class="math-symbol">Gain(D<sub>중년</sub>, 신용 등급) = 0.985</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>양호</span><span class="preview-counts"><i class="purchase">구매 4</i><i class="no-purchase">미구매 0</i></span></div>
                   <div class="preview-group"><span>우수</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 3</i></span></div>
@@ -2052,8 +2725,18 @@
                 <div class="child-metric"><span>0.985 − 0</span><b>= 0.985</b></div>
               </button>
             </div>
+            <div id="middleCalcResult" class="child-calc-result hidden">
+              <span>신용 등급 분할 계산</span>
+              <div class="child-formula-stack">
+                <div class="child-weighted-formula"><i class="math-symbol">h<sub>신용 등급</sub>(D<sub>중년</sub>)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
+                <strong id="middleGainLine" class="gain-line math-symbol hidden">Gain(D<sub>중년</sub>, 신용 등급) = 0.985 − 0 = 0.985</strong>
+              </div>
+            </div>
             <div class="action-row">
               <p id="middleFeedback" class="feedback">중년 노드 · 후보 속성 비교</p>
+              <button id="calculateMiddleGainButton" class="primary-button hidden" type="button">
+                정보이득 계산 →
+              </button>
               <button id="toStep5Button" class="secondary-button hidden" type="button">
                 완성 트리 →
               </button>
@@ -2082,7 +2765,7 @@
             </article>
             <article>
               <span>중년 노드</span>
-              <h3>신용등급 · 정보이득 0.985</h3>
+              <h3>신용 등급 · 정보이득 0.985</h3>
               <p>양호 → 구매 4 · 우수 → 미구매 3</p>
             </article>
           </div>
@@ -2202,6 +2885,8 @@
       const middleWeight = document.getElementById("middleWeight");
       const studentNoWeight = document.getElementById("studentNoWeight");
       const studentYesWeight = document.getElementById("studentYesWeight");
+      const youthPurchaseCount = document.getElementById("youthPurchaseCount");
+      const youthNoPurchaseCount = document.getElementById("youthNoPurchaseCount");
 
       [
         purchaseCount,
@@ -2211,17 +2896,34 @@
         middleWeight,
         studentNoWeight,
         studentYesWeight,
+        youthPurchaseCount,
+        youthNoPurchaseCount,
       ].forEach((select) => populateSelect(select, numberOptions));
 
-      purchaseCount.addEventListener("change", () => {
-        document.getElementById("purchaseMirror").textContent =
-          purchaseCount.value || "?";
-      });
+      function bindMirroredFraction(select, mirrorId, termId) {
+        const mirror = document.getElementById(mirrorId);
+        const term = document.getElementById(termId);
+        const sync = () => {
+          const value = select.value || "?";
+          mirror.textContent = value;
+          term.classList.toggle("has-value", Boolean(select.value));
+        };
+        select.addEventListener("change", sync);
+        sync();
+      }
 
-      noPurchaseCount.addEventListener("change", () => {
-        document.getElementById("noPurchaseMirror").textContent =
-          noPurchaseCount.value || "?";
-      });
+      bindMirroredFraction(purchaseCount, "purchaseMirror", "purchaseTerm");
+      bindMirroredFraction(noPurchaseCount, "noPurchaseMirror", "noPurchaseTerm");
+      bindMirroredFraction(
+        youthPurchaseCount,
+        "youthPurchaseMirror",
+        "youthPurchaseTerm",
+      );
+      bindMirroredFraction(
+        youthNoPurchaseCount,
+        "youthNoPurchaseMirror",
+        "youthNoPurchaseTerm",
+      );
 
       function updateProgress(activeStep) {
         document.querySelectorAll("[data-progress]").forEach((item) => {
@@ -2262,17 +2964,32 @@
           middleWeight,
           studentNoWeight,
           studentYesWeight,
+          youthPurchaseCount,
+          youthNoPurchaseCount,
         ].forEach((select) => {
           select.value = "";
+          select.disabled = false;
         });
         document.getElementById("purchaseMirror").textContent = "?";
         document.getElementById("noPurchaseMirror").textContent = "?";
+        document.getElementById("youthPurchaseMirror").textContent = "?";
+        document.getElementById("youthNoPurchaseMirror").textContent = "?";
+        [
+          "purchaseTerm",
+          "noPurchaseTerm",
+          "youthPurchaseTerm",
+          "youthNoPurchaseTerm",
+        ].forEach((id) => document.getElementById(id).classList.remove("has-value"));
+        document.getElementById("youthEntropyBadge").innerHTML =
+          "h(D<sub>청소년</sub>) = ?";
         [
           "entropyResult",
+          "entropyBreakdown",
           "weightedResult",
           "weightedBlocks",
           "ageGainResult",
           "entropyCompare",
+          "repeatCalcArea",
           "studentWeightedResult",
           "studentGainResult",
           "gainSelectionArea",
@@ -2280,6 +2997,13 @@
           "treePanel",
           "treeYouthLeaves",
           "treeMiddleLeaves",
+          "youthEntropyResult",
+          "youthEntropyBreakdown",
+          "youthCandidateArea",
+          "youthCalcResult",
+          "middleCalcResult",
+          "youthGainLine",
+          "middleGainLine",
         ].forEach(
           (id) => document.getElementById(id).classList.add("hidden"),
         );
@@ -2288,21 +3012,28 @@
         document.getElementById("revealBox").classList.remove("hidden");
         document.getElementById("checkEntropyButton").classList.remove("hidden");
         document.getElementById("checkWeightedButton").classList.remove("hidden");
-        document.getElementById("checkStudentButton").classList.remove("hidden");
-        document.getElementById("revealGainsButton").classList.add("hidden");
+        document.getElementById("checkStudentWeightedButton").classList.remove("hidden");
+        document.getElementById("checkYouthEntropyButton").classList.remove("hidden");
+        document.getElementById("calculateAgeGainButton").classList.add("hidden");
+        document.getElementById("calculateYouthGainButton").classList.add("hidden");
+        document.getElementById("calculateMiddleGainButton").classList.add("hidden");
+        document.getElementById("showGainComparisonButton").classList.add("hidden");
         document.getElementById("toStep2Button").classList.add("hidden");
         document.getElementById("toStep3Button").classList.add("hidden");
         document.getElementById("toMiddleButton").classList.add("hidden");
         document.getElementById("toStep5Button").classList.add("hidden");
         document.getElementById("step1Feedback").className = "feedback";
         document.getElementById("step1Feedback").textContent =
-          "식의 분자 · 구매 13 / 미구매 7";
+          "구매 13 / 미구매 7";
         document.getElementById("step2Feedback").className = "feedback";
         document.getElementById("step2Feedback").textContent =
-          "가중치 분자 · 7 / 6 / 7";
-        document.getElementById("studentFormulaFeedback").className = "feedback";
-        document.getElementById("studentFormulaFeedback").textContent =
-          "가중치 분자 · 아니요 / 예";
+          "청소년 7명 · 청년 6명 · 중년 7명";
+        document.getElementById("studentCalcFeedback").className = "feedback";
+        document.getElementById("studentCalcFeedback").textContent =
+          "가중치 · 아니요 / 예";
+        document.getElementById("youthEntropyFeedback").className = "feedback";
+        document.getElementById("youthEntropyFeedback").textContent =
+          "구매 3 · 미구매 4";
         document.getElementById("step3Feedback").className = "feedback";
         document.getElementById("step3Feedback").textContent =
           "첫 질문 · 가장 큰 정보이득 선택";
@@ -2354,6 +3085,7 @@
           feedback.className = "feedback correct";
           feedback.textContent = "정답 · h(D) = 0.934";
           document.getElementById("entropyResult").classList.remove("hidden");
+          document.getElementById("entropyBreakdown").classList.remove("hidden");
           document.getElementById("checkEntropyButton").classList.add("hidden");
           document.getElementById("toStep2Button").classList.remove("hidden");
         } else {
@@ -2373,23 +3105,37 @@
         if (correct) {
           feedback.className = "feedback correct";
           feedback.textContent =
-            "정답 · 나이 정보이득 0.244";
+            "정답 · 가중평균 엔트로피 0.690";
           document.getElementById("weightedResult").classList.remove("hidden");
           document.getElementById("weightedBlocks").classList.remove("hidden");
-          document.getElementById("ageGainResult").classList.remove("hidden");
-          document.getElementById("entropyCompare").classList.remove("hidden");
           document.getElementById("checkWeightedButton").classList.add("hidden");
-          document.getElementById("toStep3Button").classList.remove("hidden");
+          document.getElementById("calculateAgeGainButton").classList.remove("hidden");
         } else {
           feedback.className = "feedback error";
-          feedback.textContent = "집단 크기 재확인 · 7 / 6 / 7";
+          feedback.textContent = "집단 크기 재확인 · 청소년 7명 · 청년 6명 · 중년 7명";
         }
+      });
+
+      document.getElementById("calculateAgeGainButton").addEventListener("click", () => {
+        const feedback = document.getElementById("step2Feedback");
+        document.getElementById("ageGainResult").classList.remove("hidden");
+        document.getElementById("entropyCompare").classList.remove("hidden");
+        document.getElementById("calculateAgeGainButton").classList.add("hidden");
+        document.getElementById("toStep3Button").classList.remove("hidden");
+        feedback.className = "feedback correct";
+        feedback.textContent =
+          "나이 정보이득 · 0.934 − 0.690 = 0.244";
       });
 
       document.getElementById("toStep3Button").addEventListener("click", () => showStep(3));
 
-      document.getElementById("checkStudentButton").addEventListener("click", () => {
-        const feedback = document.getElementById("studentFormulaFeedback");
+      document.getElementById("revealGainsButton").addEventListener("click", () => {
+        document.getElementById("revealBox").classList.add("hidden");
+        document.getElementById("repeatCalcArea").classList.remove("hidden");
+      });
+
+      document.getElementById("checkStudentWeightedButton").addEventListener("click", () => {
+        const feedback = document.getElementById("studentCalcFeedback");
         const correct =
           studentNoWeight.value === "10" && studentYesWeight.value === "10";
         if (correct) {
@@ -2397,16 +3143,18 @@
           feedback.textContent = "정답 · 가중치 10/20 + 10/20";
           document.getElementById("studentWeightedResult").classList.remove("hidden");
           document.getElementById("studentGainResult").classList.remove("hidden");
-          document.getElementById("checkStudentButton").classList.add("hidden");
-          document.getElementById("revealGainsButton").classList.remove("hidden");
+          document.getElementById("checkStudentWeightedButton").classList.add("hidden");
+          document.getElementById("showGainComparisonButton").classList.remove("hidden");
+          studentNoWeight.disabled = true;
+          studentYesWeight.disabled = true;
         } else {
           feedback.className = "feedback error";
           feedback.textContent = "집단 크기 재확인 · 10명 / 10명";
         }
       });
 
-      document.getElementById("revealGainsButton").addEventListener("click", () => {
-        document.getElementById("revealBox").classList.add("hidden");
+      document.getElementById("showGainComparisonButton").addEventListener("click", () => {
+        document.getElementById("repeatCalcArea").classList.add("hidden");
         document.getElementById("gainSelectionArea").classList.remove("hidden");
       });
 
@@ -2440,6 +3188,27 @@
         showStep(4);
       });
 
+      document.getElementById("checkYouthEntropyButton").addEventListener("click", () => {
+        const feedback = document.getElementById("youthEntropyFeedback");
+        const correct =
+          youthPurchaseCount.value === "3" && youthNoPurchaseCount.value === "4";
+        if (correct) {
+          feedback.className = "feedback correct";
+          feedback.textContent = "정답 · 분할 전 엔트로피 0.985";
+          document.getElementById("youthEntropyBadge").innerHTML =
+            "h(D<sub>청소년</sub>) = 0.985";
+          document.getElementById("youthEntropyResult").classList.remove("hidden");
+          document.getElementById("youthEntropyBreakdown").classList.remove("hidden");
+          document.getElementById("youthCandidateArea").classList.remove("hidden");
+          document.getElementById("checkYouthEntropyButton").classList.add("hidden");
+          youthPurchaseCount.disabled = true;
+          youthNoPurchaseCount.disabled = true;
+        } else {
+          feedback.className = "feedback error";
+          feedback.textContent = "데이터 재확인 · 구매 3 / 미구매 4";
+        }
+      });
+
       document.querySelectorAll('.child-gain-card[data-node="youth"]').forEach((card) => {
         card.addEventListener("click", () => {
           const feedback = document.getElementById("youthFeedback");
@@ -2451,7 +3220,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "정답 · 학생 여부 정보이득 0.985";
+              "분할 후 h_학생 여부(D_청소년) = 0 · 정보이득 계산";
             document
               .querySelectorAll('.child-gain-card[data-node="youth"]')
               .forEach((item) => {
@@ -2460,9 +3229,10 @@
             card.disabled = false;
             setTreeNode("treeYouthNode", "질문", "학생 여부", "question");
             document.getElementById("treeYouthLeaves").classList.remove("hidden");
+            document.getElementById("youthCalcResult").classList.remove("hidden");
+            document.getElementById("calculateYouthGainButton").classList.remove("hidden");
             setTreeNode("treeMiddleNode", "현재 노드", "후보 속성", "current");
             document.getElementById("treeStatus").textContent = "중년 노드 계산 대기";
-            document.getElementById("toMiddleButton").classList.remove("hidden");
           } else {
             card.classList.add("wrong");
             feedback.className = "feedback error";
@@ -2470,6 +3240,16 @@
               `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
           }
         });
+      });
+
+      document.getElementById("calculateYouthGainButton").addEventListener("click", () => {
+        const feedback = document.getElementById("youthFeedback");
+        document.getElementById("youthGainLine").classList.remove("hidden");
+        document.getElementById("calculateYouthGainButton").classList.add("hidden");
+        document.getElementById("toMiddleButton").classList.remove("hidden");
+        feedback.className = "feedback correct";
+        feedback.textContent =
+          "정보이득 · 0.985 − 0 = 0.985";
       });
 
       document.getElementById("toMiddleButton").addEventListener("click", () => {
@@ -2489,23 +3269,21 @@
             .querySelectorAll('.child-gain-card[data-node="middle"]')
             .forEach((item) => item.classList.remove("selected", "wrong"));
 
-          if (card.dataset.feature === "신용등급") {
+          if (card.dataset.feature === "신용 등급") {
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "정답 · 신용등급 정보이득 0.985";
+              "분할 후 h_신용 등급(D_중년) = 0 · 정보이득 계산";
             document
               .querySelectorAll('.child-gain-card[data-node="middle"]')
               .forEach((item) => {
                 item.disabled = true;
               });
             card.disabled = false;
-            setTreeNode("treeMiddleNode", "질문", "신용등급", "question");
+            setTreeNode("treeMiddleNode", "질문", "신용 등급", "question");
             document.getElementById("treeMiddleLeaves").classList.remove("hidden");
-            const status = document.getElementById("treeStatus");
-            status.className = "tree-status complete";
-            status.textContent = "트리 완성";
-            document.getElementById("toStep5Button").classList.remove("hidden");
+            document.getElementById("middleCalcResult").classList.remove("hidden");
+            document.getElementById("calculateMiddleGainButton").classList.remove("hidden");
           } else {
             card.classList.add("wrong");
             feedback.className = "feedback error";
@@ -2513,6 +3291,19 @@
               `${card.dataset.feature} · 정보이득 ${card.dataset.value} / 더 큰 값 선택`;
           }
         });
+      });
+
+      document.getElementById("calculateMiddleGainButton").addEventListener("click", () => {
+        const feedback = document.getElementById("middleFeedback");
+        document.getElementById("middleGainLine").classList.remove("hidden");
+        document.getElementById("calculateMiddleGainButton").classList.add("hidden");
+        const status = document.getElementById("treeStatus");
+        status.className = "tree-status complete";
+        status.textContent = "트리 완성";
+        document.getElementById("toStep5Button").classList.remove("hidden");
+        feedback.className = "feedback correct";
+        feedback.textContent =
+          "정보이득 · 0.985 − 0 = 0.985";
       });
 
       document.getElementById("toStep5Button").addEventListener("click", () => {

@@ -29,24 +29,24 @@ const CONCEPTS: Array<{
 }> = [
   {
     title: "엔트로피",
-    symbol: <i className="math">ℎ(𝒟)</i>,
+    symbol: <i className="math">h(D)</i>,
     body: (
       <>
-        데이터 집합 <i className="math">𝒟</i>에서 실제값이{" "}
+        데이터 집합 <i className="math">D</i>에서 실제값이{" "}
         <b>섞여 있는 정도</b>
       </>
     ),
     detail: (
       <>
         분류 결과의 불확실성 · 모든 실제값이 같으면{" "}
-        <i className="math">ℎ(𝒟) = 0</i>
+        <i className="math">h(D) = 0</i>
       </>
     ),
   },
   {
     title: "분할 후 엔트로피",
     symbol: (
-      <i className="math">ℎ<sub>𝐴</sub>(𝒟)</i>
+      <i className="math">h<sub>분할 속성</sub>(D)</i>
     ),
     body: (
       <>
@@ -57,7 +57,7 @@ const CONCEPTS: Array<{
   },
   {
     title: "정보이득",
-    symbol: <i className="math">𝐺𝑎𝑖𝑛(𝒟, 𝐴)</i>,
+    symbol: <i className="math">Gain(D, 분할 속성)</i>,
     body: (
       <>
         분할 전보다 <b>불확실성이 감소한 양</b>
@@ -65,7 +65,7 @@ const CONCEPTS: Array<{
     ),
     detail: (
       <i className="math">
-        𝐺𝑎𝑖𝑛(𝒟, 𝐴) = ℎ(𝒟) − ℎ<sub>𝐴</sub>(𝒟)
+        Gain(D, 분할 속성) = h(D) − h<sub>분할 속성</sub>(D)
       </i>
     ),
   },
@@ -109,28 +109,28 @@ const ITEMS: Item[] = [
   {
     id: 2,
     kind: "choice",
-    question: "엔트로피 ℎ(𝒟)가 의미하는 것은 무엇인가요?",
+    question: "엔트로피 h(D)가 의미하는 것은 무엇인가요?",
     options: [
       { label: "현재 데이터에 포함된 행의 수" },
       {
-        label: "데이터 집합 𝒟에서 실제값이 섞여 있는 정도",
+        label: "데이터 집합 D에서 실제값이 섞여 있는 정도",
         correct: true,
       },
       { label: "의사결정 트리의 전체 깊이" },
       { label: "현재 사용할 수 있는 후보 속성의 수" },
     ],
     explanation:
-      "엔트로피 ℎ(𝒟)는 데이터 집합 𝒟에서 실제값이 섞여 있는 정도, 즉 분류 결과의 불확실성을 나타냅니다.",
+      "엔트로피 h(D)는 데이터 집합 D에서 실제값이 섞여 있는 정도, 즉 분류 결과의 불확실성을 나타냅니다.",
   },
   {
     id: 3,
     kind: "choice",
-    question: "정보이득 𝐺𝑎𝑖𝑛(𝒟, 𝐴)의 계산식으로 옳은 것은 무엇인가요?",
+    question: "정보이득 Gain(D, 분할 속성)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
         label: (
           <span className="formula">
-            ℎ<sub>𝐴</sub>(𝒟) − ℎ(𝒟)
+            h<sub>분할 속성</sub>(D) − h(D)
           </span>
         ),
         formula: true,
@@ -138,7 +138,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            ℎ(𝒟) + ℎ<sub>𝐴</sub>(𝒟)
+            h(D) + h<sub>분할 속성</sub>(D)
           </span>
         ),
         formula: true,
@@ -146,14 +146,14 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            ℎ(𝒟) − ℎ<sub>𝐴</sub>(𝒟)
+            h(D) − h<sub>분할 속성</sub>(D)
           </span>
         ),
         correct: true,
         formula: true,
       },
       {
-        label: <span className="formula">∑ ℎ(𝒟ᵥ)</span>,
+        label: <span className="formula">∑ h(D<sub>하위 집합</sub>)</span>,
         formula: true,
       },
     ],
@@ -180,7 +180,7 @@ const ITEMS: Item[] = [
   {
     id: 5,
     kind: "choice",
-    question: "현재 노드의 ℎ(𝒟) = 0일 때 리프 노드로 확정하는 이유는 무엇인가요?",
+    question: "현재 노드의 h(D) = 0일 때 리프 노드로 확정하는 이유는 무엇인가요?",
     options: [
       { label: "현재 노드의 데이터가 너무 많기 때문에" },
       { label: "후보 속성을 모두 사용했기 때문에" },
@@ -191,7 +191,7 @@ const ITEMS: Item[] = [
       { label: "정보이득이 항상 음수가 되기 때문에" },
     ],
     explanation:
-      "ℎ(𝒟) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
+      "h(D) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
   },
 ];
 
@@ -234,7 +234,7 @@ function Summary({ start }: { start: () => void }) {
             </div>
             <div className="stop">
               <span>종료</span>
-              <strong className="math">ℎ(𝒟) = 0</strong>
+              <strong className="math">h(D) = 0</strong>
               <p>리프 노드 확정</p>
             </div>
           </div>

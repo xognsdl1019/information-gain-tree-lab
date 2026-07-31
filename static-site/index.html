@@ -514,6 +514,9 @@
       }
 
       .math-symbol sub {
+        font-family:
+          Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+          system-ui, sans-serif;
         font-size: 0.64em;
         font-style: normal;
       }
@@ -1768,6 +1771,9 @@
       .child-card-head strong {
         color: var(--orange);
         font-size: 25px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+        text-align: right;
       }
 
       .split-preview {
@@ -2003,6 +2009,17 @@
           justify-content: center;
         }
 
+        .child-card-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .child-card-head strong {
+          width: 100%;
+          font-size: 21px;
+          text-align: left;
+        }
+
         .entropy-row {
           grid-template-columns: 1fr;
         }
@@ -2133,7 +2150,7 @@
               <div class="tree-branch">
                 <span class="tree-edge">청년</span>
                 <div class="tree-node-card leaf-purchase">
-                  <small>ℎ = 0</small><b>구매</b>
+                  <small>h(D<sub>청년</sub>) = 0</small><b>구매</b>
                 </div>
               </div>
               <div class="tree-branch">
@@ -2170,7 +2187,7 @@
           </div>
           <div class="formula-card">
             <div class="formula entropy-equation" aria-label="전체 엔트로피 계산식">
-              <span class="math-symbol">ℎ(𝒟) =</span>
+              <span class="math-symbol">h(D) =</span>
               <span id="purchaseTerm" class="entropy-term purchase-term">
                 <span class="term-label"><b>①</b>구매</span>
                 <span>−</span>
@@ -2202,7 +2219,7 @@
               </span>
             </div>
             <div id="entropyResult" class="formula-result hidden">
-              <span>전체 엔트로피</span><strong class="math-symbol">ℎ(𝒟) = 0.934</strong>
+              <span>전체 엔트로피</span><strong class="math-symbol">h(D) = 0.934</strong>
             </div>
             <div id="entropyBreakdown" class="calc-breakdown hidden">
               <div>
@@ -2257,7 +2274,7 @@
                 <span class="person-tile purchase">16</span>
               </div>
               <small class="group-formula">− <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>) − <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>)</small>
-              <span class="group-entropy"><i class="math-symbol">ℎ</i> = 0.985</span>
+              <span class="group-entropy"><i class="math-symbol">h(D<sub>청소년</sub>)</i> = 0.985</span>
             </article>
             <article class="group-card young-group">
               <h3>청년 · 6명</h3>
@@ -2271,7 +2288,7 @@
                 <span class="person-tile purchase">18</span>
               </div>
               <small class="group-formula">− <span class="math-fraction"><span>6</span><span>6</span></span> log₂(<span class="math-fraction"><span>6</span><span>6</span></span>) − <span class="math-fraction"><span>0</span><span>6</span></span> log₂(<span class="math-fraction"><span>0</span><span>6</span></span>)</small>
-              <span class="group-entropy zero-note"><i class="math-symbol">ℎ</i> = 0</span>
+              <span class="group-entropy zero-note"><i class="math-symbol">h(D<sub>청년</sub>)</i> = 0</span>
             </article>
             <article class="group-card middle-group">
               <h3>중년 · 7명</h3>
@@ -2286,7 +2303,7 @@
                 <span class="person-tile no-purchase">20</span>
               </div>
               <small class="group-formula">− <span class="math-fraction"><span>4</span><span>7</span></span> log₂(<span class="math-fraction"><span>4</span><span>7</span></span>) − <span class="math-fraction"><span>3</span><span>7</span></span> log₂(<span class="math-fraction"><span>3</span><span>7</span></span>)</small>
-              <span class="group-entropy"><i class="math-symbol">ℎ</i> = 0.985</span>
+              <span class="group-entropy"><i class="math-symbol">h(D<sub>중년</sub>)</i> = 0.985</span>
             </article>
           </div>
           <div class="cadet-prompt">
@@ -2295,7 +2312,7 @@
           </div>
           <div class="formula-card">
             <div class="formula" aria-label="나이 속성의 가중평균 엔트로피 계산식">
-              <span class="math-symbol">ℎ<sub>나이</sub>(𝒟) =</span>
+              <span class="math-symbol">h<sub>나이</sub>(D) =</span>
               <span class="weight-term youth-weight">
                 <small>청소년</small>
                 <span class="fraction">
@@ -2325,7 +2342,7 @@
             </div>
             <div id="weightedResult" class="formula-result hidden">
               <span>가중평균 엔트로피</span>
-              <strong class="math-symbol">ℎ<sub>나이</sub>(𝒟) ≈ 0.690</strong>
+              <strong class="math-symbol">h<sub>나이</sub>(D) ≈ 0.690</strong>
             </div>
             <div id="weightedBlocks" class="weighted-blocks hidden" aria-label="가중평균 구성">
               <div class="weight-block" style="flex: 7">
@@ -2341,19 +2358,19 @@
             <div id="ageGainResult" class="gain-result hidden">
               <span>나이 속성 · 정보이득</span>
               <div>
-                <span class="math-symbol">𝐺𝑎𝑖𝑛(𝒟, 나이) = 0.934 − 0.690 =</span>
+                <span class="math-symbol">Gain(D, 나이) = 0.934 − 0.690 =</span>
                 <strong>0.244</strong>
               </div>
               <small>계산 기준 · 반올림 전 값</small>
             </div>
             <div id="entropyCompare" class="entropy-compare hidden">
               <div class="entropy-row">
-                <span>분할 전 <i class="math-symbol">ℎ(𝒟)</i></span>
+                <span>분할 전 <i class="math-symbol">h(D)</i></span>
                 <div class="entropy-track"><i class="before" style="width: 93.4%"></i></div>
                 <strong>0.934</strong>
               </div>
               <div class="entropy-row">
-                <span>분할 후 <i class="math-symbol">ℎ<sub>나이</sub>(𝒟)</i></span>
+                <span>분할 후 <i class="math-symbol">h<sub>나이</sub>(D)</i></span>
                 <div class="entropy-track"><i class="after" style="width: 69%"></i></div>
                 <strong>0.690</strong>
               </div>
@@ -2400,7 +2417,7 @@
                   <b>구매 5 · 미구매 5</b>
                 </div>
                 <p class="math-line">− <span class="math-fraction"><span>5</span><span>10</span></span> log₂(<span class="math-fraction"><span>5</span><span>10</span></span>) − <span class="math-fraction"><span>5</span><span>10</span></span> log₂(<span class="math-fraction"><span>5</span><span>10</span></span>)</p>
-                <strong>ℎ = 1.000</strong>
+                <strong class="math-symbol">h(D<sub>학생 아님</sub>) = 1.000</strong>
               </article>
               <article class="student-yes-group">
                 <div>
@@ -2408,7 +2425,7 @@
                   <b>구매 8 · 미구매 2</b>
                 </div>
                 <p class="math-line">− <span class="math-fraction"><span>8</span><span>10</span></span> log₂(<span class="math-fraction"><span>8</span><span>10</span></span>) − <span class="math-fraction"><span>2</span><span>10</span></span> log₂(<span class="math-fraction"><span>2</span><span>10</span></span>)</p>
-                <strong>ℎ = 0.722</strong>
+                <strong class="math-symbol">h(D<sub>학생</sub>) = 0.722</strong>
               </article>
             </div>
             <div class="cadet-prompt">
@@ -2420,7 +2437,7 @@
                 <div class="student-weighted-equation">
                   <span class="weighted-label">
                     <small>가중평균 엔트로피</small>
-                    <b class="math-symbol">ℎ<sub>학생 여부</sub>(𝒟)</b>
+                    <b class="math-symbol">h<sub>학생 여부</sub>(D)</b>
                   </span>
                   <span class="math-operator">=</span>
                   <span class="weight-term student-no-weight">
@@ -2444,12 +2461,12 @@
               </div>
               <div id="studentWeightedResult" class="hidden">
                 <span>가중평균 엔트로피</span>
-                <b class="math-symbol">ℎ<sub>학생 여부</sub>(𝒟)</b>
+                <b class="math-symbol">h<sub>학생 여부</sub>(D)</b>
                 <strong>≈ 0.861</strong>
               </div>
               <div id="studentGainResult" class="hidden">
                 <span>학생 여부 · 정보이득</span>
-                <b class="math-symbol">𝐺𝑎𝑖𝑛(𝒟, 학생 여부) = 0.934 − 0.861</b>
+                <b class="math-symbol">Gain(D, 학생 여부) = 0.934 − 0.861</b>
                 <strong>= 0.073</strong>
               </div>
             </div>
@@ -2490,8 +2507,8 @@
                   <div><span>분할 후</span><i class="mini-track"><i style="width: 86.1%"></i></i><b>.861</b></div>
                 </div>
               </button>
-              <button class="gain-card" type="button" data-feature="신용등급" data-value="0.023">
-                <span>후보 속성 4</span><b>신용등급</b><strong>0.023</strong>
+              <button class="gain-card" type="button" data-feature="신용 등급" data-value="0.023">
+                <span>후보 속성 4</span><b>신용 등급</b><strong>0.023</strong>
                 <div class="mini-metric">
                   <div><span>분할 전</span><i class="mini-track"><i style="width: 93.4%"></i></i><b>.934</b></div>
                   <div><span>분할 후</span><i class="mini-track"><i style="width: 91.1%"></i></i><b>.911</b></div>
@@ -2530,7 +2547,7 @@
                 <h3>현재 노드: 청소년 집단</h3>
                 <p>구매 3 · 미구매 4 · 혼합 노드</p>
               </div>
-              <strong id="youthEntropyBadge" class="math-symbol">ℎ = ?</strong>
+              <strong id="youthEntropyBadge" class="math-symbol">h(D<sub>청소년</sub>) = ?</strong>
             </div>
             <div class="subset-data">
               <strong>청소년 데이터 · 7명</strong>
@@ -2553,7 +2570,7 @@
             </div>
             <div id="youthEntropyExercise" class="formula-card">
               <div class="formula entropy-equation" aria-label="청소년 노드 분할 전 엔트로피 계산식">
-                <span class="math-symbol">ℎ<sub>청소년</sub>(𝒟) =</span>
+                <span class="math-symbol">h(D<sub>청소년</sub>) =</span>
                 <span id="youthPurchaseTerm" class="entropy-term purchase-term">
                   <span class="term-label"><b>①</b>구매</span>
                   <span>−</span>
@@ -2586,7 +2603,7 @@
               </div>
               <div id="youthEntropyResult" class="formula-result hidden">
                 <span>분할 전 엔트로피</span>
-                <strong class="math-symbol">ℎ<sub>청소년</sub>(𝒟) = 0.985</strong>
+                <strong class="math-symbol">h(D<sub>청소년</sub>) = 0.985</strong>
               </div>
               <div id="youthEntropyBreakdown" class="calc-breakdown hidden">
                 <div>
@@ -2619,7 +2636,7 @@
               <div class="selection-kicker">청소년 노드 · 후보 속성별 정보이득</div>
               <div class="child-gain-grid">
               <button class="child-gain-card" type="button" data-node="youth" data-feature="수입" data-value="0.700">
-                <div class="child-card-head"><b>수입</b><strong>정보이득 0.700</strong></div>
+                <div class="child-card-head"><b>수입</b><strong class="math-symbol">Gain(D<sub>청소년</sub>, 수입) = 0.700</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>높음</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 3</i></span></div>
                   <div class="preview-group"><span>중간</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 1</i></span></div>
@@ -2628,15 +2645,15 @@
                 <div class="child-metric"><span>0.985 − 0.286</span><b>= 0.700</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="youth" data-feature="학생 여부" data-value="0.985">
-                <div class="child-card-head"><b>학생 여부</b><strong>정보이득 0.985</strong></div>
+                <div class="child-card-head"><b>학생 여부</b><strong class="math-symbol">Gain(D<sub>청소년</sub>, 학생 여부) = 0.985</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>아니요</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 4</i></span></div>
                   <div class="preview-group"><span>예</span><span class="preview-counts"><i class="purchase">구매 3</i><i class="no-purchase">미구매 0</i></span></div>
                 </div>
                 <div class="child-metric"><span>0.985 − 0</span><b>= 0.985</b></div>
               </button>
-              <button class="child-gain-card" type="button" data-node="youth" data-feature="신용등급" data-value="0.128">
-                <div class="child-card-head"><b>신용등급</b><strong>정보이득 0.128</strong></div>
+              <button class="child-gain-card" type="button" data-node="youth" data-feature="신용 등급" data-value="0.128">
+                <div class="child-card-head"><b>신용 등급</b><strong class="math-symbol">Gain(D<sub>청소년</sub>, 신용 등급) = 0.128</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>양호</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 3</i></span></div>
                   <div class="preview-group"><span>우수</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
@@ -2647,8 +2664,8 @@
             <div id="youthCalcResult" class="child-calc-result hidden">
               <span>학생 여부 분할 계산</span>
               <div class="child-formula-stack">
-                <div class="child-weighted-formula"><i class="math-symbol">ℎ<sub>학생 여부</sub>(𝒟)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
-                <strong id="youthGainLine" class="gain-line math-symbol hidden">𝐺𝑎𝑖𝑛(𝒟, 학생 여부) = 0.985 − 0 = 0.985</strong>
+                <div class="child-weighted-formula"><i class="math-symbol">h<sub>학생 여부</sub>(D<sub>청소년</sub>)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
+                <strong id="youthGainLine" class="gain-line math-symbol hidden">Gain(D<sub>청소년</sub>, 학생 여부) = 0.985 − 0 = 0.985</strong>
               </div>
             </div>
             <div class="action-row">
@@ -2669,7 +2686,7 @@
                 <h3>현재 노드: 중년 집단</h3>
                 <p>구매 4 · 미구매 3 · 혼합 노드</p>
               </div>
-              <strong class="math-symbol">ℎ = 0.985</strong>
+              <strong class="math-symbol">h(D<sub>중년</sub>) = 0.985</strong>
             </div>
             <div class="subset-row">
               <span>현재 데이터</span>
@@ -2683,7 +2700,7 @@
             </div>
             <div class="child-gain-grid">
               <button class="child-gain-card" type="button" data-node="middle" data-feature="수입" data-value="0.198">
-                <div class="child-card-head"><b>수입</b><strong>정보이득 0.198</strong></div>
+                <div class="child-card-head"><b>수입</b><strong class="math-symbol">Gain(D<sub>중년</sub>, 수입) = 0.198</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>높음</span><span class="preview-counts"><i class="purchase">구매 1</i><i class="no-purchase">미구매 0</i></span></div>
                   <div class="preview-group"><span>중간</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
@@ -2692,15 +2709,15 @@
                 <div class="child-metric"><span>0.985 − 0.787</span><b>= 0.198</b></div>
               </button>
               <button class="child-gain-card" type="button" data-node="middle" data-feature="학생 여부" data-value="0.020">
-                <div class="child-card-head"><b>학생 여부</b><strong>정보이득 0.020</strong></div>
+                <div class="child-card-head"><b>학생 여부</b><strong class="math-symbol">Gain(D<sub>중년</sub>, 학생 여부) = 0.020</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>아니요</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 1</i></span></div>
                   <div class="preview-group"><span>예</span><span class="preview-counts"><i class="purchase">구매 2</i><i class="no-purchase">미구매 2</i></span></div>
                 </div>
                 <div class="child-metric"><span>0.985 − 0.965</span><b>= 0.020</b></div>
               </button>
-              <button class="child-gain-card" type="button" data-node="middle" data-feature="신용등급" data-value="0.985">
-                <div class="child-card-head"><b>신용등급</b><strong>정보이득 0.985</strong></div>
+              <button class="child-gain-card" type="button" data-node="middle" data-feature="신용 등급" data-value="0.985">
+                <div class="child-card-head"><b>신용 등급</b><strong class="math-symbol">Gain(D<sub>중년</sub>, 신용 등급) = 0.985</strong></div>
                 <div class="split-preview">
                   <div class="preview-group"><span>양호</span><span class="preview-counts"><i class="purchase">구매 4</i><i class="no-purchase">미구매 0</i></span></div>
                   <div class="preview-group"><span>우수</span><span class="preview-counts"><i class="purchase">구매 0</i><i class="no-purchase">미구매 3</i></span></div>
@@ -2709,10 +2726,10 @@
               </button>
             </div>
             <div id="middleCalcResult" class="child-calc-result hidden">
-              <span>신용등급 분할 계산</span>
+              <span>신용 등급 분할 계산</span>
               <div class="child-formula-stack">
-                <div class="child-weighted-formula"><i class="math-symbol">ℎ<sub>신용 등급</sub>(𝒟)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
-                <strong id="middleGainLine" class="gain-line math-symbol hidden">𝐺𝑎𝑖𝑛(𝒟, 신용 등급) = 0.985 − 0 = 0.985</strong>
+                <div class="child-weighted-formula"><i class="math-symbol">h<sub>신용 등급</sub>(D<sub>중년</sub>)</i> = <span class="math-fraction"><span>4</span><span>7</span></span> × 0 + <span class="math-fraction"><span>3</span><span>7</span></span> × 0 = <b>0</b></div>
+                <strong id="middleGainLine" class="gain-line math-symbol hidden">Gain(D<sub>중년</sub>, 신용 등급) = 0.985 − 0 = 0.985</strong>
               </div>
             </div>
             <div class="action-row">
@@ -2748,7 +2765,7 @@
             </article>
             <article>
               <span>중년 노드</span>
-              <h3>신용등급 · 정보이득 0.985</h3>
+              <h3>신용 등급 · 정보이득 0.985</h3>
               <p>양호 → 구매 4 · 우수 → 미구매 3</p>
             </article>
           </div>
@@ -2963,7 +2980,8 @@
           "youthPurchaseTerm",
           "youthNoPurchaseTerm",
         ].forEach((id) => document.getElementById(id).classList.remove("has-value"));
-        document.getElementById("youthEntropyBadge").textContent = "ℎ = ?";
+        document.getElementById("youthEntropyBadge").innerHTML =
+          "h(D<sub>청소년</sub>) = ?";
         [
           "entropyResult",
           "entropyBreakdown",
@@ -3065,7 +3083,7 @@
         const feedback = document.getElementById("step1Feedback");
         if (purchaseCount.value === "13" && noPurchaseCount.value === "7") {
           feedback.className = "feedback correct";
-          feedback.textContent = "정답 · ℎ(𝒟) = 0.934";
+          feedback.textContent = "정답 · h(D) = 0.934";
           document.getElementById("entropyResult").classList.remove("hidden");
           document.getElementById("entropyBreakdown").classList.remove("hidden");
           document.getElementById("checkEntropyButton").classList.add("hidden");
@@ -3177,7 +3195,8 @@
         if (correct) {
           feedback.className = "feedback correct";
           feedback.textContent = "정답 · 분할 전 엔트로피 0.985";
-          document.getElementById("youthEntropyBadge").textContent = "ℎ = 0.985";
+          document.getElementById("youthEntropyBadge").innerHTML =
+            "h(D<sub>청소년</sub>) = 0.985";
           document.getElementById("youthEntropyResult").classList.remove("hidden");
           document.getElementById("youthEntropyBreakdown").classList.remove("hidden");
           document.getElementById("youthCandidateArea").classList.remove("hidden");
@@ -3201,7 +3220,7 @@
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "분할 후 ℎ = 0 · 정보이득 계산";
+              "분할 후 h_학생 여부(D_청소년) = 0 · 정보이득 계산";
             document
               .querySelectorAll('.child-gain-card[data-node="youth"]')
               .forEach((item) => {
@@ -3250,18 +3269,18 @@
             .querySelectorAll('.child-gain-card[data-node="middle"]')
             .forEach((item) => item.classList.remove("selected", "wrong"));
 
-          if (card.dataset.feature === "신용등급") {
+          if (card.dataset.feature === "신용 등급") {
             card.classList.add("selected");
             feedback.className = "feedback correct";
             feedback.textContent =
-              "분할 후 ℎ = 0 · 정보이득 계산";
+              "분할 후 h_신용 등급(D_중년) = 0 · 정보이득 계산";
             document
               .querySelectorAll('.child-gain-card[data-node="middle"]')
               .forEach((item) => {
                 item.disabled = true;
               });
             card.disabled = false;
-            setTreeNode("treeMiddleNode", "질문", "신용등급", "question");
+            setTreeNode("treeMiddleNode", "질문", "신용 등급", "question");
             document.getElementById("treeMiddleLeaves").classList.remove("hidden");
             document.getElementById("middleCalcResult").classList.remove("hidden");
             document.getElementById("calculateMiddleGainButton").classList.remove("hidden");
