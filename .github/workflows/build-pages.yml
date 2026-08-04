@@ -1,0 +1,50 @@
+name: Build GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "summary-app/**"
+      - "static-site/**"
+      - "package.json"
+      - "vite.github.config.ts"
+      - ".github/workflows/build-pages.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build site
+        run: npm run build
+
+      - name: Copy build output
+        run: cp -R github-pages-dist/. .
+
+      - name: Commit generated site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html scatter summary purchase-tree assets
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "사이트 빌드 결과 반영"
+          git push
