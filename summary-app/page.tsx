@@ -21,10 +21,10 @@ const CLASS_OPTIONS: ClassName[] = ["A2", "B1", "C1"];
 const CADET_NAMES: CadetName[] = ["이준 생도", "맹주본 생도"];
 
 const ID3_STEPS = [
-  { key: "attribute", icon: "속성", label: "현재 노드의 후보 속성 확인" },
-  { key: "gain", icon: "Gain", label: "후보 속성별 정보이득 계산" },
-  { key: "max", icon: "MAX", label: "정보이득이 가장 큰 속성 선택" },
-  { key: "split", icon: "분할", label: "선택한 속성값에 따라 데이터 분할" },
+  { key: "attribute", icon: "속성", label: "후보 속성" },
+  { key: "gain", icon: "Gain", label: "정보이득 계산" },
+  { key: "max", icon: "MAX", label: "최댓값 선택" },
+  { key: "split", icon: "분할", label: "데이터 분할" },
 ];
 
 const CONCEPTS: Array<{
@@ -36,50 +36,22 @@ const CONCEPTS: Array<{
   {
     title: "엔트로피",
     symbol: <i className="math">h(D)</i>,
-    body: (
-      <>
-        데이터 집합 <i className="math">D</i>에서 실제값이{" "}
-        <b>섞여 있는 정도</b>
-      </>
-    ),
-    detail: (
-      <>
-        분류 결과의 불확실성 · 모든 실제값이 같으면{" "}
-        <i className="math">h(D) = 0</i>
-      </>
-    ),
+    body: <b>실제값의 섞임</b>,
+    detail: "불확실성 · 순수 노드",
   },
   {
     title: "분할 후 엔트로피",
     symbol: (
       <i className="math">h<sub className="math-variable">A</sub>(D)</i>
     ),
-    body: (
-      <>
-        분할된 하위 집합의 엔트로피를 <b>데이터 비율</b>로 가중평균
-      </>
-    ),
-    detail: "값이 작을수록 실제값이 더 명확하게 나뉨",
+    body: <b>하위 집합 · 가중평균</b>,
+    detail: "데이터 비율 반영",
   },
   {
     title: "정보이득",
     symbol: <i className="math">Gain(D, A)</i>,
-    body: (
-      <>
-        분할 전보다 <b>불확실성이 감소한 양</b>
-      </>
-    ),
-    detail: (
-      <span className="formula-detail">
-        <i className="math">
-          Gain(D, A) = h(D) − h<sub className="math-variable">A</sub>(D)
-        </i>
-        <span>D: 현재 데이터 집합 · A: 분할 속성</span>
-        <span className="formula-example">
-          예: Gain(D<sub>청소년</sub>, 수입)
-        </span>
-      </span>
-    ),
+    body: <b>분할 전 − 분할 후</b>,
+    detail: "정보이득이 큰 속성 선택",
   },
 ];
 
@@ -90,7 +62,7 @@ const INITIAL_ORDER = [
   ID3_STEPS[2],
 ];
 
-const ASSIGNED_ITEM_IDS = [1, 3, 5];
+const ASSIGNED_ITEM_IDS = [1, 3];
 
 function shuffledCadets() {
   const cadets = [...CADET_NAMES];
@@ -103,9 +75,8 @@ function shuffledCadets() {
 
 function assignCadets(): CadetAssignments {
   const assignments: CadetAssignments = {};
-  let pool = shuffledCadets();
+  const pool = shuffledCadets();
   for (const itemId of ASSIGNED_ITEM_IDS) {
-    if (!pool.length) pool = shuffledCadets();
     assignments[itemId] = pool.shift();
   }
   return assignments;
@@ -231,7 +202,7 @@ function Summary({ start }: { start: () => void }) {
   return (
     <section className="summary-page">
       <div className="summary-title">
-        <span>의사결정 트리 핵심 정리</span>
+        <span>의사결정 트리 핵심 키워드</span>
       </div>
 
       <div className="summary-body">
@@ -239,7 +210,7 @@ function Summary({ start }: { start: () => void }) {
           <div className="id3-heading">
             <div>
               <span>ID3 알고리즘</span>
-              <h2>분할 속성 선택과 데이터 분할</h2>
+              <h2>질문 선택과 반복</h2>
             </div>
           </div>
 
@@ -260,14 +231,14 @@ function Summary({ start }: { start: () => void }) {
               <b className="repeat-arrow" aria-hidden="true">↩</b>
               <div>
                 <span>반복</span>
-                <p>실제값이 섞인 하위 노드</p>
+                <p>혼합 노드</p>
               </div>
-              <strong>4단계 → 1단계</strong>
+              <strong>다시 1단계</strong>
             </div>
             <div className="stop">
               <span>종료</span>
               <strong className="math">h(D) = 0</strong>
-              <p>리프 노드 확정</p>
+              <p>리프 노드</p>
             </div>
           </div>
         </aside>
@@ -361,24 +332,6 @@ function CadetSetup({
           <div>
             <span>선택한 교반</span>
             <strong>{selectedClass}</strong>
-          </div>
-          <div
-            style={{
-              marginTop: 14,
-              paddingTop: 14,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 18,
-              borderTop: "1px solid #d9e3ec",
-            }}
-          >
-            <span style={{ color: "#66798f", fontSize: 17, fontWeight: 850 }}>
-              퀴즈 대상
-            </span>
-            <strong style={{ color: "#183d69", fontSize: 22 }}>
-              이준 생도 · 맹주본 생도
-            </strong>
           </div>
         </div>
 
