@@ -188,65 +188,74 @@ const ITEMS: Item[] = [
 const QUIZ_ITEM_COUNT = ITEMS.filter((item) => item.scored !== false).length;
 
 function Summary({ start }: { start: () => void }) {
+  const keywordGroups = [
+    {
+      number: "01",
+      tone: "structure",
+      title: "트리의 구조",
+      keywords: [
+        "루트 노드",
+        "질문 노드",
+        "부모 노드",
+        "자식 노드",
+        "엣지",
+        "리프 노드",
+        "깊이",
+        "높이",
+      ],
+    },
+    {
+      number: "02",
+      tone: "split",
+      title: "분할 기준",
+      keywords: [
+        "엔트로피",
+        "실제값의 섞임",
+        "불확실성",
+        "순수 노드",
+        "가중평균 엔트로피",
+        "정보이득",
+        "좋은 분할",
+      ],
+    },
+    {
+      number: "03",
+      tone: "id3",
+      title: "ID3 알고리즘",
+      keywords: [
+        "후보 속성",
+        "정보이득 계산",
+        "최댓값 선택",
+        "데이터 분할",
+        "반복 분할",
+        "리프 노드 확정",
+      ],
+    },
+  ];
+
   return (
-    <section className="summary-page formula-summary-page">
+    <section className="summary-page keyword-summary-page">
       <div className="summary-title">
-        <span>의사결정 트리 핵심 공식</span>
+        <span>의사결정 트리 핵심 키워드</span>
       </div>
 
-      <div className="summary-body formula-summary">
-        <div className="formula-concepts">
-          <article className="formula-card entropy-card">
-            <div className="formula-card-title">
-              <span>01</span>
-              <h2>엔트로피</h2>
+      <div className="keyword-summary-grid">
+        {keywordGroups.map((group) => (
+          <article
+            className={`keyword-card tone-${group.tone}`}
+            key={group.title}
+          >
+            <div className="keyword-card-title">
+              <span>{group.number}</span>
+              <h2>{group.title}</h2>
             </div>
-            <div className="summary-formula" aria-label="엔트로피 공식">
-              <span className="formula equation">
-                h(D) = −
-                <span className="sigma">
-                  <b>∑</b>
-                  <sup>c</sup>
-                  <sub>i = 1</sub>
-                </span>
-                p<sub>i</sub> log<sub>2</sub> p<sub>i</sub>
-              </span>
-            </div>
+            <ul>
+              {group.keywords.map((keyword) => (
+                <li key={keyword}>{keyword}</li>
+              ))}
+            </ul>
           </article>
-
-          <article className="formula-card weighted-card">
-            <div className="formula-card-title">
-              <span>02</span>
-              <h2>가중평균 엔트로피</h2>
-            </div>
-            <div className="summary-formula" aria-label="가중평균 엔트로피 공식">
-              <span className="formula equation weighted-equation">
-                h<sub className="math-variable">A</sub>(D) =
-                <span className="sigma sigma-wide">
-                  <b>∑</b>
-                  <sub>v ∈ Values(A)</sub>
-                </span>
-                <span className="fraction">
-                  <span>|D<sub>v</sub>|</span>
-                  <span>|D|</span>
-                </span>
-                h(D<sub>v</sub>)
-              </span>
-            </div>
-          </article>
-
-          <article className="formula-card gain-card">
-            <div className="formula-card-title">
-              <span>03</span>
-              <h2>정보이득</h2>
-            </div>
-            <div className="summary-formula" aria-label="정보이득 공식">
-              <span className="formula equation">
-                Gain(D, A) = h(D) − h<sub className="math-variable">A</sub>(D)
-              </span>
-            </div>
-          </article>
-        </div>
+        ))}
       </div>
 
       <div className="summary-action">
