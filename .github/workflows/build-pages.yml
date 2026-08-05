@@ -10,6 +10,7 @@ on:
       - "package.json"
       - "vite.github.config.ts"
       - ".github/workflows/build-pages.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
