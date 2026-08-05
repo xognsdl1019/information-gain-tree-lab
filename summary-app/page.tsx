@@ -183,77 +183,69 @@ const ITEMS: Item[] = [
     explanation:
       "h(D) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
   },
-  {
-    id: 6,
-    kind: "order",
-    scored: false,
-    instruction:
-      "이 문제는 점수에 포함하지 않습니다. 전체가 함께 순서를 맞춰보세요.",
-    question:
-      "ID3 알고리즘에서 분할 속성을 선택하고 데이터를 나누는 네 단계를 올바른 순서로 배열하세요.",
-    explanation:
-      "실제값이 섞인 하위 노드에서는 후보 속성 확인부터 데이터 분할까지의 네 단계를 반복하고, h(D) = 0이면 리프 노드로 확정합니다.",
-  },
 ];
 
 const QUIZ_ITEM_COUNT = ITEMS.filter((item) => item.scored !== false).length;
 
 function Summary({ start }: { start: () => void }) {
   return (
-    <section className="summary-page">
+    <section className="summary-page formula-summary-page">
       <div className="summary-title">
-        <span>의사결정 트리 핵심 키워드</span>
+        <span>의사결정 트리 핵심 공식</span>
       </div>
 
-      <div className="summary-body">
-        <aside className="id3-card">
-          <div className="id3-heading">
-            <div>
-              <span>ID3 알고리즘</span>
-              <h2>질문 선택과 반복</h2>
+      <div className="summary-body formula-summary">
+        <div className="formula-concepts">
+          <article className="formula-card entropy-card">
+            <div className="formula-card-title">
+              <span>01</span>
+              <h2>엔트로피</h2>
             </div>
-          </div>
-
-          <ol>
-            {ID3_STEPS.map((step, index) => (
-              <li className={`tone-${step.key}`} key={step.key}>
-                <b>{step.icon}</b>
-                <div>
-                  <small>{index + 1}단계</small>
-                  <strong>{step.label}</strong>
-                </div>
-              </li>
-            ))}
-          </ol>
-
-          <div className="id3-notes">
-            <div className="repeat">
-              <b className="repeat-arrow" aria-hidden="true">↩</b>
-              <div>
-                <span>반복</span>
-                <p>혼합 노드</p>
-              </div>
-              <strong>다시 1단계</strong>
+            <div className="summary-formula" aria-label="엔트로피 공식">
+              <span className="formula equation">
+                h(D) = −
+                <span className="sigma">
+                  <b>∑</b>
+                  <sup>c</sup>
+                  <sub>i = 1</sub>
+                </span>
+                p<sub>i</sub> log<sub>2</sub> p<sub>i</sub>
+              </span>
             </div>
-            <div className="stop">
-              <span>종료</span>
-              <strong className="math">h(D) = 0</strong>
-              <p>리프 노드</p>
-            </div>
-          </div>
-        </aside>
+          </article>
 
-        <div className="concepts">
-          {CONCEPTS.map((concept) => (
-            <article key={concept.title}>
-              <div className="concept-heading">
-                <h2>{concept.title}</h2>
-                <strong>{concept.symbol}</strong>
-              </div>
-              <p>{concept.body}</p>
-              <small>{concept.detail}</small>
-            </article>
-          ))}
+          <article className="formula-card weighted-card">
+            <div className="formula-card-title">
+              <span>02</span>
+              <h2>가중평균 엔트로피</h2>
+            </div>
+            <div className="summary-formula" aria-label="가중평균 엔트로피 공식">
+              <span className="formula equation weighted-equation">
+                h<sub className="math-variable">A</sub>(D) =
+                <span className="sigma sigma-wide">
+                  <b>∑</b>
+                  <sub>v ∈ Values(A)</sub>
+                </span>
+                <span className="fraction">
+                  <span>|D<sub>v</sub>|</span>
+                  <span>|D|</span>
+                </span>
+                h(D<sub>v</sub>)
+              </span>
+            </div>
+          </article>
+
+          <article className="formula-card gain-card">
+            <div className="formula-card-title">
+              <span>03</span>
+              <h2>정보이득</h2>
+            </div>
+            <div className="summary-formula" aria-label="정보이득 공식">
+              <span className="formula equation">
+                Gain(D, A) = h(D) − h<sub className="math-variable">A</sub>(D)
+              </span>
+            </div>
+          </article>
         </div>
       </div>
 
@@ -563,7 +555,7 @@ function Complete({
         <div className="mark">✓</div>
         <span>학습 완료</span>
         <h1>{message}</h1>
-        <p>5개 확인 퀴즈와 전체 공동 풀이를 통해 ID3의 핵심 흐름을 확인했습니다.</p>
+        <p>5개 확인 퀴즈를 통해 엔트로피와 정보이득의 핵심 개념을 확인했습니다.</p>
         <div className="score">
           <span>확인 퀴즈 점수</span>
           <b>
