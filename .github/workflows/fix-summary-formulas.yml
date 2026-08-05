@@ -1,0 +1,299 @@
+name: Fix summary formulas
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/fix-summary-formulas.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix-and-build:
+    if: contains(github.event.head_commit.message, '수식 렌더링 수정 실행')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Rewrite summary formulas
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          page_path = Path("summary-app/page.tsx")
+          page = page_path.read_text(encoding="utf-8")
+
+          replacement = '''      <div className="summary-body formula-summary">
+        <div className="formula-concepts">
+          <article className="formula-card entropy-card">
+            <div className="formula-card-title">
+              <span>01</span>
+              <h2>엔트로피</h2>
+            </div>
+            <div className="summary-formula">
+              <math display="block" aria-label="엔트로피 공식">
+                <mrow>
+                  <mi>h</mi><mo>(</mo><mi>D</mi><mo>)</mo><mo>=</mo><mo>−</mo>
+                  <munderover>
+                    <mo>∑</mo>
+                    <mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow>
+                    <mi>c</mi>
+                  </munderover>
+                  <msub><mi>p</mi><mi>i</mi></msub>
+                  <msub><mi>log</mi><mn>2</mn></msub>
+                  <msub><mi>p</mi><mi>i</mi></msub>
+                </mrow>
+              </math>
+            </div>
+          </article>
+
+          <article className="formula-card weighted-card">
+            <div className="formula-card-title">
+              <span>02</span>
+              <h2>가중평균 엔트로피</h2>
+            </div>
+            <div className="summary-formula">
+              <math display="block" aria-label="가중평균 엔트로피 공식">
+                <mrow>
+                  <msub><mi>h</mi><mi>A</mi></msub><mo>(</mo><mi>D</mi><mo>)</mo><mo>=</mo>
+                  <munder>
+                    <mo>∑</mo>
+                    <mrow>
+                      <mi>v</mi><mo>∈</mo><mtext>Values</mtext><mo>(</mo><mi>A</mi><mo>)</mo>
+                    </mrow>
+                  </munder>
+                  <mfrac>
+                    <mrow><mo>|</mo><msub><mi>D</mi><mi>v</mi></msub><mo>|</mo></mrow>
+                    <mrow><mo>|</mo><mi>D</mi><mo>|</mo></mrow>
+                  </mfrac>
+                  <mi>h</mi><mo>(</mo><msub><mi>D</mi><mi>v</mi></msub><mo>)</mo>
+                </mrow>
+              </math>
+            </div>
+          </article>
+
+          <article className="formula-card gain-card">
+            <div className="formula-card-title">
+              <span>03</span>
+              <h2>정보이득</h2>
+            </div>
+            <div className="summary-formula">
+              <math display="block" aria-label="정보이득 공식">
+                <mrow>
+                  <mi>Gain</mi><mo>(</mo><mi>D</mi><mo>,</mo><mi>A</mi><mo>)</mo>
+                  <mo>=</mo>
+                  <mi>h</mi><mo>(</mo><mi>D</mi><mo>)</mo>
+                  <mo>−</mo>
+                  <msub><mi>h</mi><mi>A</mi></msub><mo>(</mo><mi>D</mi><mo>)</mo>
+                </mrow>
+              </math>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div className="summary-action">'''
+
+          pattern = re.compile(
+              r'      <div className="summary-body formula-summary">.*?      </div>\n\n      <div className="summary-action">',
+              re.S,
+          )
+          page, count = pattern.subn(replacement, page, count=1)
+          if count != 1:
+              raise SystemExit(f"Summary formula section replacement failed: {count}")
+          page_path.write_text(page, encoding="utf-8")
+
+          css_path = Path("summary-app/globals.css")
+          css = css_path.read_text(encoding="utf-8")
+          marker = "/* SUMMARY MATHML FORMULAS */"
+          if marker in css:
+              css = css.split(marker, 1)[0].rstrip() + "\n"
+
+          css += r'''
+
+/* SUMMARY MATHML FORMULAS */
+.formula-summary {
+  min-width: 0;
+}
+
+.formula-concepts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.formula-card {
+  min-width: 0;
+  min-height: 272px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--blue);
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px #142c4f0d;
+}
+
+.formula-card.weighted-card {
+  border-top-color: #566f9f;
+}
+
+.formula-card.gain-card {
+  border-top-color: var(--orange);
+}
+
+.formula-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.formula-card-title > span {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--navy);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.weighted-card .formula-card-title > span {
+  background: #566f9f;
+}
+
+.gain-card .formula-card-title > span {
+  background: var(--orange);
+}
+
+.formula-card-title h2 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: -0.035em;
+}
+
+.summary-formula {
+  min-width: 0;
+  min-height: 160px;
+  margin-top: 22px;
+  padding: 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #dfe7ef;
+  background: #f7f9fc;
+  border-radius: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.summary-formula math {
+  width: max-content;
+  min-width: max-content;
+  margin: auto;
+  color: var(--navy);
+  font-family: "Cambria Math", "STIX Two Math", "Noto Sans Math", "Times New Roman", serif;
+  font-size: clamp(29px, 2.25vw, 42px);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.weighted-card .summary-formula math {
+  font-size: clamp(23px, 1.75vw, 34px);
+}
+
+.summary-formula mi,
+.summary-formula mo,
+.summary-formula mn,
+.summary-formula mtext {
+  font-family: inherit;
+}
+
+.summary-formula mtext {
+  font-style: normal;
+}
+
+@media (max-width: 1000px) {
+  .formula-concepts {
+    grid-template-columns: 1fr;
+  }
+
+  .formula-card {
+    min-height: 0;
+  }
+
+  .summary-formula {
+    min-height: 138px;
+  }
+
+  .summary-formula math,
+  .weighted-card .summary-formula math {
+    font-size: clamp(27px, 4.4vw, 39px);
+  }
+}
+
+@media (max-width: 680px) {
+  .formula-card {
+    padding: 19px 16px;
+  }
+
+  .formula-card-title h2 {
+    font-size: 25px;
+  }
+
+  .summary-formula {
+    min-height: 124px;
+    margin-top: 17px;
+    padding: 16px 10px;
+    justify-content: flex-start;
+  }
+
+  .summary-formula math,
+  .weighted-card .summary-formula math {
+    font-size: 27px;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-formula math,
+  .weighted-card .summary-formula math {
+    font-size: 24px;
+  }
+}
+'''
+          css_path.write_text(css, encoding="utf-8")
+          PY
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build site
+        run: npm run build
+
+      - name: Copy build output
+        run: cp -R github-pages-dist/. .
+
+      - name: Commit source and generated site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add summary-app/page.tsx summary-app/globals.css index.html scatter summary purchase-tree assets
+          git commit -m "요약 수식 렌더링 안정화"
+          git push
