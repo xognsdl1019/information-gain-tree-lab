@@ -1,0 +1,250 @@
+/* Summary formula cards */
+.formula-summary {
+  min-width: 0;
+}
+
+.formula-concepts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.formula-card {
+  min-width: 0;
+  min-height: 272px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--blue);
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 6px 20px #142c4f0d;
+}
+
+.formula-card.weighted-card {
+  border-top-color: #566f9f;
+}
+
+.formula-card.gain-card {
+  border-top-color: var(--orange);
+}
+
+.formula-card-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.formula-card-title > span {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--navy);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.weighted-card .formula-card-title > span {
+  background: #566f9f;
+}
+
+.gain-card .formula-card-title > span {
+  background: var(--orange);
+}
+
+.formula-card-title h2 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: -0.035em;
+}
+
+.summary-formula {
+  min-width: 0;
+  min-height: 160px;
+  margin-top: 22px;
+  padding: 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border: 1px solid #dfe7ef;
+  background: #f7f9fc;
+  border-radius: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Existing HTML formula layout */
+.summary-formula > .equation {
+  width: max-content;
+  min-width: max-content;
+  margin: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.16em;
+  color: var(--navy);
+  font-family: "Cambria Math", "STIX Two Math", "Noto Sans Math", "Times New Roman", serif;
+  font-size: clamp(29px, 2.25vw, 42px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.weighted-card .summary-formula > .equation {
+  font-size: clamp(23px, 1.75vw, 34px);
+}
+
+.summary-formula .equation sub {
+  position: static;
+  bottom: auto;
+  font-family: inherit;
+  font-size: 0.64em;
+  font-style: italic;
+  font-weight: inherit;
+  line-height: 0;
+  vertical-align: -0.3em;
+}
+
+.summary-formula .sigma {
+  min-width: 1.7em;
+  height: 1.9em;
+  margin: 0 0.08em;
+  display: inline-grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.48em 0.9em 0.48em;
+  place-items: center;
+  align-self: center;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.summary-formula .sigma b {
+  grid-row: 2;
+  font-family: inherit;
+  font-size: 1.35em;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0.8;
+}
+
+.summary-formula .sigma sup,
+.summary-formula .sigma sub {
+  position: static;
+  width: max-content;
+  font-family: inherit;
+  font-size: 0.42em;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  vertical-align: baseline;
+}
+
+.summary-formula .sigma sup {
+  grid-row: 1;
+  align-self: end;
+}
+
+.summary-formula .sigma sub {
+  grid-row: 3;
+  align-self: start;
+}
+
+.summary-formula .sigma-wide {
+  min-width: 4.9em;
+}
+
+.summary-formula .fraction {
+  min-width: 2em;
+  margin: 0 0.12em;
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  align-items: center;
+  text-align: center;
+  line-height: 1.05;
+  vertical-align: middle;
+}
+
+.summary-formula .fraction > span {
+  padding: 0.08em 0.2em;
+  white-space: nowrap;
+}
+
+.summary-formula .fraction > span:first-child {
+  border-bottom: 0.07em solid currentColor;
+}
+
+/* MathML fallback and future rendering */
+.summary-formula math {
+  width: max-content;
+  min-width: max-content;
+  margin: auto;
+  color: var(--navy);
+  font-family: "Cambria Math", "STIX Two Math", "Noto Sans Math", "Times New Roman", serif;
+  font-size: clamp(29px, 2.25vw, 42px);
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.weighted-card .summary-formula math {
+  font-size: clamp(23px, 1.75vw, 34px);
+}
+
+@media (max-width: 1000px) {
+  .formula-concepts {
+    grid-template-columns: 1fr;
+  }
+
+  .formula-card {
+    min-height: 0;
+  }
+
+  .summary-formula {
+    min-height: 138px;
+  }
+
+  .summary-formula > .equation,
+  .weighted-card .summary-formula > .equation,
+  .summary-formula math,
+  .weighted-card .summary-formula math {
+    font-size: clamp(27px, 4.4vw, 39px);
+  }
+}
+
+@media (max-width: 680px) {
+  .formula-card {
+    padding: 19px 16px;
+  }
+
+  .formula-card-title h2 {
+    font-size: 25px;
+  }
+
+  .summary-formula {
+    min-height: 124px;
+    margin-top: 17px;
+    padding: 16px 10px;
+    justify-content: flex-start;
+  }
+
+  .summary-formula > .equation,
+  .weighted-card .summary-formula > .equation,
+  .summary-formula math,
+  .weighted-card .summary-formula math {
+    font-size: 27px;
+  }
+}
+
+@media (max-width: 420px) {
+  .summary-formula > .equation,
+  .weighted-card .summary-formula > .equation,
+  .summary-formula math,
+  .weighted-card .summary-formula math {
+    font-size: 24px;
+  }
+}
