@@ -109,3 +109,5 @@ jobs:
           git add summary-app/page.tsx summary-app/formula-summary.css index.html scatter summary purchase-tree assets
           git commit -m "요약 키워드를 항목별 세 개로 축소"
           git push
+
+# trigger
