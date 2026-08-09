@@ -21,9 +21,9 @@ const CLASS_OPTIONS: ClassName[] = ["A2", "B1", "C1"];
 const CADET_NAMES: CadetName[] = ["이준 생도", "맹주본 생도"];
 
 const ID3_STEPS = [
-  { key: "attribute", icon: "속성", label: "후보 속성" },
-  { key: "gain", icon: "Gain", label: "정보이득 계산" },
-  { key: "max", icon: "MAX", label: "최댓값 선택" },
+  { key: "attribute", icon: "속성", label: "후보 속성 확인" },
+  { key: "gain", icon: "Gain", label: "후보 속성별 정보이득 계산" },
+  { key: "max", icon: "MAX", label: "분할 속성 선택" },
   { key: "split", icon: "분할", label: "데이터 분할" },
 ];
 
@@ -36,22 +36,22 @@ const CONCEPTS: Array<{
   {
     title: "엔트로피",
     symbol: <i className="math">h(D)</i>,
-    body: <b>실제값의 섞임</b>,
-    detail: "불확실성 · 순수 노드",
+    body: <b>평균 정보량</b>,
+    detail: "각 실제값이 나타날 확률 이용",
   },
   {
     title: "분할 후 엔트로피",
     symbol: (
       <i className="math">h<sub className="math-variable">A</sub>(D)</i>
     ),
-    body: <b>하위 집합 · 가중평균</b>,
-    detail: "데이터 비율 반영",
+    body: <b>자식 노드별 엔트로피</b>,
+    detail: "데이터 비율로 가중 평균",
   },
   {
     title: "정보이득",
     symbol: <i className="math">Gain(D, A)</i>,
     body: <b>분할 전 − 분할 후</b>,
-    detail: "정보이득이 큰 속성 선택",
+    detail: "정보이득이 가장 큰 후보 속성 선택",
   },
 ];
 
@@ -88,29 +88,29 @@ const ITEMS: Item[] = [
     kind: "choice",
     instruction: "다음 설명이 옳으면 O, 옳지 않으면 X를 선택하세요.",
     question:
-      "의사결정 트리는 루트 노드에서 선택한 하나의 속성만 모든 하위 노드에서 반복해서 사용한다.",
+      "ID3 알고리즘은 루트 노드에서 선택한 분할 속성 하나만 이후의 모든 노드에서 반복하여 사용한다.",
     options: [
       { label: "O" },
       { label: "X", correct: true },
     ],
     explanation:
-      "혼합된 하위 노드에서는 남은 후보 속성의 정보이득을 다시 비교하여 새로운 질문을 선택합니다.",
+      "분할 후 각 자식 노드에서는 남은 후보 속성별 정보이득을 다시 계산하고, 정보이득이 가장 큰 후보 속성을 새로운 분할 속성으로 선택합니다.",
   },
   {
     id: 2,
     kind: "choice",
-    question: "엔트로피 h(D)가 의미하는 것은 무엇인가요?",
+    question: "엔트로피 h(D)에 대한 설명으로 옳은 것은 무엇인가요?",
     options: [
-      { label: "현재 데이터에 포함된 행의 수" },
+      { label: "데이터 집합 D에 포함된 데이터의 수" },
       {
-        label: "데이터 집합 D에서 실제값이 섞여 있는 정도",
+        label: "각 실제값이 나타날 확률을 이용하여 계산한 평균 정보량",
         correct: true,
       },
       { label: "의사결정 트리의 전체 깊이" },
       { label: "현재 사용할 수 있는 후보 속성의 수" },
     ],
     explanation:
-      "엔트로피 h(D)는 데이터 집합 D에서 실제값이 섞여 있는 정도, 즉 분류 결과의 불확실성을 나타냅니다.",
+      "엔트로피 h(D)는 각 실제값이 나타날 확률을 이용하여 계산한 평균 정보량으로, 데이터 집합 D에서 임의로 선택한 데이터의 실제값이 무엇일지에 대한 불확실성을 나타냅니다.",
   },
   {
     id: 3,
@@ -143,12 +143,16 @@ const ITEMS: Item[] = [
         formula: true,
       },
       {
-        label: <span className="formula">∑ h(D<sub>하위 집합</sub>)</span>,
+        label: (
+          <span className="formula">
+            h(D) × h<sub className="math-variable">A</sub>(D)
+          </span>
+        ),
         formula: true,
       },
     ],
     explanation:
-      "정보이득은 분할 전 엔트로피에서 분할 후 가중평균 엔트로피를 뺀 값입니다.",
+      "정보이득 Gain(D, A)는 분할 전 현재 노드의 엔트로피 h(D)에서 속성 A로 분할한 후 자식 노드별 엔트로피의 가중 평균 h_A(D)를 뺀 값입니다.",
   },
   {
     id: 4,
@@ -160,28 +164,28 @@ const ITEMS: Item[] = [
         label: "후보 속성 중 정보이득이 가장 큰 속성",
         correct: true,
       },
-      { label: "분할 후 엔트로피가 가장 큰 속성" },
-      { label: "속성값의 종류가 가장 많은 속성" },
-      { label: "데이터 표에서 가장 왼쪽에 있는 속성" },
+      { label: "분할 후 가중 평균 엔트로피가 가장 큰 후보 속성" },
+      { label: "속성값의 가짓수가 가장 많은 후보 속성" },
+      { label: "데이터 표에서 가장 왼쪽에 있는 후보 속성" },
     ],
     explanation:
-      "ID3는 후보 속성의 정보이득을 비교하고, 가장 큰 속성을 현재 노드의 질문으로 선택합니다.",
+      "ID3 알고리즘은 후보 속성별 정보이득을 비교하고, 정보이득이 가장 큰 후보 속성을 현재 노드의 분할 속성으로 선택합니다.",
   },
   {
     id: 5,
     kind: "choice",
-    question: "현재 노드의 h(D) = 0일 때 리프 노드로 확정하는 이유는 무엇인가요?",
+    question: "현재 노드의 h(D) = 0일 때 분할을 종료하고 리프 노드로 확정하는 이유는 무엇인가요?",
     options: [
       { label: "현재 노드의 데이터가 너무 많기 때문에" },
       { label: "후보 속성을 모두 사용했기 때문에" },
       {
-        label: "모든 실제값이 같아 분류 결과가 하나로 결정되기 때문에",
+        label: "현재 노드에 포함된 모든 데이터의 실제값이 동일하기 때문에",
         correct: true,
       },
       { label: "정보이득이 항상 음수가 되기 때문에" },
     ],
     explanation:
-      "h(D) = 0이면 노드 안의 모든 실제값이 같아 분류 결과가 하나로 결정됩니다. 따라서 더 나눌 필요가 없어 리프 노드로 확정합니다.",
+      "h(D) = 0이면 현재 노드에 포함된 모든 데이터의 실제값이 동일합니다. 따라서 추가 분할 없이 해당 실제값을 예측하는 리프 노드로 확정합니다.",
   },
 ];
 
@@ -193,19 +197,19 @@ function Summary({ start }: { start: () => void }) {
       number: "01",
       tone: "structure",
       title: "트리의 구조",
-      keywords: ["루트 노드", "질문 노드", "리프 노드"],
+      keywords: ["루트 노드", "자식 노드", "리프 노드"],
     },
     {
       number: "02",
       tone: "split",
       title: "분할 기준",
-      keywords: ["엔트로피", "가중평균 엔트로피", "정보이득"],
+      keywords: ["엔트로피", "가중 평균 엔트로피", "정보이득"],
     },
     {
       number: "03",
       tone: "id3",
       title: "ID3 알고리즘",
-      keywords: ["정보이득 계산", "최댓값 선택", "반복 분할"],
+      keywords: ["후보 속성별 정보이득", "분할 속성 선택", "반복 분할"],
     },
   ];
 
