@@ -828,6 +828,54 @@ main {
   font-style: normal;
 }
 
+.formula-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12em;
+  white-space: nowrap;
+}
+
+.math-sum {
+  width: 1.65em;
+  height: 2.08em;
+  flex: 0 0 1.65em;
+  display: inline-grid;
+  grid-template-areas:
+    "upper"
+    "symbol"
+    "lower";
+  grid-template-rows: 0.46em 1.02em 0.6em;
+  align-items: center;
+  justify-items: center;
+  line-height: 1;
+}
+
+.math-sum-upper {
+  grid-area: upper;
+  align-self: end;
+  font-size: 0.46em;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.math-sum-symbol {
+  grid-area: symbol;
+  font-size: 1.24em;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.math-sum-lower {
+  grid-area: lower;
+  align-self: end;
+  font-size: 0.4em;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 .options button.formula-option sub {
   position: relative;
   bottom: -0.18em;

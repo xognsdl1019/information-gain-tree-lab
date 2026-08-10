@@ -37,92 +37,98 @@ function assignCadets(): CadetAssignments {
   return assignments;
 }
 
+function EntropyFormula({
+  variant,
+}: {
+  variant: "entropy" | "positive" | "gini" | "probability";
+}) {
+  const label = {
+    entropy: "h of D equals negative sum from k equals 1 to K of p k log base 2 p k",
+    positive: "h of D equals sum from k equals 1 to K of p k log base 2 p k",
+    gini: "h of D equals 1 minus sum from k equals 1 to K of p k squared",
+    probability: "h of D equals sum from k equals 1 to K of p k",
+  }[variant];
+
+  return (
+    <span className="formula-row" aria-label={label}>
+      <span>h(𝒟)</span>
+      <span>=</span>
+      {variant === "entropy" && <span>−</span>}
+      {variant === "gini" && (
+        <>
+          <span>1</span>
+          <span>−</span>
+        </>
+      )}
+      <span className="math-sum" aria-hidden="true">
+        <span className="math-sum-upper">K</span>
+        <span className="math-sum-symbol">∑</span>
+        <span className="math-sum-lower">k = 1</span>
+      </span>
+      {variant === "gini" ? (
+        <span>
+          p<sub>k</sub><sup>2</sup>
+        </span>
+      ) : (
+        <span>
+          p<sub>k</sub>
+        </span>
+      )}
+      {(variant === "entropy" || variant === "positive") && (
+        <>
+          <span>
+            log<sub>2</sub>
+          </span>
+          <span>
+            p<sub>k</sub>
+          </span>
+        </>
+      )}
+    </span>
+  );
+}
+
 const ITEMS: Item[] = [
   {
     id: 1,
     question: "엔트로피 h(𝒟)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
-        label: (
-          <span className="formula">
-            h(𝒟) = −Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub> log<sub>2</sub> p<sub>k</sub>
-          </span>
-        ),
+        label: <EntropyFormula variant="entropy" />,
         correct: true,
         formula: true,
       },
       {
-        label: (
-          <span className="formula">
-            h(𝒟) = Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub> log<sub>2</sub> p<sub>k</sub>
-          </span>
-        ),
+        label: <EntropyFormula variant="positive" />,
         formula: true,
       },
       {
-        label: (
-          <span className="formula">
-            h(𝒟) = 1 − Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub><sup>2</sup>
-          </span>
-        ),
+        label: <EntropyFormula variant="gini" />,
         formula: true,
       },
       {
-        label: (
-          <span className="formula">
-            h(𝒟) = Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub>
-          </span>
-        ),
+        label: <EntropyFormula variant="probability" />,
         formula: true,
       },
     ],
     explanation:
-      "K는 실제값의 가짓수이고, pₖ는 데이터 집합 𝒟에서 실제값 k가 나타날 확률입니다. 엔트로피는 −Σ pₖ log₂ pₖ로 계산합니다.",
+      "K는 클래스의 개수이고, pₖ는 데이터 집합 𝒟에서 클래스 k가 차지하는 비율입니다. 로그의 밑은 2를 사용합니다.",
   },
   {
     id: 2,
-    question: (
-      <>
-        속성 A로 분할하여 자식 노드의 데이터 집합 𝒟<sub>1</sub>, …, 𝒟<sub>m</sub>이 생성되었을 때, h<sub>A</sub>(𝒟)의 계산식으로 옳은 것은 무엇인가요?
-      </>
-    ),
+    question:
+      "엔트로피 h(𝒟)가 큰 데이터 집합의 특징으로 옳은 것은 무엇인가요?",
     options: [
+      { label: "현재 노드에 포함된 데이터의 수가 많음" },
       {
-        label: (
-          <span className="formula">
-            h<sub>A</sub>(𝒟) = Σ<sub>j=1</sub><sup>m</sup> (|𝒟<sub>j</sub>| / |𝒟|) h(𝒟<sub>j</sub>)
-          </span>
-        ),
+        label: "여러 클래스가 비슷한 비율로 섞여 있어 분류의 불확실성이 큼",
         correct: true,
-        formula: true,
       },
-      {
-        label: (
-          <span className="formula">
-            h<sub>A</sub>(𝒟) = Σ<sub>j=1</sub><sup>m</sup> h(𝒟<sub>j</sub>)
-          </span>
-        ),
-        formula: true,
-      },
-      {
-        label: (
-          <span className="formula">
-            h<sub>A</sub>(𝒟) = Σ<sub>j=1</sub><sup>m</sup> (|𝒟| / |𝒟<sub>j</sub>|) h(𝒟<sub>j</sub>)
-          </span>
-        ),
-        formula: true,
-      },
-      {
-        label: (
-          <span className="formula">
-            h<sub>A</sub>(𝒟) = h(𝒟) − Σ<sub>j=1</sub><sup>m</sup> h(𝒟<sub>j</sub>)
-          </span>
-        ),
-        formula: true,
-      },
+      { label: "현재 노드에서 사용할 수 있는 후보 속성의 수가 많음" },
+      { label: "현재 노드에 포함된 모든 데이터의 클래스가 동일함" },
     ],
     explanation:
-      "각 자식 노드의 데이터 집합 𝒟ⱼ에 대해 엔트로피 h(𝒟ⱼ)와 데이터 비율 |𝒟ⱼ|/|𝒟|을 곱한 뒤 모두 더합니다.",
+      "여러 클래스가 비슷한 비율로 섞여 있을수록 어느 클래스로 분류될지 불확실하므로 엔트로피가 커집니다.",
   },
   {
     id: 3,
@@ -192,12 +198,12 @@ const ITEMS: Item[] = [
       { label: "현재 노드에서 사용할 후보 속성이 없음" },
       { label: "현재 노드의 깊이가 0임" },
       {
-        label: "현재 노드에 포함된 모든 데이터의 실제값이 동일함",
+        label: "현재 노드에 포함된 모든 데이터의 클래스가 동일함",
         correct: true,
       },
     ],
     explanation:
-      "h(𝒟) = 0이면 현재 노드의 모든 데이터가 동일한 실제값을 가집니다. 따라서 추가 분할 없이 해당 실제값을 예측하는 리프 노드로 확정합니다.",
+      "h(𝒟) = 0이면 현재 노드의 모든 데이터가 동일한 클래스에 속합니다. 따라서 추가 분할 없이 해당 클래스를 예측하는 리프 노드로 확정합니다.",
   },
 ];
 
