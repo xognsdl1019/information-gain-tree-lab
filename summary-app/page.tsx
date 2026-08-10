@@ -132,7 +132,12 @@ const ITEMS: Item[] = [
   },
   {
     id: 3,
-    question: "정보이득 Gain(𝒟, A)의 계산식으로 옳은 것은 무엇인가요?",
+    question: (
+      <>
+        정보이득 Gain(𝒟, <span className="math-variable">A</span>)의 계산식으로
+        옳은 것은 무엇인가요?
+      </>
+    ),
     options: [
       {
         label: (
@@ -170,7 +175,9 @@ const ITEMS: Item[] = [
     ],
     explanation: (
       <>
-        정보이득 Gain(𝒟, A)는 분할 전 엔트로피 h(𝒟)에서 속성 A로 분할한 후 엔트로피 h<sub>A</sub>(𝒟)를 뺀 값입니다.
+        정보이득 Gain(𝒟, <span className="math-variable">A</span>)는 분할 전
+        엔트로피 h(𝒟)에서 속성 <span className="math-variable">A</span>로 분할한
+        후 엔트로피 h<sub className="math-variable">A</sub>(𝒟)를 뺀 값입니다.
       </>
     ),
   },

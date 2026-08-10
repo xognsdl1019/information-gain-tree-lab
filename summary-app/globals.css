@@ -44,6 +44,12 @@ input {
   letter-spacing: 0;
 }
 
+.math-variable {
+  font-family: "Cambria Math", "STIX Two Math", "Times New Roman", serif;
+  font-style: italic;
+  font-weight: inherit;
+}
+
 .math sub,
 .formula sub {
   font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
