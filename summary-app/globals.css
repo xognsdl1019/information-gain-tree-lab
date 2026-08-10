@@ -836,6 +836,14 @@ main {
   vertical-align: baseline;
 }
 
+.options button.formula-option sup {
+  position: relative;
+  top: -0.42em;
+  font-size: 68%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+
 .options button.selected {
   border-color: var(--blue);
   background: #f7fbff;
@@ -1303,7 +1311,7 @@ main {
   .app-header nav {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 4px;
     font-size: 12px;
     text-align: center;
