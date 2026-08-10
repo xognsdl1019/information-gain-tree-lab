@@ -2,65 +2,20 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 
-type Phase = "summary" | "setup" | "quiz" | "complete";
+type Phase = "setup" | "quiz" | "complete";
 type ClassName = "A2" | "B1" | "C1";
 type CadetName = "이준 생도" | "맹주본 생도";
 type Option = { label: ReactNode; correct?: boolean; formula?: boolean };
 type CadetAssignments = Partial<Record<number, CadetName>>;
 type Item = {
   id: number;
-  kind: "choice" | "order";
-  instruction?: string;
-  question: string;
-  options?: Option[];
-  explanation: string;
-  scored?: boolean;
+  question: ReactNode;
+  options: Option[];
+  explanation: ReactNode;
 };
 
 const CLASS_OPTIONS: ClassName[] = ["A2", "B1", "C1"];
 const CADET_NAMES: CadetName[] = ["이준 생도", "맹주본 생도"];
-
-const ID3_STEPS = [
-  { key: "attribute", icon: "속성", label: "후보 속성 확인" },
-  { key: "gain", icon: "Gain", label: "후보 속성별 정보이득 계산" },
-  { key: "max", icon: "MAX", label: "분할 속성 선택" },
-  { key: "split", icon: "분할", label: "데이터 분할" },
-];
-
-const CONCEPTS: Array<{
-  title: string;
-  symbol: ReactNode;
-  body: ReactNode;
-  detail: ReactNode;
-}> = [
-  {
-    title: "엔트로피",
-    symbol: <i className="math">h(D)</i>,
-    body: <b>평균 정보량</b>,
-    detail: "각 실제값이 나타날 확률 이용",
-  },
-  {
-    title: "분할 후 엔트로피",
-    symbol: (
-      <i className="math">h<sub className="math-variable">A</sub>(D)</i>
-    ),
-    body: <b>자식 노드별 엔트로피</b>,
-    detail: "데이터 비율로 가중 평균",
-  },
-  {
-    title: "정보이득",
-    symbol: <i className="math">Gain(D, A)</i>,
-    body: <b>분할 전 − 분할 후</b>,
-    detail: "정보이득이 가장 큰 후보 속성 선택",
-  },
-];
-
-const INITIAL_ORDER = [
-  ID3_STEPS[1],
-  ID3_STEPS[3],
-  ID3_STEPS[0],
-  ID3_STEPS[2],
-];
 
 const ASSIGNED_ITEM_IDS = [1, 3];
 
@@ -85,42 +40,98 @@ function assignCadets(): CadetAssignments {
 const ITEMS: Item[] = [
   {
     id: 1,
-    kind: "choice",
-    instruction: "다음 설명이 옳으면 O, 옳지 않으면 X를 선택하세요.",
-    question:
-      "ID3 알고리즘은 루트 노드에서 선택한 분할 속성 하나만 이후의 모든 노드에서 반복하여 사용한다.",
+    question: "엔트로피 h(𝒟)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
-      { label: "O" },
-      { label: "X", correct: true },
+      {
+        label: (
+          <span className="formula">
+            h(𝒟) = −Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub> log<sub>2</sub> p<sub>k</sub>
+          </span>
+        ),
+        correct: true,
+        formula: true,
+      },
+      {
+        label: (
+          <span className="formula">
+            h(𝒟) = Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub> log<sub>2</sub> p<sub>k</sub>
+          </span>
+        ),
+        formula: true,
+      },
+      {
+        label: (
+          <span className="formula">
+            h(𝒟) = 1 − Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub><sup>2</sup>
+          </span>
+        ),
+        formula: true,
+      },
+      {
+        label: (
+          <span className="formula">
+            h(𝒟) = Σ<sub>k=1</sub><sup>K</sup> p<sub>k</sub>
+          </span>
+        ),
+        formula: true,
+      },
     ],
     explanation:
-      "분할 후 각 자식 노드에서는 남은 후보 속성별 정보이득을 다시 계산하고, 정보이득이 가장 큰 후보 속성을 새로운 분할 속성으로 선택합니다.",
+      "K는 실제값의 가짓수이고, pₖ는 데이터 집합 𝒟에서 실제값 k가 나타날 확률입니다. 엔트로피는 −Σ pₖ log₂ pₖ로 계산합니다.",
   },
   {
     id: 2,
-    kind: "choice",
-    question: "엔트로피 h(D)에 대한 설명으로 옳은 것은 무엇인가요?",
+    question: (
+      <>
+        속성 A로 분할하여 자식 노드의 데이터 집합 𝒟<sub>1</sub>, …, 𝒟<sub>m</sub>이 생성되었을 때, h<sub>A</sub>(𝒟)의 계산식으로 옳은 것은 무엇인가요?
+      </>
+    ),
     options: [
-      { label: "데이터 집합 D에 포함된 데이터의 수" },
       {
-        label: "각 실제값이 나타날 확률을 이용하여 계산한 평균 정보량",
+        label: (
+          <span className="formula">
+            h<sub>A</sub>(𝒟) = Σ<sub>j=1</sub><sup>m</sup> (|𝒟<sub>j</sub>| / |𝒟|) h(𝒟<sub>j</sub>)
+          </span>
+        ),
         correct: true,
+        formula: true,
       },
-      { label: "의사결정 트리의 전체 깊이" },
-      { label: "현재 사용할 수 있는 후보 속성의 수" },
+      {
+        label: (
+          <span className="formula">
+            h<sub>A</sub>(𝒟) = Σ<sub>j=1</sub><sup>m</sup> h(𝒟<sub>j</sub>)
+          </span>
+        ),
+        formula: true,
+      },
+      {
+        label: (
+          <span className="formula">
+            h<sub>A</sub>(𝒟) = Σ<sub>j=1</sub><sup>m</sup> (|𝒟| / |𝒟<sub>j</sub>|) h(𝒟<sub>j</sub>)
+          </span>
+        ),
+        formula: true,
+      },
+      {
+        label: (
+          <span className="formula">
+            h<sub>A</sub>(𝒟) = h(𝒟) − Σ<sub>j=1</sub><sup>m</sup> h(𝒟<sub>j</sub>)
+          </span>
+        ),
+        formula: true,
+      },
     ],
     explanation:
-      "엔트로피 h(D)는 각 실제값이 나타날 확률을 이용하여 계산한 평균 정보량으로, 데이터 집합 D에서 임의로 선택한 데이터의 실제값이 무엇일지에 대한 불확실성을 나타냅니다.",
+      "각 자식 노드의 데이터 집합 𝒟ⱼ에 대해 엔트로피 h(𝒟ⱼ)와 데이터 비율 |𝒟ⱼ|/|𝒟|을 곱한 뒤 모두 더합니다.",
   },
   {
     id: 3,
-    kind: "choice",
-    question: "정보이득 Gain(D, A)의 계산식으로 옳은 것은 무엇인가요?",
+    question: "정보이득 Gain(𝒟, A)의 계산식으로 옳은 것은 무엇인가요?",
     options: [
       {
         label: (
           <span className="formula">
-            h<sub className="math-variable">A</sub>(D) − h(D)
+            h<sub className="math-variable">A</sub>(𝒟) − h(𝒟)
           </span>
         ),
         formula: true,
@@ -128,7 +139,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            h(D) + h<sub className="math-variable">A</sub>(D)
+            h(𝒟) + h<sub className="math-variable">A</sub>(𝒟)
           </span>
         ),
         formula: true,
@@ -136,7 +147,7 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            h(D) − h<sub className="math-variable">A</sub>(D)
+            h(𝒟) − h<sub className="math-variable">A</sub>(𝒟)
           </span>
         ),
         correct: true,
@@ -145,114 +156,59 @@ const ITEMS: Item[] = [
       {
         label: (
           <span className="formula">
-            h(D) × h<sub className="math-variable">A</sub>(D)
+            h(𝒟) × h<sub className="math-variable">A</sub>(𝒟)
           </span>
         ),
         formula: true,
       },
     ],
-    explanation:
-      "정보이득 Gain(D, A)는 분할 전 현재 노드의 엔트로피 h(D)에서 속성 A로 분할한 후 자식 노드별 엔트로피의 가중 평균 h_A(D)를 뺀 값입니다.",
+    explanation: (
+      <>
+        정보이득 Gain(𝒟, A)는 분할 전 엔트로피 h(𝒟)에서 속성 A로 분할한 후 엔트로피 h<sub>A</sub>(𝒟)를 뺀 값입니다.
+      </>
+    ),
   },
   {
     id: 4,
-    kind: "choice",
     question:
-      "ID3 알고리즘이 현재 노드에서 사용할 분할 속성을 선택하는 기준으로 옳은 것은 무엇인가요?",
+      "후보 속성별 정보이득을 다음과 같이 계산했습니다.\nID3가 현재 노드의 분할 속성으로 선택하는 것은 무엇인가요?",
     options: [
       {
-        label: "후보 속성 중 정보이득이 가장 큰 속성",
+        label: "나이 · Gain(𝒟, 나이) = 0.247",
         correct: true,
       },
-      { label: "분할 후 가중 평균 엔트로피가 가장 큰 후보 속성" },
-      { label: "속성값의 가짓수가 가장 많은 후보 속성" },
-      { label: "데이터 표에서 가장 왼쪽에 있는 후보 속성" },
+      { label: "수입 · Gain(𝒟, 수입) = 0.029" },
+      { label: "학생 여부 · Gain(𝒟, 학생 여부) = 0.152" },
+      { label: "신용 등급 · Gain(𝒟, 신용 등급) = 0.048" },
     ],
     explanation:
-      "ID3 알고리즘은 후보 속성별 정보이득을 비교하고, 정보이득이 가장 큰 후보 속성을 현재 노드의 분할 속성으로 선택합니다.",
+      "ID3는 후보 속성 중 정보이득이 가장 큰 속성을 선택합니다. 따라서 0.247로 가장 큰 ‘나이’를 분할 속성으로 선택합니다.",
   },
   {
     id: 5,
-    kind: "choice",
-    question: "현재 노드의 h(D) = 0일 때 분할을 종료하고 리프 노드로 확정하는 이유는 무엇인가요?",
+    question: "현재 노드의 엔트로피 h(𝒟) = 0이 의미하는 것은 무엇인가요?",
     options: [
-      { label: "현재 노드의 데이터가 너무 많기 때문에" },
-      { label: "후보 속성을 모두 사용했기 때문에" },
+      { label: "현재 노드에 포함된 데이터가 없음" },
+      { label: "현재 노드에서 사용할 후보 속성이 없음" },
+      { label: "현재 노드의 깊이가 0임" },
       {
-        label: "현재 노드에 포함된 모든 데이터의 실제값이 동일하기 때문에",
+        label: "현재 노드에 포함된 모든 데이터의 실제값이 동일함",
         correct: true,
       },
-      { label: "정보이득이 항상 음수가 되기 때문에" },
     ],
     explanation:
-      "h(D) = 0이면 현재 노드에 포함된 모든 데이터의 실제값이 동일합니다. 따라서 추가 분할 없이 해당 실제값을 예측하는 리프 노드로 확정합니다.",
+      "h(𝒟) = 0이면 현재 노드의 모든 데이터가 동일한 실제값을 가집니다. 따라서 추가 분할 없이 해당 실제값을 예측하는 리프 노드로 확정합니다.",
   },
 ];
 
-const QUIZ_ITEM_COUNT = ITEMS.filter((item) => item.scored !== false).length;
-
-function Summary({ start }: { start: () => void }) {
-  const keywordGroups = [
-    {
-      number: "01",
-      tone: "structure",
-      title: "트리의 구조",
-      keywords: ["루트 노드", "자식 노드", "리프 노드"],
-    },
-    {
-      number: "02",
-      tone: "split",
-      title: "분할 기준",
-      keywords: ["엔트로피", "가중 평균 엔트로피", "정보이득"],
-    },
-    {
-      number: "03",
-      tone: "id3",
-      title: "ID3 알고리즘",
-      keywords: ["후보 속성별 정보이득", "분할 속성 선택", "반복 분할"],
-    },
-  ];
-
-  return (
-    <section className="summary-page keyword-summary-page">
-      <div className="summary-title">
-        <span>의사결정 트리 핵심 키워드</span>
-      </div>
-
-      <div className="keyword-summary-grid">
-        {keywordGroups.map((group) => (
-          <article
-            className={`keyword-card tone-${group.tone}`}
-            key={group.title}
-          >
-            <div className="keyword-card-title">
-              <span>{group.number}</span>
-              <h2>{group.title}</h2>
-            </div>
-            <ul>
-              {group.keywords.map((keyword) => (
-                <li key={keyword}>{keyword}</li>
-              ))}
-            </ul>
-          </article>
-        ))}
-      </div>
-
-      <div className="summary-action">
-        <button onClick={start}>확인 퀴즈 풀기 →</button>
-      </div>
-    </section>
-  );
-}
+const QUIZ_ITEM_COUNT = ITEMS.length;
 
 function CadetSetup({
   initialClass,
   start,
-  back,
 }: {
   initialClass: ClassName;
   start: (className: ClassName) => void;
-  back: () => void;
 }) {
   const [selectedClass, setSelectedClass] = useState<ClassName>(initialClass);
 
@@ -316,9 +272,6 @@ function CadetSetup({
           </div>
         </div>
 
-        <button className="setup-back" type="button" onClick={back}>
-          ← 핵심 정리로 돌아가기
-        </button>
       </div>
     </section>
   );
@@ -337,36 +290,20 @@ function Quiz({
 }) {
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
-  const [order, setOrder] = useState([...INITIAL_ORDER]);
   const [feedback, setFeedback] = useState<"idle" | "correct" | "wrong">(
     "idle",
   );
   const [score, setScore] = useState(0);
   const item = ITEMS[index];
   const assignedCadet = assignments[item.id];
-  const ready = item.kind === "choice" ? selected !== null : true;
-  const isGroupItem = item.scored === false;
+  const ready = selected !== null;
 
   function check(event: FormEvent) {
     event.preventDefault();
-    const ok =
-      item.kind === "choice"
-        ? Boolean(item.options?.[selected ?? -1]?.correct)
-        : order.every((step, stepIndex) => step === ID3_STEPS[stepIndex]);
+    const ok = Boolean(item.options[selected ?? -1]?.correct);
 
-    if (ok && !isGroupItem) setScore((value) => value + 1);
+    if (ok) setScore((value) => value + 1);
     setFeedback(ok ? "correct" : "wrong");
-  }
-
-  function moveStep(from: number, direction: -1 | 1) {
-    const to = from + direction;
-    if (to < 0 || to >= order.length || feedback === "correct") return;
-    setOrder((current) => {
-      const nextOrder = [...current];
-      [nextOrder[from], nextOrder[to]] = [nextOrder[to], nextOrder[from]];
-      return nextOrder;
-    });
-    if (feedback === "wrong") setFeedback("idle");
   }
 
   function next() {
@@ -383,15 +320,9 @@ function Quiz({
     <section className="quiz-page">
       <div className="quiz-toolbar">
         <div className="quiz-progress-label">
-          <span>{isGroupItem ? "다 같이 풀기" : `${className} 교반 · 확인 퀴즈`}</span>
+          <span>{className} 교반 · 확인 퀴즈</span>
           <strong>
-            {isGroupItem ? (
-              "공동"
-            ) : (
-              <>
-                {index + 1}<small> / {QUIZ_ITEM_COUNT}</small>
-              </>
-            )}
+            {index + 1}<small> / {QUIZ_ITEM_COUNT}</small>
           </strong>
         </div>
         <nav>
@@ -405,104 +336,57 @@ function Quiz({
                     : ""
               }
               key={question.id}
-              title={question.scored === false ? "다 같이 풀기" : `문제 ${question.id}`}
+              title={`문제 ${question.id}`}
             >
               {questionIndex < index ? "✓" : question.id}
             </i>
           ))}
         </nav>
-        <button type="button" onClick={back}>← 핵심 정리</button>
+        <button type="button" onClick={back}>← 교반 선택</button>
       </div>
 
       <form className="quiz-card" onSubmit={check}>
-        <span>{isGroupItem ? "다 같이 풀기" : `문제 ${item.id}`}</span>
-        {assignedCadet && !isGroupItem && (
+        <span>문제 {item.id}</span>
+        {assignedCadet && (
           <div className="quiz-cadet">
             <span>담당 생도</span>
             <strong>{assignedCadet}</strong>
           </div>
         )}
-        {item.instruction && (
-          <p className="quiz-instruction">{item.instruction}</p>
-        )}
-        <h1 className={item.instruction ? "question-statement" : ""}>
-          {item.question}
-        </h1>
+        <h1>{item.question}</h1>
 
-        {item.kind === "choice" ? (
-          <div
-            className={`options ${item.id === 1 ? "ox-options" : ""} ${
-              item.id === 4 ? "item-four-options" : ""
-            } ${item.id === 5 ? "item-five-options" : ""}`}
-          >
-            {item.options?.map((option, optionIndex) => (
-              <button
-                type="button"
-                className={`${selected === optionIndex ? "selected" : ""} ${
-                  feedback === "correct" && option.correct ? "correct" : ""
-                } ${
-                  feedback === "wrong" && selected === optionIndex ? "wrong" : ""
-                } ${option.formula ? "formula-option" : ""}`}
-                onClick={() => {
-                  setSelected(optionIndex);
-                  if (feedback === "wrong") setFeedback("idle");
-                }}
-                disabled={feedback === "correct"}
-                key={`${item.id}-${optionIndex}`}
-              >
-                <i>{String.fromCharCode(65 + optionIndex)}</i>
-                <span>{option.label}</span>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="order-list">
-            {order.map((step, stepIndex) => (
-              <div className={`order-step tone-${step.key}`} key={step.key}>
-                <b>{step.icon}</b>
-                <div className="order-copy">
-                  <small>현재 {stepIndex + 1}번째</small>
-                  <span>{step.label}</span>
-                </div>
-                <div className="order-controls">
-                  <button
-                    type="button"
-                    onClick={() => moveStep(stepIndex, -1)}
-                    disabled={stepIndex === 0 || feedback === "correct"}
-                    aria-label={`${step.label} 위로 이동`}
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => moveStep(stepIndex, 1)}
-                    disabled={
-                      stepIndex === order.length - 1 || feedback === "correct"
-                    }
-                    aria-label={`${step.label} 아래로 이동`}
-                  >
-                    ↓
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="options">
+          {item.options.map((option, optionIndex) => (
+            <button
+              type="button"
+              className={`${selected === optionIndex ? "selected" : ""} ${
+                feedback === "correct" && option.correct ? "correct" : ""
+              } ${
+                feedback === "wrong" && selected === optionIndex ? "wrong" : ""
+              } ${option.formula ? "formula-option" : ""}`}
+              onClick={() => {
+                setSelected(optionIndex);
+                if (feedback === "wrong") setFeedback("idle");
+              }}
+              disabled={feedback === "correct"}
+              key={`${item.id}-${optionIndex}`}
+            >
+              <i>{String.fromCharCode(65 + optionIndex)}</i>
+              <span>{option.label}</span>
+            </button>
+          ))}
+        </div>
 
         {feedback === "correct" && (
           <div className="feedback good" role="status" aria-live="polite">
-            <b>{isGroupItem ? "✓ 올바른 순서입니다." : "✓ 정답입니다."}</b>
+            <b>✓ 정답입니다.</b>
             <span>{item.explanation}</span>
           </div>
         )}
         {feedback === "wrong" && (
           <div className="feedback bad" role="status" aria-live="polite">
             <b>다시 확인</b>
-            <span>
-              {item.kind === "order"
-                ? "화살표로 순서를 바꾼 뒤 다시 확인해 보세요."
-                : "답을 바꾼 뒤 다시 확인해 보세요."}
-            </span>
+            <span>답을 바꾼 뒤 다시 확인해 보세요.</span>
           </div>
         )}
 
@@ -524,11 +408,11 @@ function Quiz({
 
 function Complete({
   score,
-  summary,
+  setup,
   retry,
 }: {
   score: number;
-  summary: () => void;
+  setup: () => void;
   retry: () => void;
 }) {
   const message =
@@ -536,7 +420,7 @@ function Complete({
       ? "핵심 개념을 정확히 이해했습니다"
       : score >= 4
         ? "핵심 흐름을 이해했습니다"
-        : "핵심 정리를 다시 확인해 보세요";
+        : "공식과 분할 기준을 다시 확인해 보세요";
 
   return (
     <section className="complete-page">
@@ -544,7 +428,7 @@ function Complete({
         <div className="mark">✓</div>
         <span>학습 완료</span>
         <h1>{message}</h1>
-        <p>5개 확인 퀴즈를 통해 엔트로피와 정보이득의 핵심 개념을 확인했습니다.</p>
+        <p>{QUIZ_ITEM_COUNT}개 확인 퀴즈를 통해 엔트로피와 정보이득의 핵심 개념을 확인했습니다.</p>
         <div className="score">
           <span>확인 퀴즈 점수</span>
           <b>
@@ -556,7 +440,7 @@ function Complete({
           </div>
         </div>
         <div className="complete-actions">
-          <button onClick={summary}>핵심 정리 다시 보기</button>
+          <button onClick={setup}>교반 다시 선택</button>
           <button className="primary" onClick={retry}>
             퀴즈 다시 풀기
           </button>
@@ -567,7 +451,7 @@ function Complete({
 }
 
 export default function SummaryQuiz() {
-  const [phase, setPhase] = useState<Phase>("summary");
+  const [phase, setPhase] = useState<Phase>("setup");
   const [score, setScore] = useState(0);
   const [selectedClass, setSelectedClass] = useState<ClassName>("A2");
   const [assignments, setAssignments] = useState<CadetAssignments>({});
@@ -594,8 +478,6 @@ export default function SummaryQuiz() {
           </div>
         </div>
         <nav>
-          <span className={phase === "summary" ? "active" : ""}>핵심 정리</span>
-          <i>→</i>
           <span className={phase === "setup" ? "active" : ""}>교반 선택</span>
           <i>→</i>
           <span className={phase === "quiz" ? "active" : ""}>확인 퀴즈</span>
@@ -603,19 +485,17 @@ export default function SummaryQuiz() {
           <span className={phase === "complete" ? "active" : ""}>완료</span>
         </nav>
       </header>
-      {phase === "summary" && <Summary start={() => setPhase("setup")} />}
       {phase === "setup" && (
         <CadetSetup
           initialClass={selectedClass}
           start={beginQuiz}
-          back={() => setPhase("summary")}
         />
       )}
       {phase === "quiz" && (
         <Quiz
           assignments={assignments}
           className={selectedClass}
-          back={() => setPhase("summary")}
+          back={() => setPhase("setup")}
           finish={(finalScore) => {
             setScore(finalScore);
             setPhase("complete");
@@ -625,7 +505,7 @@ export default function SummaryQuiz() {
       {phase === "complete" && (
         <Complete
           score={score}
-          summary={() => setPhase("summary")}
+          setup={() => setPhase("setup")}
           retry={retryQuiz}
         />
       )}
