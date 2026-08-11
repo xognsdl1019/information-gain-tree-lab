@@ -46,6 +46,8 @@
         overflow-x: hidden;
         color: var(--ink);
         background: var(--bg);
+        word-break: keep-all;
+        overflow-wrap: break-word;
         font-family:
           Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
           system-ui, sans-serif;
@@ -1360,6 +1362,8 @@
 
       .gain-card b {
         font-size: 23px;
+        white-space: nowrap;
+        word-break: keep-all;
       }
 
       .gain-card strong {
@@ -1508,6 +1512,8 @@
 
       .tree-node-card b {
         font-size: 20px;
+        white-space: nowrap;
+        word-break: keep-all;
       }
 
       .tree-node-card small {
@@ -1770,7 +1776,10 @@
       }
 
       .child-card-head b {
+        flex: 0 0 auto;
         font-size: 22px;
+        white-space: nowrap;
+        word-break: keep-all;
       }
 
       .child-card-head strong {
