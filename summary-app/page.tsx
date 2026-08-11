@@ -197,21 +197,6 @@ const ITEMS: Item[] = [
     explanation:
       "ID3는 후보 속성 중 정보이득이 가장 큰 속성을 선택합니다. 따라서 0.247로 가장 큰 ‘나이’를 분할 속성으로 선택합니다.",
   },
-  {
-    id: 5,
-    question: "현재 노드의 엔트로피 h(𝒟) = 0이 의미하는 것은 무엇인가요?",
-    options: [
-      { label: "현재 노드에 포함된 데이터가 없음" },
-      { label: "현재 노드에서 사용할 후보 속성이 없음" },
-      { label: "현재 노드의 깊이가 0임" },
-      {
-        label: "현재 노드에 포함된 모든 데이터의 클래스가 동일함",
-        correct: true,
-      },
-    ],
-    explanation:
-      "h(𝒟) = 0이면 현재 노드의 모든 데이터가 동일한 클래스에 속합니다. 따라서 추가 분할 없이 해당 클래스를 예측하는 리프 노드로 확정합니다.",
-  },
 ];
 
 const QUIZ_ITEM_COUNT = ITEMS.length;
@@ -431,7 +416,7 @@ function Complete({
   const message =
     score === QUIZ_ITEM_COUNT
       ? "핵심 개념을 정확히 이해했습니다"
-      : score >= 4
+      : score >= 3
         ? "핵심 흐름을 이해했습니다"
         : "공식과 분할 기준을 다시 확인해 보세요";
 
