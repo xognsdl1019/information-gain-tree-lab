@@ -2363,7 +2363,7 @@
             </div>
           </div>
           <div class="cadet-prompt">
-            <span data-cadet="1">맹주본 생도</span>
+            <span>권현 생도</span>
             <strong>구매 / 미구매 인원</strong>
           </div>
           <div class="formula-card">
@@ -2482,7 +2482,7 @@
             </article>
           </div>
           <div class="cadet-prompt">
-            <span data-cadet="2">이준 생도</span>
+            <span>이준 생도</span>
             <strong>가중치 · 청소년 / 청년 / 중년</strong>
           </div>
           <div class="formula-card">
@@ -2602,10 +2602,6 @@
                 <p class="math-line">− <span class="math-fraction"><span>6</span><span>7</span></span> log₂(<span class="math-fraction"><span>6</span><span>7</span></span>) − <span class="math-fraction"><span>1</span><span>7</span></span> log₂(<span class="math-fraction"><span>1</span><span>7</span></span>)</p>
                 <strong class="math-symbol">h(D<sub>학생</sub>) = 0.592</strong>
               </article>
-            </div>
-            <div class="cadet-prompt">
-              <span data-cadet="3">맹주본 생도</span>
-              <strong>가중치 · 아니요 / 예</strong>
             </div>
             <div class="repeat-formulas">
               <div class="repeat-gain-formula">
@@ -2738,7 +2734,7 @@
               </table>
             </div>
             <div class="cadet-prompt">
-              <span data-cadet="4">이준 생도</span>
+              <span>강동근 생도</span>
               <strong>청소년 노드 · 분할 전 엔트로피 식</strong>
             </div>
             <div id="youthEntropyExercise" class="formula-card">
@@ -3013,19 +3009,6 @@
       dataTables.innerHTML =
         tableMarkup(customers.slice(0, 7)) + tableMarkup(customers.slice(7));
 
-      function cadetAssignments() {
-        const names = ["맹주본 생도", "이준 생도"];
-        const first = Math.random() < 0.5 ? 0 : 1;
-        return Array.from({ length: 4 }, (_, index) => names[(first + index) % names.length]);
-      }
-
-      function setCadets() {
-        const assignments = cadetAssignments();
-        assignments.forEach((cadet, index) => {
-          document.querySelector(`[data-cadet="${index + 1}"]`).textContent = cadet;
-        });
-      }
-
       function populateSelect(select, values) {
         select.innerHTML =
           `<option value="">?</option>` +
@@ -3215,7 +3198,6 @@
 
       setupForm.addEventListener("submit", (event) => {
         event.preventDefault();
-        setCadets();
         changeClassButton.textContent = `${classSelect.value} · 교반 변경`;
         resetExercise();
         setupView.classList.add("hidden");
@@ -3462,7 +3444,6 @@
       });
 
       document.getElementById("restartButton").addEventListener("click", () => {
-        setCadets();
         resetExercise();
       });
     </script>
